@@ -1,0 +1,168 @@
+{
+ "isole-ghiacciate": {
+  "mappa": "images/ambienti/isole-ghiacciate/mappa.webp",
+  "luoghi": [
+   {
+    "file": "images/ambienti/isole-ghiacciate/isole-ghiacciate-1.webp",
+    "titolo": "Isole Ghiacciate 1"
+   },
+   {
+    "file": "images/ambienti/isole-ghiacciate/isole-ghiacciate-2.webp",
+    "titolo": "Isole Ghiacciate 2"
+   },
+   {
+    "file": "images/ambienti/isole-ghiacciate/isole-ghiacciate-3.webp",
+    "titolo": "Isole Ghiacciate 3"
+   },
+   {
+    "file": "images/ambienti/isole-ghiacciate/isole-ghiacciate-4.webp",
+    "titolo": "Isole Ghiacciate 4"
+   },
+   {
+    "file": "images/ambienti/isole-ghiacciate/isole-ghiacciate-5.webp",
+    "titolo": "Isole Ghiacciate 5"
+   },
+   {
+    "file": "images/ambienti/isole-ghiacciate/isole-ghiacciate-6.webp",
+    "titolo": "Isole Ghiacciate 6"
+   },
+   {
+    "file": "images/ambienti/isole-ghiacciate/nerath.webp",
+    "titolo": "Nerath"
+   }
+  ]
+ },
+ "citta-dei-morti": {
+  "mappa": "images/ambienti/citta-dei-morti/mappa.webp",
+  "luoghi": [
+   {
+    "file": "images/ambienti/citta-dei-morti/citta-dei-morti-2.webp",
+    "titolo": "Città dei Morti 2"
+   },
+   {
+    "file": "images/ambienti/citta-dei-morti/citta-dei-morti-3.webp",
+    "titolo": "Città dei Morti 3"
+   },
+   {
+    "file": "images/ambienti/citta-dei-morti/citta-dei-morti-4.webp",
+    "titolo": "Città dei Morti 4"
+   },
+   {
+    "file": "images/ambienti/citta-dei-morti/citta-dei-morti.webp",
+    "titolo": "Città dei Morti"
+   },
+   {
+    "file": "images/ambienti/citta-dei-morti/custodi-della-soglia.webp",
+    "titolo": "Custodi della Soglia"
+   }
+  ]
+ },
+ "foresta-fungina": {
+  "mappa": "images/ambienti/foresta-fungina/mappa.webp",
+  "luoghi": [
+   {
+    "file": "images/ambienti/foresta-fungina/colonia-dei-micelianti.webp",
+    "titolo": "Colonia dei Micelianti"
+   },
+   {
+    "file": "images/ambienti/foresta-fungina/foresta-fungina-1.webp",
+    "titolo": "Foresta Fungina 1"
+   },
+   {
+    "file": "images/ambienti/foresta-fungina/foresta-fungina-2.webp",
+    "titolo": "Foresta Fungina 2"
+   },
+   {
+    "file": "images/ambienti/foresta-fungina/foresta-fungina-3.webp",
+    "titolo": "Foresta Fungina 3"
+   },
+   {
+    "file": "images/ambienti/foresta-fungina/foresta-fungina-4.webp",
+    "titolo": "Foresta Fungina 4"
+   },
+   {
+    "file": "images/ambienti/foresta-fungina/foresta-fungina-5.webp",
+    "titolo": "Foresta Fungina 5"
+   },
+   {
+    "file": "images/ambienti/foresta-fungina/foresta-fungina-6.webp",
+    "titolo": "Foresta Fungina 6"
+   },
+   {
+    "file": "images/ambienti/foresta-fungina/foresta-fungina-7.webp",
+    "titolo": "Foresta Fungina 7"
+   }
+  ]
+ },
+ "valle-decadente": {
+  "mappa": "images/ambienti/valle-decadente/mappa.webp",
+  "luoghi": [
+   {
+    "file": "images/ambienti/valle-decadente/predoni-del-confine.webp",
+    "titolo": "Predoni del Confine"
+   },
+   {
+    "file": "images/ambienti/valle-decadente/valle-decadente-1.webp",
+    "titolo": "Valle Decadente 1"
+   },
+   {
+    "file": "images/ambienti/valle-decadente/valle-decadente-2.webp",
+    "titolo": "Valle Decadente 2"
+   },
+   {
+    "file": "images/ambienti/valle-decadente/valle-decadente-3.webp",
+    "titolo": "Valle Decadente 3"
+   },
+   {
+    "file": "images/ambienti/valle-decadente/valle-decadente-4.webp",
+    "titolo": "Valle Decadente 4"
+   }
+  ]
+ },
+ "altopiani-cristallini": {
+  "mappa": "images/ambienti/altopiani-cristallini/mappa.webp",
+  "luoghi": [
+   {
+    "file": "images/ambienti/altopiani-cristallini/altopiani-cristallini-1.webp",
+    "titolo": "Altopiani Cristallini 1"
+   },
+   {
+    "file": "images/ambienti/altopiani-cristallini/altopiani-cristallini-2.webp",
+    "titolo": "Altopiani Cristallini 2"
+   },
+   {
+    "file": "images/ambienti/altopiani-cristallini/altopiani-cristallini-3.webp",
+    "titolo": "Altopiani Cristallini 3"
+   },
+   {
+    "file": "images/ambienti/altopiani-cristallini/altopiani-cristallini-4.webp",
+    "titolo": "Altopiani Cristallini 4"
+   },
+   {
+    "file": "images/ambienti/altopiani-cristallini/thal-seren.webp",
+    "titolo": "Thal Seren"
+   }
+  ]
+ },
+ "antica-fucina": {
+  "mappa": "images/ambienti/antica-fucina/mappa.webp",
+  "luoghi": [
+   {
+    "file": "images/ambienti/antica-fucina/antica-fucina-1.webp",
+    "titolo": "Antica Fucina 1"
+   },
+   {
+    "file": "images/ambienti/antica-fucina/antica-fucina-2.webp",
+    "titolo": "Antica Fucina 2"
+   },
+   {
+    "file": "images/ambienti/antica-fucina/antica-fucina-4.webp",
+    "titolo": "Antica Fucina 4"
+   },
+   {
+    "file": "images/ambienti/antica-fucina/kharon.webp",
+    "titolo": "Kharon"
+   }
+  ]
+ }
+}

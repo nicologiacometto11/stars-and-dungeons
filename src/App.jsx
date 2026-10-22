@@ -12,13 +12,13 @@ import Craft from './components/Craft.jsx'
 import Receive from './components/Receive.jsx'
 
 const TABS = [
-  ['scheda', 'Scheda'],
-  ['zodiaco', 'Zodiaco'],
-  ['negozio', 'Negozio'],
-  ['inventario', 'Inventario'],
-  ['bestiario', 'Bestiario'],
-  ['craft', 'Craft'],
-  ['ricevi', 'Ricevi'],
+  ['scheda', 'Scheda', '🧙'],
+  ['zodiaco', 'Zodiaco', '✨'],
+  ['negozio', 'Negozio', '🛒'],
+  ['inventario', 'Inventario', '🎒'],
+  ['bestiario', 'Bestiario', '📖'],
+  ['craft', 'Craft', '⚒️'],
+  ['ricevi', 'Ricevi', '🎁'],
 ]
 
 export default function App() {
@@ -161,9 +161,10 @@ export default function App() {
       )}
 
       <nav className="tabs">
-        {TABS.map(([id, nome]) => (
-          <button key={id} className={tab === id ? 'on' : ''} onClick={() => setTab(id)}>
-            {nome}
+        {TABS.map(([id, nome, ico]) => (
+          <button key={id} className={tab === id ? 'on' : ''} onClick={() => { setTab(id); window.scrollTo({ top: 0 }) }}>
+            <span className="ico" aria-hidden="true">{ico}</span>
+            <span className="nome-tab">{nome}</span>
           </button>
         ))}
       </nav>

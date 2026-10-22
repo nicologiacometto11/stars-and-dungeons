@@ -237,3 +237,10 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 @media (display-mode: standalone) {
   .top { padding-top: calc(env(safe-area-inset-top) + 14px); }
 }
+
+.banner-install { display: flex; align-items: center; gap: 12px; padding: 10px 12px; margin-bottom: 12px; border: 1px solid rgba(230, 194, 116, .35); border-radius: 12px; background: linear-gradient(135deg, rgba(230, 194, 116, .1), rgba(185, 162, 255, .08)); }
+.banner-install img { border-radius: 10px; flex: none; }
+.banner-testo { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.banner-testo small { color: var(--muted); line-height: 1.35; }
+.banner-azioni { display: flex; flex-direction: column; gap: 6px; flex: none; }
+.banner-azioni button { padding: 6px 12px; font-size: .85rem; min-height: 0; }

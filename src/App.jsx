@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { supabase, modalitaOnline } from './lib/supabase.js'
 import { caricaScheda, salvaScheda, eliminaScheda } from './lib/store.js'
 import { derive, nuovaScheda } from './lib/rules.js'
+import InstallBanner from './components/InstallBanner.jsx'
 import Auth, { NuovaPassword } from './components/Auth.jsx'
 import Sheet from './components/Sheet.jsx'
 import Zodiac from './components/Zodiac.jsx'
@@ -155,6 +156,8 @@ export default function App() {
           )}
         </div>
       </header>
+
+      <InstallBanner />
 
       {!modalitaOnline && (
         <div className="avviso">Modalità locale: la scheda è salvata solo su questo browser. Configura Supabase per averla su ogni dispositivo.</div>

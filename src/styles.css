@@ -162,3 +162,8 @@ input[type=range] { accent-color: var(--oro); }
   .card { padding: 14px; }
   .tabs { margin: 0 -8px 14px; padding: 0 8px; }
 }
+
+button.pericolo { background: transparent; border-color: rgba(240, 138, 150, .5); color: var(--no); }
+button.pericolo:hover:not(:disabled) { background: rgba(240, 138, 150, .12); border-color: var(--no); }
+.pericolo-box { border: 1px solid rgba(240, 138, 150, .4); border-radius: 10px; padding: 12px 14px; background: rgba(240, 138, 150, .06); }
+.sep-h { border: 0; border-top: 1px solid var(--line); margin: 16px 0; }

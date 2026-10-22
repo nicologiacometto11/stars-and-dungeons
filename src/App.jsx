@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { supabase, modalitaOnline } from './lib/supabase.js'
-import { caricaScheda, salvaScheda } from './lib/store.js'
+import { caricaScheda, salvaScheda, eliminaScheda } from './lib/store.js'
 import { derive, nuovaScheda } from './lib/rules.js'
 import Auth, { NuovaPassword } from './components/Auth.jsx'
 import Sheet from './components/Sheet.jsx'
@@ -107,6 +107,20 @@ export default function App() {
     return () => document.removeEventListener('visibilitychange', onVis)
   }, [userId])
 
+  // elimina la scheda (la conferma è chiesta nella Scheda); poi si riparte dalla creazione
+  const elimina = useCallback(async () => {
+    try {
+      await eliminaScheda(userId)
+      dirty.current = false
+      setStato('idle')
+      setC(null)
+      setTab('scheda')
+    } catch (e) {
+      console.error(e)
+      alert('Non sono riuscito a eliminare il personaggio. Riprova.')
+    }
+  }, [userId])
+
   const up = useCallback((fn) => {
     dirty.current = true
     setC((prev) => fn(prev))
@@ -155,7 +169,7 @@ export default function App() {
       </nav>
 
       <main>
-        {tab === 'scheda' && <Sheet c={c} d={d} up={up} />}
+        {tab === 'scheda' && <Sheet c={c} d={d} up={up} onElimina={elimina} />}
         {tab === 'zodiaco' && <Zodiac c={c} d={d} up={up} />}
         {tab === 'negozio' && <Shop c={c} d={d} up={up} />}
         {tab === 'inventario' && <Inventory c={c} d={d} up={up} />}

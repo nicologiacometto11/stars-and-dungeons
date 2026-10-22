@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { CATEGORIE } from '../data/zodiac.js'
 import { RANGO_MAX, segniUsati, conLog, normalizza } from '../lib/rules.js'
 import { esportaJSON } from '../lib/store.js'
@@ -37,7 +37,27 @@ function Contatore({ nome, valore, max, onMeno, onPiu, nota }) {
   )
 }
 
-export default function Sheet({ c, d, up }) {
+function ZonaPericolo({ nome, onElimina }) {
+  const [aperta, setAperta] = useState(false)
+  const [testo, setTesto] = useState('')
+  const ok = testo.trim().toLowerCase() === (nome || '').trim().toLowerCase()
+  if (!aperta) return <button className="pericolo" onClick={() => setAperta(true)}>Elimina personaggio…</button>
+  return (
+    <div className="pericolo-box">
+      <p><b>Questa azione è definitiva</b>: la scheda, l'inventario e il bestiario di «{nome}» verranno cancellati e non si possono recuperare. Se vuoi un backup, esportala prima.</p>
+      <label className="campo">
+        Per confermare scrivi il nome del personaggio
+        <input value={testo} onChange={(e) => setTesto(e.target.value)} placeholder={nome} autoFocus />
+      </label>
+      <div className="riga">
+        <button className="pericolo" disabled={!ok} onClick={onElimina}>Elimina per sempre</button>
+        <button className="ghost" onClick={() => { setAperta(false); setTesto('') }}>Annulla</button>
+      </div>
+    </div>
+  )
+}
+
+export default function Sheet({ c, d, up, onElimina }) {
   const fileRef = useRef(null)
   const usati = segniUsati(c)
   const liberi = c.rango - usati
@@ -164,6 +184,8 @@ export default function Sheet({ c, d, up }) {
           <button onClick={() => fileRef.current?.click()}>Importa scheda</button>
           <input ref={fileRef} type="file" accept="application/json" hidden onChange={importa} />
         </div>
+        <hr className="sep-h" />
+        <ZonaPericolo nome={c.nome} onElimina={onElimina} />
       </details>
 
       {c.log.length > 0 && (

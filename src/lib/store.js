@@ -29,6 +29,15 @@ export async function salvaScheda(userId, scheda) {
   localStorage.setItem(LOCAL_KEY, JSON.stringify(scheda))
 }
 
+export async function eliminaScheda(userId) {
+  if (supabase && userId) {
+    const { error } = await supabase.from('characters').delete().eq('user_id', userId)
+    if (error) throw error
+    return
+  }
+  localStorage.removeItem(LOCAL_KEY)
+}
+
 export function esportaJSON(scheda) {
   const blob = new Blob([JSON.stringify(scheda, null, 2)], { type: 'application/json' })
   const a = document.createElement('a')

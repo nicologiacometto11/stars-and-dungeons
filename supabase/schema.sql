@@ -10,11 +10,12 @@ create table if not exists public.characters (
 alter table public.characters enable row level security;
 
 -- Permessi espliciti (servono se "Automatically expose new tables" è disattivato). L'accesso resta limitato alle policy qui sotto.
-grant select, insert, update on public.characters to authenticated;
+grant select, insert, update, delete on public.characters to authenticated;
 
 drop policy if exists "leggi la tua scheda" on public.characters;
 drop policy if exists "crea la tua scheda" on public.characters;
 drop policy if exists "modifica la tua scheda" on public.characters;
+drop policy if exists "elimina la tua scheda" on public.characters;
 
 create policy "leggi la tua scheda" on public.characters
   for select to authenticated using ((select auth.uid()) = user_id);
@@ -27,4 +28,5 @@ create policy "modifica la tua scheda" on public.characters
   using ((select auth.uid()) = user_id)
   with check ((select auth.uid()) = user_id);
 
--- Nessuna policy di delete: la scheda "resta per sempre" e sparisce solo se si cancella l'account.
+create policy "elimina la tua scheda" on public.characters
+  for delete to authenticated using ((select auth.uid()) = user_id);

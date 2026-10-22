@@ -42,7 +42,7 @@ Gli id sono `slug(nome)` (vedi `craft.js`): ricette, bottino e inventario si leg
 
 ## Modello dati della scheda (salvata)
 
-Si salva solo lo stato "grezzo": `rango`, `segni` (punti per segno), `bonusSegni` (es. Cinque Essenze), `scelte` (il "+1 a scelta" dei Segni), `corpo`/`mente` attuali (`null` = al massimo), `usati` (Fato/Sybil spesi), `extra` (correzioni manuali), `armorSplit`, `aureos`, `inventario [{id,qta,eq}]`, `bestiario {scoperti,rivelati}`, `abilita`, `log`.
+Si salva solo lo stato "grezzo": `rango`, `segni` (punti per segno), `bonusSegni` (es. Cinque Essenze), `scelte` (il "+1 a scelta" dei Segni), `corpo`/`mente` attuali (`null` = al massimo), `usati` (Fato/Sybil spesi), `extra` (correzioni manuali), `armorSplit`, `aureos`, `inventario [{id,qta,eq}]`, `bestiario {scoperti,rivelati}`, `abilita` (perenni delle armi S), `abilitaPers` (abilità scritte dal giocatore), `noteAbilita`, `log`.
 Tutto il resto si ricalcola con `derive()` in `rules.js`, quindi non può disallinearsi. Aggiungere campi nuovi richiede di gestirli in `nuovaScheda()` e `normalizza()` per non rompere le schede già salvate.
 
 ## Regole implementate (da `rules.js`)
@@ -91,7 +91,6 @@ Nessuna.
 - Configurare Supabase e testare registrazione/login da due dispositivi.
 - Deploy su Netlify con le variabili d'ambiente.
 - Eventuale PWA per usarla da telefono come app.
-- Mostrare le abilità uniche (mostri A) e le abilità perenni delle armi S in una sezione dedicata della scheda (ora sono salvate in `abilita` e come oggetti di tipo "abilita").
 - Gli effetti dei consumabili (Tonico, Cosmo Liquido ecc.) sono manuali: si possono automatizzare.
 - Requisiti delle armi: "Corpo 21" e simili sono controllati sul MAX derivato; chiedere al Master se è quello che intende.
 
@@ -100,3 +99,7 @@ Nessuna.
 - Niente logica di gioco nei componenti: va in `rules.js`.
 - Dati di gioco solo in `src/data/*`, modificabili senza toccare la UI.
 - Modificare lo stato sempre con `up(fn)` (aggiorna e salva); usare `conLog` per registrare le azioni nello storico.
+
+## Abilità
+
+`Abilities.jsx` (nella Scheda) elenca con `abilitaScheda(c)` in `rules.js`: abilità Zodiaco sbloccate, armi/oggetti equipaggiati, abilità uniche (mostri A) in inventario, perenni (armi S) e quelle scritte dal giocatore. I costi in Mente/Corpo sono letti dal testo con `parseCosti` e il bottone "Usa −N" li toglie dalla riserva; i costi variabili ("quanti Corpo vuoi") restano manuali con i +/− delle Riserve.

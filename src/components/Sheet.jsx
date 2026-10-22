@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { CATEGORIE } from '../data/zodiac.js'
 import { RANGO_MAX, segniUsati, conLog, normalizza } from '../lib/rules.js'
 import { esportaJSON } from '../lib/store.js'
+import Abilities from './Abilities.jsx'
 
 function Riserva({ nome, valore, max, onChange, onRipristina }) {
   const pct = max > 0 ? Math.min(100, (valore / max) * 100) : 0
@@ -127,6 +128,8 @@ export default function Sheet({ c, d, up, onElimina }) {
           </div>
         </div>
       </section>
+
+      <Abilities c={c} d={d} up={up} />
 
       <section className="card">
         <h2>Armor</h2>

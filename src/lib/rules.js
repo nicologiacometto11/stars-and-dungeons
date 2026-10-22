@@ -24,7 +24,9 @@ export function nuovaScheda(nome = '') {
     aureos: 0,
     inventario: [], // { id, qta, eq }
     bestiario: { scoperti: {}, rivelati: {} },
-    abilita: [],
+    abilita: [], // abilità perenni ottenute (armi S): { da, testo }
+    abilitaPers: [], // abilità scritte dal giocatore: { id, nome, testo, mente, corpo }
+    noteAbilita: {}, // appunti per abilità, per chiave
     log: [],
   }
 }
@@ -149,6 +151,57 @@ export function armiElementoDisponibili(c) {
 
 export const prossimaSoglia = (c, segnoId) => SOGLIE.find((s) => s > effSegno(c, segnoId))
 
+// ---- abilità ----
+// Cerca nel testo i costi in Mente/Corpo, es. "(5 Mente)", "(3 Mente + 3 Corpo)", "pagando 5 Corpo".
+export function parseCosti(testo = '', largo = false) {
+  const out = []
+  const add = (n, ris) => {
+    const r = ris.toLowerCase()
+    if (!out.some((x) => x.n === n && x.ris === r)) out.push({ n, ris: r })
+  }
+  for (const m of testo.matchAll(/\((?:costo\s*)?(\d+)\s*(Mente|Corpo)(?:\s*(o|e|\+)\s*(?:(\d+)\s*)?(Mente|Corpo))?/gi)) {
+    add(Number(m[1]), m[2])
+    if (m[5]) add(m[4] ? Number(m[4]) : Number(m[1]), m[5])
+  }
+  for (const m of testo.matchAll(/(?:pagando|pagare|paga|costo:?)\s+(\d+)\s*(Mente|Corpo)/gi)) add(Number(m[1]), m[2])
+  if (largo) for (const m of testo.matchAll(/(\d+)\s*(Mente|Corpo)/gi)) add(Number(m[1]), m[2])
+  return out
+}
+
+// Tutte le abilità che il giocatore può usare ora: Ruota sbloccata, oggetti/armi equipaggiati,
+// abilità uniche, perenni (armi S) e quelle scritte da lui.
+export function abilitaScheda(c) {
+  const lista = []
+  for (const s of SEGNI) {
+    for (const a of abilitaSbloccate(c, s.id)) {
+      if (a.tipo === 'segno') continue
+      lista.push({ key: `z:${s.id}:${a.soglia}`, nome: a.nome, fonte: `Zodiaco · ${s.nome}`, tipo: 'zodiaco', testo: a.desc, costoTxt: a.costo, costi: parseCosti(a.costo || '', true) })
+    }
+  }
+  for (const inv of c.inventario) {
+    const it = ITEMS_BY_ID[inv.id]
+    if (!it) continue
+    if (it.cat === 'abilita') {
+      lista.push({ key: `i:${it.id}`, nome: it.nome, fonte: 'Abilità unica', tipo: 'unica', testo: it.desc.replace(/^Abilità UNICA\.\s*/, ''), costi: parseCosti(it.desc) })
+    } else if (inv.eq && (it.cat === 'arma' || it.cat === 'oggetto')) {
+      const testo = it.abilita || it.desc || ''
+      const costi = parseCosti(testo)
+      if (it.cat === 'oggetto' && !costi.length && !/puoi|ogni volta|evoca|immune|rifletti|ignora/i.test(testo)) continue
+      lista.push({ key: `i:${it.id}`, nome: it.nome, fonte: it.cat === 'arma' ? 'Arma equipaggiata' : 'Oggetto equipaggiato', tipo: 'oggetto', testo, costi })
+    }
+  }
+  for (const a of c.abilita || []) {
+    lista.push({ key: `p:${a.da}`, nome: a.da, fonte: 'Abilità perenne (Arma S)', tipo: 'perenne', testo: a.testo, costi: parseCosti(a.testo) })
+  }
+  for (const a of c.abilitaPers || []) {
+    const costi = []
+    if (a.mente > 0) costi.push({ n: a.mente, ris: 'mente' })
+    if (a.corpo > 0) costi.push({ n: a.corpo, ris: 'corpo' })
+    lista.push({ key: `c:${a.id}`, nome: a.nome, fonte: 'Tua', tipo: 'pers', testo: a.testo, costi, persId: a.id })
+  }
+  return lista
+}
+
 // ---- inventario ----
 export function qtaIn(c, id) {
   return c.inventario.find((i) => i.id === id)?.qta || 0
@@ -182,6 +235,9 @@ export function normalizza(raw) {
   c.usati = { ...base.usati, ...(raw?.usati || {}) }
   c.extra = { ...base.extra, ...(raw?.extra || {}) }
   c.bestiario = { scoperti: {}, rivelati: {}, ...(raw?.bestiario || {}) }
+  c.abilita = raw?.abilita || []
+  c.abilitaPers = raw?.abilitaPers || []
+  c.noteAbilita = raw?.noteAbilita || {}
   c.inventario = raw?.inventario || []
   c.log = raw?.log || []
   return c

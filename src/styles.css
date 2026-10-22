@@ -224,3 +224,11 @@ button.pericolo { background: transparent; border-color: rgba(240, 138, 150, .5)
   .tabs button:active { background: rgba(255, 255, 255, .08); }
   .top { padding-top: 16px; }
 }
+
+textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; width: 100%; resize: vertical; }
+.ab-lista li { display: flex; flex-direction: column; gap: 6px; }
+.ab-costi { gap: 6px; }
+.ab-costi button { padding: 6px 10px; font-size: .85rem; border-color: rgba(230, 194, 116, .4); color: var(--oro); }
+.ab-note summary { cursor: pointer; color: var(--muted); font-size: .8rem; }
+.ab-note textarea { margin-top: 6px; }
+.nuova-ab { margin-top: 12px; }

@@ -168,6 +168,16 @@ export function parseCosti(testo = '', largo = false) {
   return out
 }
 
+// Forma dell'Equilibrio (Bilancia, soglia 1): ogni costo si può pagare in Mente o in Corpo a scelta.
+export const costoLibero = (c) => effSegno(c, 'bilancia') >= 1
+
+// Se il costo è libero, ogni costo diventa pagabile in entrambe le riserve.
+export function costiPagabili(costi, libero) {
+  if (!libero) return costi
+  const importi = [...new Set(costi.map((k) => k.n))]
+  return importi.flatMap((n) => [{ n, ris: 'mente' }, { n, ris: 'corpo' }])
+}
+
 // Tutte le abilità che il giocatore può usare ora: Ruota sbloccata, oggetti/armi equipaggiati,
 // abilità uniche, perenni (armi S) e quelle scritte da lui.
 export function abilitaScheda(c) {

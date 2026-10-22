@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { abilitaScheda, conLog } from '../lib/rules.js'
+import { abilitaScheda, conLog, costoLibero, costiPagabili } from '../lib/rules.js'
 
 const NOME_RIS = { mente: 'Mente', corpo: 'Corpo' }
 
@@ -28,6 +28,7 @@ export default function Abilities({ c, d, up }) {
   const [filtro, setFiltro] = useState('tutte')
   const [nuova, setNuova] = useState(false)
   const tutte = abilitaScheda(c)
+  const libero = costoLibero(c)
   const lista = tutte.filter((a) => filtro === 'tutte' || a.tipo === filtro)
   const attuale = { mente: Math.min(c.mente ?? d.menteMax, d.menteMax), corpo: Math.min(c.corpo ?? d.corpoMax, d.corpoMax) }
 
@@ -58,6 +59,8 @@ export default function Abilities({ c, d, up }) {
         ))}
       </div>
 
+      {libero && <p className="muted"><small>Forma dell'Equilibrio attiva: puoi pagare ogni costo in Mente o in Corpo, a tua scelta.</small></p>}
+
       {lista.length === 0 && (
         <p className="muted">Nessuna abilità qui. Compaiono quando sblocchi le soglie dello Zodiaco, equipaggi armi e oggetti, ottieni abilità uniche o forgi armi S. Puoi anche scriverne una tua.</p>
       )}
@@ -72,7 +75,7 @@ export default function Abilities({ c, d, up }) {
             {a.testo && <p>{a.testo}</p>}
             {(a.costi.length > 0 || a.costoTxt) && (
               <div className="riga ab-costi">
-                {a.costi.map((k) => (
+                {costiPagabili(a.costi, libero).map((k) => (
                   <button key={k.ris + k.n} disabled={attuale[k.ris] < k.n} onClick={() => paga(a, k)} title="Toglie il costo dalla riserva">
                     Usa −{k.n} {NOME_RIS[k.ris]}
                   </button>

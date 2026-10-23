@@ -3,6 +3,7 @@ import { CATEGORIE } from '../data/zodiac.js'
 import { RANGO_MAX, segniUsati, conLog, normalizza } from '../lib/rules.js'
 import { esportaJSON } from '../lib/store.js'
 import Abilities from './Abilities.jsx'
+import AssegnaPunto from './AssegnaPunto.jsx'
 
 function Riserva({ nome, valore, max, onChange, onRipristina }) {
   const pct = max > 0 ? Math.min(100, (valore / max) * 100) : 0
@@ -24,14 +25,14 @@ function Riserva({ nome, valore, max, onChange, onRipristina }) {
   )
 }
 
-function Contatore({ nome, valore, max, onMeno, onPiu, nota }) {
+function Contatore({ nome, valore, max, onMeno, onPiu, nota, libero }) {
   return (
     <div className="stat">
       <span className="stat-n">{nome}</span>
       <div className="riga">
         <button onClick={onMeno} disabled={valore <= 0}>−</button>
         <strong>{valore}</strong>
-        <button onClick={onPiu} disabled={valore >= max}>+</button>
+        <button onClick={onPiu} disabled={!libero && valore >= max}>+</button>
       </div>
       <small>{nota || `max ${max}`}</small>
     </div>
@@ -102,6 +103,8 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
         {d.ofiuco && <p className="ofiuco">☉ Hai trovato Ofiuco: tutte le tue caratteristiche sono raddoppiate.</p>}
       </section>
 
+      <AssegnaPunto c={c} up={up} />
+
       <section className="card">
         <h2>Riserve</h2>
         <Riserva nome="Corpo" valore={corpo} max={d.corpoMax} onChange={(v) => up((s) => ({ ...s, corpo: v }))} onRipristina={() => up((s) => ({ ...s, corpo: null }))} />
@@ -117,7 +120,11 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
             onMeno={() => up((s) => ({ ...s, usati: { ...s.usati, sybil: s.usati.sybil + 1 } }))}
             onPiu={() => up((s) => ({ ...s, usati: { ...s.usati, sybil: Math.max(0, s.usati.sybil - 1) } }))}
           />
-          <div className="stat"><span className="stat-n">Cura</span><strong>{d.cura}</strong><small>punti Cura</small></div>
+          <Contatore
+            nome="Cura" valore={d.curaAttuale} max={d.cura} libero nota={`base ${d.cura} · modificabile`}
+            onMeno={() => up((s) => ({ ...s, usati: { ...s.usati, cura: (s.usati.cura || 0) + 1 } }))}
+            onPiu={() => up((s) => ({ ...s, usati: { ...s.usati, cura: (s.usati.cura || 0) - 1 } }))}
+          />
           <div className="stat">
             <span className="stat-n">Aureos</span>
             <input

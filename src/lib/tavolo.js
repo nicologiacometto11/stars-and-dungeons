@@ -11,6 +11,7 @@ export function statoPubblico(c, d) {
     armorF: d.armorFisica, armorM: d.armorMagica,
     fato: d.fatoAttuale, fatoMax: d.fato,
     sybil: d.sybilAttuale, sybilMax: d.sybil,
+    cura: d.curaAttuale, curaMax: d.cura,
   }
 }
 

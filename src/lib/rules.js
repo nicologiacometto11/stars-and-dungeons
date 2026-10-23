@@ -20,7 +20,7 @@ export function nuovaScheda(nome = '') {
     scelte: {}, // scelta del bonus "+1 a X" del Segno, per segno
     corpo: null, // null = al massimo
     mente: null,
-    usati: { fato: 0, sybil: 0 }, // punti spesi (il valore attuale = massimo - usati)
+    usati: { fato: 0, sybil: 0, cura: 0 }, // punti spesi (il valore attuale = massimo - usati; per la Cura può essere negativo: il giocatore la modifica liberamente)
     extra: { corpoMax: 0, menteMax: 0, armor: 0, fato: 0, sybil: 0, cura: 0 }, // correzioni manuali
     armorSplit: null, // quanta Armor base è Fisica (null = tutta Fisica)
     aureos: 0,
@@ -34,6 +34,15 @@ export function nuovaScheda(nome = '') {
 }
 
 export const effSegno = (c, id) => (c.segni[id] || 0) + (c.bonusSegni?.[id] || 0)
+
+export const puntiLiberi = (c) => c.rango - segniUsati(c)
+
+// Assegna un punto Rango a un segno (max 10 per segno, solo se ci sono punti liberi)
+export function assegnaPunto(c, segnoId) {
+  if (puntiLiberi(c) <= 0 || (c.segni[segnoId] || 0) >= 10) return c
+  const nuovo = (c.segni[segnoId] || 0) + 1
+  return conLog({ ...c, segni: { ...c.segni, [segnoId]: nuovo } }, `${SEGNI_BY_ID[segnoId].nome}: ${nuovo} punti`)
+}
 
 export function segniUsati(c) {
   return Object.values(c.segni).reduce((a, b) => a + b, 0)
@@ -119,6 +128,7 @@ export function derive(c) {
 
   d.fatoAttuale = Math.max(0, d.fato - (c.usati?.fato || 0))
   d.sybilAttuale = Math.max(0, d.sybil - (c.usati?.sybil || 0))
+  d.curaAttuale = Math.max(0, d.cura - (c.usati?.cura || 0))
   return d
 }
 

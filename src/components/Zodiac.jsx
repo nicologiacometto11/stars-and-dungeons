@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import AssegnaPunto from './AssegnaPunto.jsx'
 import { SEGNI, SEGNI_BY_ID, OFIUCO, CATEGORIE } from '../data/zodiac.js'
 import { ITEMS } from '../data/items.js'
 import {
@@ -71,6 +72,8 @@ export default function Zodiac({ c, d, up }) {
 
   return (
     <div className="stack">
+      <AssegnaPunto c={c} up={up} />
+
       <section className="card">
         <Ruota c={c} sel={sel} onSel={setSel} />
         <div className="legenda">

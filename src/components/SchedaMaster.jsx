@@ -43,7 +43,7 @@ export function SchedaLettura({ c, onAggiorna }) {
         <div className="stat"><span className="stat-n">Armor</span><strong>F {d.armorFisica} · M {d.armorMagica}</strong></div>
         <div className="stat"><span className="stat-n">Fato</span><strong>{d.fatoAttuale} / {d.fato}</strong></div>
         <div className="stat"><span className="stat-n">Sybil</span><strong>{d.sybilAttuale} / {d.sybil}</strong></div>
-        <div className="stat"><span className="stat-n">Cura</span><strong>{d.cura}</strong></div>
+        <div className="stat"><span className="stat-n">Cura</span><strong>{d.curaAttuale} / {d.cura}</strong></div>
         <div className="stat"><span className="stat-n">Critico</span><strong>{1 + d.critico}%</strong></div>
         <div className="stat"><span className="stat-n">Dadi Soc · Fis · Mag</span><strong>+{d.dadiSociale} · +{d.dadiFisico} · +{d.dadiMagico}</strong></div>
         <div className="stat"><span className="stat-n">Danni Fis · Mag</span><strong>+{d.dmgFisici} · +{d.dmgMagici}</strong></div>

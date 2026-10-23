@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { SHOP_ITEMS } from '../data/items.js'
-import { conAggiunta, conLog, qtaIn } from '../lib/rules.js'
+import { conAggiunta, conLog, itemNoto, qtaIn, studiaOggetto, STUDIO_SYBIL } from '../lib/rules.js'
 import ItemCard from './ItemCard.jsx'
 
 export default function Shop({ c, d, up }) {
@@ -14,9 +14,9 @@ export default function Shop({ c, d, up }) {
       (i) =>
         (tipo === 'tutti' || i.cat === tipo) &&
         (tier === 'tutti' || i.tier === tier) &&
-        (!t || i.nome.toLowerCase().includes(t) || (i.abilita || i.desc || '').toLowerCase().includes(t)),
+        (!t || i.nome.toLowerCase().includes(t) || (itemNoto(c, i.id) && (i.abilita || i.desc || '').toLowerCase().includes(t))),
     ).sort((a, b) => a.prezzo - b.prezzo || a.nome.localeCompare(b.nome))
-  }, [tipo, tier, q])
+  }, [tipo, tier, q, c])
 
   const compra = (it) =>
     up((s) => {
@@ -31,7 +31,7 @@ export default function Shop({ c, d, up }) {
           <h2 style={{ margin: 0 }}>Negozio</h2>
           <strong className="oro">{c.aureos} Aureos</strong>
         </div>
-        <input placeholder="Cerca per nome o effetto…" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input placeholder="Cerca per nome…" value={q} onChange={(e) => setQ(e.target.value)} />
         <div className="filtri">
           {[['tutti', 'Tutto'], ['arma', 'Armi'], ['oggetto', 'Oggetti']].map(([k, n]) => (
             <button key={k} className={tipo === k ? 'on' : ''} onClick={() => setTipo(k)}>{n}</button>
@@ -44,7 +44,10 @@ export default function Shop({ c, d, up }) {
       </section>
 
       {lista.map((it) => (
-        <ItemCard key={it.id} it={it} c={c} d={d} qta={qtaIn(c, it.id)}>
+        <ItemCard
+          key={it.id} it={it} c={c} d={d} qta={qtaIn(c, it.id)}
+          noto={itemNoto(c, it.id)} puoiStudiare={d.sybilAttuale >= STUDIO_SYBIL} onStudia={() => up((s) => studiaOggetto(s, d, it.id))}
+        >
           <span className="oro">{it.prezzo} Aureos</span>
           <button className="primary" disabled={c.aureos < it.prezzo} onClick={() => compra(it)}>
             {c.aureos < it.prezzo ? 'Aureos insufficienti' : 'Compra'}

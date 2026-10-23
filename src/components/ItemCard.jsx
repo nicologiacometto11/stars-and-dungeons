@@ -2,7 +2,7 @@ import { verificaReq } from '../lib/rules.js'
 
 const TIER_CLASS = { C: 't-c', B: 't-b', A: 't-a', S: 't-s', SS: 't-s', Zodiaco: 't-z', Speciale: 't-z', Chiave: 't-k' }
 
-export default function ItemCard({ it, c, d, qta, children, compact }) {
+export default function ItemCard({ it, c, d, qta, children, compact, noto = true, puoiStudiare, onStudia }) {
   const reqOk = it.req ? verificaReq(it.req, c, d) : true
   return (
     <div className={`item ${TIER_CLASS[it.tier] || ''}`}>
@@ -24,7 +24,14 @@ export default function ItemCard({ it, c, d, qta, children, compact }) {
           Requisiti: {it.reqTxt} {reqOk ? '✓' : '✗'}
         </div>
       )}
-      {!compact && (it.abilita || it.desc) && <p className="item-desc">{it.abilita || it.desc}</p>}
+      {!compact && (it.abilita || it.desc) && (noto ? (
+        <p className="item-desc">{it.abilita || it.desc}</p>
+      ) : (
+        <div className="item-lock">
+          <small className="muted">🔒 Cosa fa e che effetti ha: sconosciuto finché non lo studi o lo compri.</small>
+          <button disabled={!puoiStudiare} onClick={onStudia}>{puoiStudiare ? 'Studia · 1 Sybil' : 'Servono 1 Sybil'}</button>
+        </div>
+      ))}
       {children && <div className="item-act">{children}</div>}
     </div>
   )

@@ -4,7 +4,7 @@
 import { SEGNI, SEGNI_BY_ID, CATEGORIE, SOGLIE } from '../data/zodiac.js'
 import { ITEMS_BY_ID } from '../data/items.js'
 import { MOSTRI_BY_ID } from '../data/monsters.js'
-import { slug } from '../data/craft.js'
+import { slug, ARMI_CRAFT_A, ARMI_CRAFT_S } from '../data/craft.js'
 
 export const RANGO_MAX = 12
 export const ELEMENTI = ['fuoco', 'terra', 'aria', 'acqua']
@@ -26,6 +26,8 @@ export function nuovaScheda(nome = '') {
     aureos: 0,
     inventario: [], // { id, qta, eq }
     bestiario: { scoperti: {}, rivelati: {} },
+    noti: {}, // oggetti e armi di cui il giocatore conosce gli effetti (studiati, comprati, ricevuti, forgiati)
+    ricette: [], // ricette di craft scoperte (nome dell'arma)
     abilita: [], // abilità perenni ottenute (armi S): { da, testo }
     abilitaPers: [], // abilità scritte dal giocatore: { id, nome, testo, mente, corpo }
     noteAbilita: {}, // appunti per abilità, per chiave
@@ -163,6 +165,44 @@ export function armiElementoDisponibili(c) {
 
 export const prossimaSoglia = (c, segnoId) => SOGLIE.find((s) => s > effSegno(c, segnoId))
 
+// ---- studio di armi e oggetti ----
+export const STUDIO_SYBIL = 1
+
+// Prima di averli (comprati, ricevuti, forgiati) o studiati, gli effetti di armi e oggetti sono nascosti.
+export const itemNoto = (c, id) => !!c.noti?.[id] || qtaIn(c, id) > 0
+
+export function studiaOggetto(c, d, id) {
+  if (itemNoto(c, id) || d.sybil - (c.usati?.sybil || 0) < STUDIO_SYBIL) return c
+  const it = ITEMS_BY_ID[id]
+  return conLog(
+    { ...c, usati: { ...c.usati, sybil: (c.usati?.sybil || 0) + STUDIO_SYBIL }, noti: { ...(c.noti || {}), [id]: true } },
+    `Studiato ${it?.nome || id} (−${STUDIO_SYBIL} Sybil)`,
+  )
+}
+
+// ---- craft a tentativi ----
+export const RICETTE = [...ARMI_CRAFT_A, ...ARMI_CRAFT_S]
+
+// La ricetta che corrisponde esattamente ai materiali scelti (nessuno in più, nessuno in meno)
+export function cercaRicetta(ids) {
+  const set = new Set(ids)
+  return RICETTE.find((r) => r.ing.length === set.size && r.ing.every((n) => set.has(slug(n)))) || null
+}
+
+// Tenta il craft: se la combinazione è giusta i materiali si consumano e si ottiene l'arma, altrimenti non si perde niente.
+export function tentaCraft(c, ids) {
+  const set = [...new Set(ids)]
+  if (!set.length || !set.every((id) => qtaIn(c, id) > 0)) return { c, esito: 'no' }
+  const ric = cercaRicetta(set)
+  if (!ric) return { c, esito: 'no' }
+  let x = c
+  for (const n of ric.ing) x = conRimozione(x, slug(n))
+  x = conAggiunta(x, slug(ric.nome))
+  if (ric.perenne) x = { ...x, abilita: [...(x.abilita || []), { da: ric.nome, testo: ric.perenne }] }
+  if (!x.ricette.includes(ric.nome)) x = { ...x, ricette: [...x.ricette, ric.nome] }
+  return { c: conLog(x, `Forgiata ${ric.nome}`), esito: 'ok', ricetta: ric }
+}
+
 // ---- abilità ----
 // Cerca nel testo i costi in Mente/Corpo, es. "(5 Mente)", "(3 Mente + 3 Corpo)", "pagando 5 Corpo".
 export function parseCosti(testo = '', largo = false) {
@@ -234,7 +274,7 @@ export function conAggiunta(c, id, qta = 1) {
   const idx = inv.findIndex((i) => i.id === id)
   if (idx >= 0) inv[idx] = { ...inv[idx], qta: inv[idx].qta + qta }
   else inv.push({ id, qta, eq: false })
-  return { ...c, inventario: inv }
+  return { ...c, inventario: inv, noti: { ...(c.noti || {}), [id]: true } }
 }
 
 export function conRimozione(c, id, qta = 1) {
@@ -307,6 +347,8 @@ export function normalizza(raw) {
   c.usati = { ...base.usati, ...(raw?.usati || {}) }
   c.extra = { ...base.extra, ...(raw?.extra || {}) }
   c.bestiario = { scoperti: {}, rivelati: {}, ...(raw?.bestiario || {}) }
+  c.noti = raw?.noti || {}
+  c.ricette = raw?.ricette || []
   c.abilita = raw?.abilita || []
   c.abilitaPers = raw?.abilitaPers || []
   c.noteAbilita = raw?.noteAbilita || {}

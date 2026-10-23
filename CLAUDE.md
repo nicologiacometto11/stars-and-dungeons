@@ -42,7 +42,7 @@ Gli id sono `slug(nome)` (vedi `craft.js`): ricette, bottino e inventario si leg
 
 ## Modello dati della scheda (salvata)
 
-Si salva solo lo stato "grezzo": `rango`, `segni` (punti per segno), `bonusSegni` (es. Cinque Essenze), `scelte` (il "+1 a scelta" dei Segni), `corpo`/`mente` attuali (`null` = al massimo), `usati` (Fato/Sybil spesi), `extra` (correzioni manuali), `armorSplit`, `aureos`, `inventario [{id,qta,eq}]`, `bestiario {scoperti,rivelati}`, `abilita` (perenni delle armi S), `abilitaPers` (abilità scritte dal giocatore), `noteAbilita`, `log`.
+Si salva solo lo stato "grezzo": `rango`, `segni` (punti per segno), `bonusSegni` (es. Cinque Essenze), `scelte` (il "+1 a scelta" dei Segni), `corpo`/`mente` attuali (`null` = al massimo), `usati` (Fato/Sybil spesi), `extra` (correzioni manuali), `armorSplit`, `aureos`, `inventario [{id,qta,eq}]`, `bestiario {scoperti,rivelati}`, `noti` (oggetti i cui effetti si conoscono), `ricette` (scoperte), `abilita` (perenni delle armi S), `abilitaPers` (abilità scritte dal giocatore), `noteAbilita`, `log`.
 Tutto il resto si ricalcola con `derive()` in `rules.js`, quindi non può disallinearsi. Aggiungere campi nuovi richiede di gestirli in `nuovaScheda()` e `normalizza()` per non rompere le schede già salvate.
 
 ## Regole implementate (da `rules.js`)
@@ -113,3 +113,10 @@ Principio: il Master non scrive mai nella scheda di un giocatore. Manda un'azion
 Regole: Armor Fisica/Magica si sottrae ai danni dello stesso tipo (minimo 0), i puri la ignorano e il giocatore sceglie Corpo o Mente; fisico = Corpo, magico = Mente. Danni = conferma del giocatore (può correggere il numero); cure, Aureos, oggetti, Rango +1 e bottino si applicano da soli. Calcoli in `rules.js` (`dannoNetto`, `conDanno`, `conCura`, `applicaBottino`, `riceviOggetto`).
 Decisione del Master: la tab "Ricevi" resta ai giocatori (si segnano da soli Aureos, oggetti e bottino per risparmiare tempo); il Master può comunque dare le cose dalla sua vista.
 Fase 3 (da fare): mostri in campo (i giocatori vedono solo l'immagine, i dettagli solo pagando 1 Sybil, mai i PV rimasti).
+
+## Segreti e scoperte (richieste del Master)
+
+- Ofiuco è segreto: nessun indizio nell'interfaccia finché non è sbloccato.
+- Effetti e abilità di armi e oggetti sono nascosti nel Negozio finché il giocatore non paga 1 Sybil (`studiaOggetto`, `STUDIO_SYBIL`) o non li ottiene (comprati, ricevuti, forgiati: `conAggiunta` segna l'oggetto in `noti`). Restano visibili nome, grado, prezzo e requisiti.
+- Craft a tentativi: nessun elenco di ricette. Il giocatore sceglie i materiali e tenta (`tentaCraft`): se la combinazione è esatta i materiali si consumano e ottiene l'arma (e la ricetta si scopre), se è sbagliata non perde niente.
+- Da fare: acquisto della ricetta casuale con Sybil (costo da chiarire con il Master: 1 Sybil per la ricetta a caso, 5 per A e S?).

@@ -289,3 +289,8 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 .assegna-lista { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin: 8px 0; }
 .assegna-lista button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; padding: 10px 12px; }
 .assegna-lista small { color: var(--muted); }
+
+.item-lock { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 6px; padding: 8px 10px; border-radius: 8px; border: 1px dashed var(--line2); }
+.mat-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px; margin: 8px 0; }
+.mat-lista label { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; font-size: .9rem; }
+.mat-lista label.on { border-color: var(--oro); background: rgba(230, 194, 116, .1); }

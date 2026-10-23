@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Compagni from './Compagni.jsx'
 import MasterAzioni from './MasterAzioni.jsx'
+import SchedaMaster from './SchedaMaster.jsx'
 import Storico from './Storico.jsx'
 import { MOSTRI } from '../data/monsters.js'
 import { ordineIniziale, prossimoTurno } from '../lib/tavolo.js'
@@ -64,6 +65,7 @@ function Bottino({ tv }) {
 export default function Master({ tv }) {
   const [copiato, setCopiato] = useState(false)
   const [aperto, setAperto] = useState(null)
+  const [scheda, setScheda] = useState(null)
   const t = tv.tavolo
   if (!tv.pronto || !t) return <p className="muted centrato">Carico il tavolo…</p>
 
@@ -142,7 +144,11 @@ export default function Master({ tv }) {
                   <button className="ghost" onClick={() => tv.annullaAzione(a.id)}>Annulla</button>
                 </div>
               ))}
-              <button onClick={() => setAperto(aperto === g.user_id ? null : g.user_id)}>{aperto === g.user_id ? 'Chiudi azioni' : 'Azioni…'}</button>
+              <div className="riga">
+                <button onClick={() => setScheda(scheda === g.user_id ? null : g.user_id)}>{scheda === g.user_id ? 'Chiudi scheda' : 'Vedi scheda'}</button>
+                <button onClick={() => setAperto(aperto === g.user_id ? null : g.user_id)}>{aperto === g.user_id ? 'Chiudi azioni' : 'Azioni…'}</button>
+              </div>
+              {scheda === g.user_id && <SchedaMaster userId={g.user_id} />}
               {aperto === g.user_id && <MasterAzioni g={g} tv={tv} />}
             </>
           )}

@@ -5,6 +5,7 @@ import { derive, nuovaScheda } from './lib/rules.js'
 import { useTavolo } from './lib/tavolo.js'
 import Tavolo from './components/Tavolo.jsx'
 import Master from './components/Master.jsx'
+import RichiesteMaster from './components/RichiesteMaster.jsx'
 import InstallBanner from './components/InstallBanner.jsx'
 import Auth, { NuovaPassword } from './components/Auth.jsx'
 import Sheet from './components/Sheet.jsx'
@@ -162,6 +163,7 @@ export default function App() {
       </header>
 
       <InstallBanner />
+      {tv.membro && <RichiesteMaster tv={tv} c={c} d={d} up={up} />}
 
       {!modalitaOnline && (
         <div className="avviso">Modalità locale: la scheda è salvata solo su questo browser. Configura Supabase per averla su ogni dispositivo.</div>
@@ -177,7 +179,7 @@ export default function App() {
       </nav>
 
       <main>
-        {tab === 'scheda' && <Sheet c={c} d={d} up={up} onElimina={elimina} />}
+        {tab === 'scheda' && <Sheet c={c} d={d} up={up} onElimina={elimina} tv={tv} />}
         {tab === 'zodiaco' && <Zodiac c={c} d={d} up={up} />}
         {tab === 'negozio' && <Shop c={c} d={d} up={up} />}
         {tab === 'inventario' && <Inventory c={c} d={d} up={up} />}

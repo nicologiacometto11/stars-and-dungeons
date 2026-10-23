@@ -9,7 +9,7 @@ function Barra({ nome, v = 0, max = 0 }) {
   )
 }
 
-export default function Compagni({ giocatori, turnoId, io, onEspelli }) {
+export default function Compagni({ giocatori, turnoId, io, onEspelli, extra }) {
   if (!giocatori.length) return <p className="muted">Nessun giocatore al tavolo.</p>
   return (
     <div className="compagni">
@@ -29,6 +29,7 @@ export default function Compagni({ giocatori, turnoId, io, onEspelli }) {
               <small>Fato <b>{s.fato ?? '–'}</b></small>
               <small>Sybil <b>{s.sybil ?? '–'}</b></small>
             </div>
+            {extra && extra(g)}
             {onEspelli && <button className="ghost pericolo" onClick={() => onEspelli(g)}>Rimuovi dal tavolo</button>}
           </div>
         )

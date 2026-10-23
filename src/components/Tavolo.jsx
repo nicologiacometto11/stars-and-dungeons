@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Compagni from './Compagni.jsx'
+import Storico from './Storico.jsx'
 
 // Vista del giocatore: entra con il codice, poi vede i compagni, il Round e il turno
 export default function Tavolo({ c, userId, tv }) {
@@ -64,6 +65,8 @@ export default function Tavolo({ c, userId, tv }) {
         <h2>Compagni</h2>
         <Compagni giocatori={tv.giocatori} turnoId={inTurno?.id} io={userId} />
       </section>
+
+      <Storico eventi={tv.eventi} />
 
       {tv.membro && (
         <button className="ghost pericolo" onClick={() => confirm('Uscire dal tavolo? La tua scheda resta com\'è, ma dovrai rimettere il codice per rientrare.') && tv.esci()}>

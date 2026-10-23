@@ -104,7 +104,10 @@ Nessuna.
 
 `Abilities.jsx` (nella Scheda) elenca con `abilitaScheda(c)` in `rules.js`: abilità Zodiaco sbloccate, armi/oggetti equipaggiati, abilità uniche (mostri A) in inventario, perenni (armi S) e quelle scritte dal giocatore. I costi in Mente/Corpo sono letti dal testo con `parseCosti` e il bottone "Usa −N" li toglie dalla riserva; i costi variabili ("quanti Corpo vuoi") restano manuali con i +/− delle Riserve.
 
-## Tavolo e Master (in costruzione)
+## Tavolo e Master
 
-SQL in `supabase/tavolo.sql` (tabelle `masters`, `tavolo`, `tavolo_codice`, `giocatori_tavolo`; funzione `entra_tavolo(codice, nome)`; Realtime). Hook `useTavolo` in `src/lib/tavolo.js`; viste `Tavolo.jsx` (giocatore) e `Master.jsx`. Fase 1: codice di accesso, giocatori in tempo reale, Round e turno. Prossime: azioni del Master (danni/oggetti, il giocatore conferma e l'Armor è già sottratta: fisico su Corpo, magico su Mente, puro a scelta), mostri in campo (i giocatori vedono solo l'immagine, i dettagli solo pagando 1 Sybil), abilità usate nello storico.
-Regole del Master: l'Armor Fisica/Magica si sottrae ai danni dello stesso tipo, i danni puri la ignorano; il turno avanza con il tasto del Master.
+SQL in `supabase/tavolo.sql` (fase 1: `masters`, `tavolo`, `tavolo_codice`, `giocatori_tavolo`, `entra_tavolo(codice, nome)`, Realtime) e `supabase/tavolo2.sql` (fase 2: `azioni`, `eventi`). Si eseguono in ordine dopo `schema.sql`. Il Master si sceglie a mano: `insert into public.masters (user_id) select id from auth.users where email = '...'`.
+Hook `useTavolo` in `src/lib/tavolo.js`; viste `Tavolo.jsx` (giocatore), `Master.jsx`, `MasterAzioni.jsx`, `RichiesteMaster.jsx` (giocatore: danni da confermare e doni automatici), `Compagni.jsx`, `Storico.jsx`.
+Principio: il Master non scrive mai nella scheda di un giocatore. Manda un'azione (`azioni`) e l'app del giocatore la applica alla propria scheda, "prenotandola" prima (`rispondiAzione`) così non si applica due volte.
+Regole: Armor Fisica/Magica si sottrae ai danni dello stesso tipo (minimo 0), i puri la ignorano e il giocatore sceglie Corpo o Mente; fisico = Corpo, magico = Mente. Danni = conferma del giocatore (può correggere il numero); cure, Aureos, oggetti, Rango +1 e bottino si applicano da soli. Calcoli in `rules.js` (`dannoNetto`, `conDanno`, `conCura`, `applicaBottino`, `riceviOggetto`).
+Fase 3 (da fare): mostri in campo (i giocatori vedono solo l'immagine, i dettagli solo pagando 1 Sybil, mai i PV rimasti).

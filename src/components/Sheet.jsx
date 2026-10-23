@@ -58,7 +58,7 @@ function ZonaPericolo({ nome, onElimina }) {
   )
 }
 
-export default function Sheet({ c, d, up, onElimina }) {
+export default function Sheet({ c, d, up, onElimina, tv }) {
   const fileRef = useRef(null)
   const usati = segniUsati(c)
   const liberi = c.rango - usati
@@ -129,7 +129,7 @@ export default function Sheet({ c, d, up, onElimina }) {
         </div>
       </section>
 
-      <Abilities c={c} d={d} up={up} />
+      <Abilities c={c} d={d} up={up} tv={tv} />
 
       <section className="card">
         <h2>Armor</h2>

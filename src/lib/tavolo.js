@@ -31,6 +31,8 @@ export function useTavolo(userId, c, d) {
   const [tavolo, setTavolo] = useState(null)
   const [giocatori, setGiocatori] = useState([])
   const [codice, setCodice] = useState('')
+  const [azioni, setAzioni] = useState([]) // richieste del Master in attesa per me
+  const [eventi, setEventi] = useState([])
   const [pronto, setPronto] = useState(false)
   const attivo = !!supabase && !!userId
 
@@ -53,6 +55,17 @@ export function useTavolo(userId, c, d) {
       const k = await supabase.from('tavolo_codice').select('codice').eq('id', 1).maybeSingle()
       setCodice(k.data?.codice || '')
     }
+    if (sonoMaster || sonoMembro) {
+      const [az, ev] = await Promise.all([
+        supabase.from('azioni').select('*').eq('user_id', userId).eq('stato', 'attesa').order('created_at'),
+        supabase.from('eventi').select('*').order('created_at', { ascending: false }).limit(40),
+      ])
+      setAzioni(az.data || [])
+      setEventi(ev.data || [])
+    } else {
+      setAzioni([])
+      setEventi([])
+    }
     setPronto(true)
   }, [attivo, userId])
 
@@ -67,6 +80,8 @@ export function useTavolo(userId, c, d) {
       .channel('tavolo')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'tavolo' }, () => carica())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'giocatori_tavolo' }, () => carica())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'azioni' }, () => carica())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'eventi' }, () => carica())
       .subscribe()
     const torna = () => document.visibilityState === 'visible' && carica()
     document.addEventListener('visibilitychange', torna)
@@ -120,8 +135,33 @@ export function useTavolo(userId, c, d) {
     setCodice(cod)
   }, [])
 
+  const registraEvento = useCallback(async (testo) => {
+    const { error } = await supabase.from('eventi').insert({ testo })
+    if (error) console.error(error)
+  }, [])
+
+  // Il Master manda un'azione a un giocatore (e la scrive nello storico)
+  const inviaAzione = useCallback(async (destinatario, tipo, dati, testo) => {
+    const { error } = await supabase.from('azioni').insert({ user_id: destinatario, tipo, dati })
+    if (error) throw error
+    if (testo) await registraEvento(testo)
+  }, [registraEvento])
+
+  // Il giocatore "prenota" l'azione prima di applicarla, così non si applica due volte (es. da due dispositivi)
+  const rispondiAzione = useCallback(async (id, stato) => {
+    const { data, error } = await supabase.from('azioni').update({ stato }).eq('id', id).eq('stato', 'attesa').select('id')
+    if (error) throw error
+    await carica()
+    return (data || []).length > 0
+  }, [carica])
+
+  const pulisciStorico = useCallback(async () => {
+    await supabase.from('eventi').delete().gte('id', 0)
+    await carica()
+  }, [carica])
+
   return useMemo(
-    () => ({ attivo, pronto, master, membro, tavolo, giocatori, codice, entra, esci, aggiornaTavolo, espelli, nuovoCodice }),
-    [attivo, pronto, master, membro, tavolo, giocatori, codice, entra, esci, aggiornaTavolo, espelli, nuovoCodice],
+    () => ({ attivo, pronto, master, membro, tavolo, giocatori, codice, azioni, eventi, entra, esci, aggiornaTavolo, espelli, nuovoCodice, registraEvento, inviaAzione, rispondiAzione, pulisciStorico }),
+    [attivo, pronto, master, membro, tavolo, giocatori, codice, azioni, eventi, entra, esci, aggiornaTavolo, espelli, nuovoCodice, registraEvento, inviaAzione, rispondiAzione, pulisciStorico],
   )
 }

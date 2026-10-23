@@ -1,10 +1,59 @@
 import { useState } from 'react'
 import Compagni from './Compagni.jsx'
+import MasterAzioni from './MasterAzioni.jsx'
+import Storico from './Storico.jsx'
+import { MOSTRI } from '../data/monsters.js'
 import { ordineIniziale, prossimoTurno } from '../lib/tavolo.js'
 
 // Vista del Master: codice, scontro (Round e turni) e giocatori al tavolo
+function Bottino({ tv }) {
+  const [mostro, setMostro] = useState('')
+  const [esclusi, setEsclusi] = useState({})
+  const [msg, setMsg] = useState('')
+  const m = MOSTRI.find((x) => x.id === mostro)
+  const scelti = tv.giocatori.filter((g) => !esclusi[g.user_id])
+  const distribuisci = async () => {
+    try {
+      for (const g of scelti) await tv.inviaAzione(g.user_id, 'bottino', { mostro: m.id })
+      await tv.registraEvento(`Bottino di ${m.nome} a ${scelti.map((g) => g.nome || '?').join(', ')}`)
+      setMsg('Distribuito ✓')
+      setMostro('')
+    } catch (e) {
+      console.error(e)
+      setMsg('Non riesco a inviare. Riprova.')
+    }
+  }
+  return (
+    <section className="card">
+      <h2>Bottino di un mostro</h2>
+      <p className="muted">Aureos e materiali arrivano da soli a chi scegli (con l'Anello d'Oro gli Aureos raddoppiano).</p>
+      <select value={mostro} onChange={(e) => { setMostro(e.target.value); setMsg('') }}>
+        <option value="">Scegli il mostro sconfitto…</option>
+        {MOSTRI.map((x) => <option key={x.id} value={x.id}>{x.nome} (Grado {x.grado})</option>)}
+      </select>
+      {m && (
+        <>
+          <p>{m.aureos ? `${m.aureos} Aureos` : 'Nessun Aureos'}{m.drop.length > 0 && ` · ${m.drop.join(', ')}`}</p>
+          <div className="filtri">
+            {tv.giocatori.map((g) => (
+              <label key={g.user_id} className="check">
+                <input type="checkbox" checked={!esclusi[g.user_id]} onChange={(e) => setEsclusi({ ...esclusi, [g.user_id]: !e.target.checked })} /> {g.nome || '?'}
+              </label>
+            ))}
+          </div>
+        </>
+      )}
+      <div className="riga">
+        <button className="primary" disabled={!m || !scelti.length} onClick={distribuisci}>Distribuisci a {scelti.length}</button>
+        {msg && <small className="muted">{msg}</small>}
+      </div>
+    </section>
+  )
+}
+
 export default function Master({ tv }) {
   const [copiato, setCopiato] = useState(false)
+  const [aperto, setAperto] = useState(null)
   const t = tv.tavolo
   if (!tv.pronto || !t) return <p className="muted centrato">Carico il tavolo…</p>
 
@@ -75,9 +124,18 @@ export default function Master({ tv }) {
         <Compagni
           giocatori={tv.giocatori}
           turnoId={inTurno?.id}
+          extra={(g) => (
+            <>
+              <button onClick={() => setAperto(aperto === g.user_id ? null : g.user_id)}>{aperto === g.user_id ? 'Chiudi azioni' : 'Azioni…'}</button>
+              {aperto === g.user_id && <MasterAzioni g={g} tv={tv} />}
+            </>
+          )}
           onEspelli={(g) => confirm(`Rimuovere ${g.nome || 'questo giocatore'} dal tavolo? La sua scheda non viene toccata.`) && tv.espelli(g.user_id)}
         />
       </section>
+
+      <Bottino tv={tv} />
+      <Storico eventi={tv.eventi} onPulisci={tv.pulisciStorico} />
     </div>
   )
 }

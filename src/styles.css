@@ -266,3 +266,11 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 .tabs.molte button { padding-left: 6px; padding-right: 6px; }
 @media (min-width: 641px) { .tabs.molte button { padding-left: 14px; padding-right: 14px; } }
 @media (max-width: 640px) { .tabs.molte button.on { padding: 0 10px; } .tabs.molte { padding: 5px 4px; } }
+
+/* ---- richieste del Master ---- */
+.richieste { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+.richiesta { display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; border: 1px solid rgba(240, 138, 150, .5); background: linear-gradient(160deg, rgba(240, 138, 150, .12), var(--card)); }
+.richiesta .campo { flex: 1; }
+.richiesta-avviso { border: 1px solid rgba(230, 194, 116, .4); background: rgba(230, 194, 116, .1); }
+.master-azioni { display: flex; flex-direction: column; gap: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+.master-azioni .riga > input, .master-azioni .riga > select { flex: 1; min-width: 0; }

@@ -1,38 +1,17 @@
 import { useMemo, useState } from 'react'
 import { ITEMS } from '../data/items.js'
 import { MOSTRI } from '../data/monsters.js'
-import { MATERIALI_AUREOS, slug } from '../data/craft.js'
-import { conAggiunta, conLog, qtaIn } from '../lib/rules.js'
+import { applicaBottino, haAnelloOro, riceviOggetto, conLog, qtaIn } from '../lib/rules.js'
 import ItemCard from './ItemCard.jsx'
-
-// Aggiunge un oggetto alla scheda. I materiali "che danno Aureos" si convertono subito.
-function ricevi(s, it, qta = 1) {
-  if (it.aureosAlRicevimento) {
-    const tot = it.aureosAlRicevimento * qta
-    return conLog({ ...s, aureos: s.aureos + tot }, `Ricevuto ${it.nome}: +${tot} Aureos`)
-  }
-  return conLog(conAggiunta(s, it.id, qta), `Ricevuto ${qta > 1 ? qta + '× ' : ''}${it.nome}`)
-}
 
 function Bottino({ c, up }) {
   const [id, setId] = useState('')
   const m = MOSTRI.find((x) => x.id === id)
-  const anelloOro = c.inventario.some((i) => i.id === slug("Anello d'Oro") && i.eq)
+  const anelloOro = haAnelloOro(c)
 
   const incassa = () => {
     if (!m) return
-    up((s) => {
-      let x = s
-      if (m.aureos) {
-        const au = m.aureos * (anelloOro ? 2 : 1)
-        x = conLog({ ...x, aureos: x.aureos + au }, `Sconfitto ${m.nome}: +${au} Aureos${anelloOro ? ' (Anello d\'Oro)' : ''}`)
-      } else x = conLog(x, `Sconfitto ${m.nome}`)
-      for (const n of m.drop) {
-        const it = ITEMS.find((i) => i.id === slug(n))
-        if (it) x = ricevi(x, it)
-      }
-      return x
-    })
+    up((s) => applicaBottino(s, m))
     setId('')
   }
 
@@ -99,7 +78,7 @@ export default function Receive({ c, d, up }) {
       {lista.slice(0, 80).map((it) => (
         <ItemCard key={it.id} it={it} c={c} d={d} qta={qtaIn(c, it.id)} compact>
           {it.aureosAlRicevimento && <small className="muted">Si converte subito in {it.aureosAlRicevimento} Aureos</small>}
-          <button onClick={() => up((s) => ricevi(s, it))}>Ricevi</button>
+          <button onClick={() => up((s) => riceviOggetto(s, it))}>Ricevi</button>
         </ItemCard>
       ))}
       {lista.length > 80 && <p className="muted centrato">Mostrati 80 risultati su {lista.length}: affina la ricerca.</p>}

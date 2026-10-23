@@ -24,7 +24,7 @@ function NuovaAbilita({ onSalva, onAnnulla }) {
   )
 }
 
-export default function Abilities({ c, d, up }) {
+export default function Abilities({ c, d, up, tv }) {
   const [filtro, setFiltro] = useState('tutte')
   const [nuova, setNuova] = useState(false)
   const tutte = abilitaScheda(c)
@@ -32,13 +32,15 @@ export default function Abilities({ c, d, up }) {
   const lista = tutte.filter((a) => filtro === 'tutte' || a.tipo === filtro)
   const attuale = { mente: Math.min(c.mente ?? d.menteMax, d.menteMax), corpo: Math.min(c.corpo ?? d.corpoMax, d.corpoMax) }
 
-  const paga = (a, costo) =>
+  const paga = (a, costo) => {
+    if (tv?.membro) tv.registraEvento(`${c.nome} usa ${a.nome} (−${costo.n} ${NOME_RIS[costo.ris]})`)
     up((s) => {
       const max = costo.ris === 'mente' ? d.menteMax : d.corpoMax
       const ora = Math.min(s[costo.ris] ?? max, max)
       if (ora < costo.n) return s
       return conLog({ ...s, [costo.ris]: ora - costo.n }, `Usata ${a.nome} (−${costo.n} ${NOME_RIS[costo.ris]})`)
     })
+  }
 
   const nota = (key, testo) => up((s) => ({ ...s, noteAbilita: { ...s.noteAbilita, [key]: testo } }))
   const elimina = (a) => {

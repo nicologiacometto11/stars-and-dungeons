@@ -3,6 +3,8 @@
 
 import { SEGNI, SEGNI_BY_ID, CATEGORIE, SOGLIE } from '../data/zodiac.js'
 import { ITEMS_BY_ID } from '../data/items.js'
+import { MOSTRI_BY_ID } from '../data/monsters.js'
+import { slug } from '../data/craft.js'
 
 export const RANGO_MAX = 12
 export const ELEMENTI = ['fuoco', 'terra', 'aria', 'acqua']
@@ -230,6 +232,56 @@ export function conRimozione(c, id, qta = 1) {
     .map((i) => (i.id === id ? { ...i, qta: i.qta - qta, eq: i.qta - qta > 0 ? i.eq : false } : i))
     .filter((i) => i.qta > 0)
   return { ...c, inventario: inv }
+}
+
+// Aggiunge un oggetto alla scheda. I materiali "che danno Aureos" si convertono subito.
+export function riceviOggetto(s, it, qta = 1) {
+  if (it.aureosAlRicevimento) {
+    const tot = it.aureosAlRicevimento * qta
+    return conLog({ ...s, aureos: s.aureos + tot }, `Ricevuto ${it.nome}: +${tot} Aureos`)
+  }
+  return conLog(conAggiunta(s, it.id, qta), `Ricevuto ${qta > 1 ? qta + '× ' : ''}${it.nome}`)
+}
+
+export const haAnelloOro = (c) => c.inventario.some((i) => i.id === slug("Anello d'Oro") && i.eq)
+
+// Mostro sconfitto: Aureos (raddoppiati con l'Anello d'Oro equipaggiato) e materiali del bottino.
+export function applicaBottino(s, m) {
+  let x = s
+  if (m.aureos) {
+    const doppio = haAnelloOro(s)
+    const au = m.aureos * (doppio ? 2 : 1)
+    x = conLog({ ...x, aureos: x.aureos + au }, `Sconfitto ${m.nome}: +${au} Aureos${doppio ? " (Anello d'Oro)" : ''}`)
+  } else x = conLog(x, `Sconfitto ${m.nome}`)
+  for (const n of m.drop) {
+    const it = ITEMS_BY_ID[slug(n)]
+    if (it) x = riceviOggetto(x, it)
+  }
+  return x
+}
+export const bottinoDi = (idMostro) => MOSTRI_BY_ID[idMostro]
+
+// ---- danni e cure del Master ----
+// L'Armor dello stesso tipo si sottrae al danno (minimo 0); i danni puri la ignorano.
+export function dannoNetto(d, tipo, n) {
+  if (tipo === 'fisico') return Math.max(0, n - d.armorFisica)
+  if (tipo === 'magico') return Math.max(0, n - d.armorMagica)
+  return n
+}
+// Riserva che di norma subisce il danno: fisico = Corpo, magico = Mente (i puri li sceglie il giocatore)
+export const riservaDanno = (tipo) => (tipo === 'magico' ? 'mente' : 'corpo')
+
+const attuale = (c, d, ris) => {
+  const max = ris === 'corpo' ? d.corpoMax : d.menteMax
+  return { ora: Math.min(c[ris] ?? max, max), max }
+}
+export function conDanno(c, d, ris, n) {
+  const { ora } = attuale(c, d, ris)
+  return { ...c, [ris]: Math.max(0, ora - n) }
+}
+export function conCura(c, d, ris, n) {
+  const { ora, max } = attuale(c, d, ris)
+  return { ...c, [ris]: Math.min(max, ora + n) }
 }
 
 export function conLog(c, testo) {

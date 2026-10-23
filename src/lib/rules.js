@@ -356,6 +356,16 @@ export function conCura(c, d, ris, n) {
   return { ...c, [ris]: Math.min(max, ora + n) }
 }
 
+// Sybil e punti Cura dati o tolti dal Master: il valore attuale non scende sotto 0 (e può superare la base)
+export function conSybil(c, n) {
+  const d = derive(c)
+  return { ...c, usati: { ...c.usati, sybil: d.sybil - Math.max(0, d.sybilAttuale + n) } }
+}
+export function conPuntiCura(c, n) {
+  const d = derive(c)
+  return { ...c, usati: { ...c.usati, cura: d.cura - Math.max(0, d.curaAttuale + n) } }
+}
+
 export function conLog(c, testo) {
   const log = [{ t: new Date().toISOString(), testo }, ...(c.log || [])].slice(0, 150)
   return { ...c, log }

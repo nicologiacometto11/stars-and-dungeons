@@ -106,11 +106,11 @@ Nessuna.
 
 ## Tavolo e Master
 
-SQL in `supabase/tavolo.sql` (fase 1: `masters`, `tavolo`, `tavolo_codice`, `giocatori_tavolo`, `entra_tavolo(codice, nome)`, Realtime), `supabase/tavolo2.sql` (fase 2: `azioni`, `eventi`) e `supabase/tavolo3.sql` (il Master legge in sola lettura le schede dei giocatori al tavolo). Si eseguono in ordine dopo `schema.sql`. Il Master si sceglie a mano: `insert into public.masters (user_id) select id from auth.users where email = '...'`.
+SQL in `supabase/tavolo.sql` (fase 1: `masters`, `tavolo`, `tavolo_codice`, `giocatori_tavolo`, `entra_tavolo(codice, nome)`, Realtime), `supabase/tavolo2.sql` (fase 2: `azioni`, `eventi`) `supabase/tavolo3.sql` (il Master legge in sola lettura le schede dei giocatori al tavolo) e `supabase/tavolo4.sql` (azioni Sybil e punti Cura). Si eseguono in ordine dopo `schema.sql`. Il Master si sceglie a mano: `insert into public.masters (user_id) select id from auth.users where email = '...'`.
 Hook `useTavolo` in `src/lib/tavolo.js`; viste `Tavolo.jsx` (giocatore), `Master.jsx`, `MasterAzioni.jsx`, `RichiesteMaster.jsx` (giocatore: danni da confermare e doni automatici), `Compagni.jsx`, `Storico.jsx`.
 Il Master vede la scheda intera di un giocatore con "Vedi scheda" (`SchedaMaster.jsx`, sola lettura).
 Principio: il Master non scrive mai nella scheda di un giocatore. Manda un'azione (`azioni`) e l'app del giocatore la applica alla propria scheda, "prenotandola" prima (`rispondiAzione`) così non si applica due volte.
-Regole: Armor Fisica/Magica si sottrae ai danni dello stesso tipo (minimo 0), i puri la ignorano e il giocatore sceglie Corpo o Mente; fisico = Corpo, magico = Mente. Danni = conferma del giocatore (può correggere il numero); cure, Aureos, oggetti, Rango +1 e bottino si applicano da soli. Calcoli in `rules.js` (`dannoNetto`, `conDanno`, `conCura`, `applicaBottino`, `riceviOggetto`).
+Regole: Armor Fisica/Magica si sottrae ai danni dello stesso tipo (minimo 0), i puri la ignorano e il giocatore sceglie Corpo o Mente; fisico = Corpo, magico = Mente. Danni = conferma del giocatore (può correggere il numero); cure, oggetti, Rango +1, bottino e Aureos/Sybil/punti Cura in più si applicano da soli; togliere Aureos, Sybil o punti Cura chiede conferma. Calcoli in `rules.js` (`dannoNetto`, `conDanno`, `conCura`, `applicaBottino`, `riceviOggetto`).
 Decisione del Master: la tab "Ricevi" resta ai giocatori (si segnano da soli Aureos, oggetti e bottino per risparmiare tempo); il Master può comunque dare le cose dalla sua vista.
 Fase 3 (da fare): mostri in campo (i giocatori vedono solo l'immagine, i dettagli solo pagando 1 Sybil, mai i PV rimasti).
 

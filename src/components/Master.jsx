@@ -11,6 +11,8 @@ const TIPO_DANNO = { fisico: 'fisici', magico: 'magici', puro: 'puri' }
 function descriviAzione(a) {
   if (a.tipo === 'danno') return `${a.dati.n} danni ${TIPO_DANNO[a.dati.tipo]}`
   if (a.tipo === 'aureos') return `${a.dati.n > 0 ? '+' : ''}${a.dati.n} Aureos`
+  if (a.tipo === 'sybil') return `${a.dati.n > 0 ? '+' : ''}${a.dati.n} Sybil`
+  if (a.tipo === 'puntiCura') return `${a.dati.n > 0 ? '+' : ''}${a.dati.n} punti Cura`
   if (a.tipo === 'cura') return `cura ${a.dati.n} ${a.dati.riserva === 'corpo' ? 'Corpo' : 'Mente'}`
   if (a.tipo === 'rango') return 'Rango +1'
   if (a.tipo === 'bottino') return 'bottino'

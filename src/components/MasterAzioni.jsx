@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { ITEMS } from '../data/items.js'
 
-const TIPI = [['danno', 'Danno'], ['cura', 'Cura'], ['aureos', 'Aureos'], ['oggetto', 'Oggetto'], ['rango', 'Rango +1']]
+const TIPI = [['danno', 'Danno'], ['cura', 'Cura'], ['aureos', 'Aureos'], ['sybil', 'Sybil'], ['puntiCura', 'Punti Cura'], ['oggetto', 'Oggetto'], ['rango', 'Rango +1']]
+const RISORSE = { aureos: 'Aureos', sybil: 'Sybil', puntiCura: 'punti Cura' }
 const TIPO_DANNO = { fisico: 'fisici', magico: 'magici', puro: 'puri' }
 
 // Azioni del Master verso un giocatore
@@ -31,7 +32,7 @@ export default function MasterAzioni({ g, tv }) {
     try {
       if (tipo === 'danno') await tv.inviaAzione(g.user_id, 'danno', { tipo: tipoDanno, n: num }, `Master → ${nome}: ${num} danni ${TIPO_DANNO[tipoDanno]}`)
       if (tipo === 'cura') await tv.inviaAzione(g.user_id, 'cura', { riserva: ris, n: num }, `Master → ${nome}: cura ${num} ${ris === 'corpo' ? 'Corpo' : 'Mente'}`)
-      if (tipo === 'aureos') await tv.inviaAzione(g.user_id, 'aureos', { n: segno === '+' ? num : -num }, `Master → ${nome}: ${segno}${num} Aureos`)
+      if (RISORSE[tipo]) await tv.inviaAzione(g.user_id, tipo, { n: segno === '+' ? num : -num }, `Master → ${nome}: ${segno}${num} ${RISORSE[tipo]}`)
       if (tipo === 'oggetto') await tv.inviaAzione(g.user_id, 'oggetto', { id: oggetto, qta: Math.max(1, num || 1) }, `Master → ${nome}: ${ITEMS.find((i) => i.id === oggetto)?.nome}`)
       if (tipo === 'rango') await tv.inviaAzione(g.user_id, 'rango', {}, `Master → ${nome}: Rango +1`)
       setMsg('Inviato ✓')
@@ -70,13 +71,13 @@ export default function MasterAzioni({ g, tv }) {
           </select>
         </div>
       )}
-      {tipo === 'aureos' && (
+      {RISORSE[tipo] && (
         <div className="riga">
           <select value={segno} onChange={(e) => setSegno(e.target.value)} style={{ width: 'auto' }}>
             <option value="+">Dai</option>
             <option value="-">Togli</option>
           </select>
-          <input type="number" min="1" placeholder="Aureos" value={n} onChange={(e) => setN(e.target.value)} />
+          <input type="number" min="1" placeholder={RISORSE[tipo]} value={n} onChange={(e) => setN(e.target.value)} />
         </div>
       )}
       {tipo === 'oggetto' && (
@@ -97,7 +98,7 @@ export default function MasterAzioni({ g, tv }) {
         {msg && <small className="muted">{msg}</small>}
       </div>
       {tipo === 'danno' && <small className="muted">Il giocatore vede il danno con l'Armor già sottratta e lo conferma.</small>}
-      {tipo === 'aureos' && segno === '-' && <small className="muted">Togliere Aureos chiede la conferma del giocatore.</small>}
+      {RISORSE[tipo] && segno === '-' && <small className="muted">Togliere {RISORSE[tipo]} chiede la conferma del giocatore.</small>}
     </div>
   )
 }

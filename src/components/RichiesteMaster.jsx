@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { ITEMS_BY_ID } from '../data/items.js'
-import { RANGO_MAX, applicaBottino, bottinoDi, conCura, conDanno, conLog, dannoNetto, riceviOggetto, riservaDanno } from '../lib/rules.js'
+import { RANGO_MAX, applicaBottino, bottinoDi, conCura, conDanno, conLog, conPuntiCura, conSybil, dannoNetto, riceviOggetto, riservaDanno } from '../lib/rules.js'
 
 // I danni e gli Aureos tolti chiedono conferma; i doni si applicano da soli
-export const chiedeConferma = (a) => a.tipo === 'danno' || (a.tipo === 'aureos' && a.dati.n < 0)
+const RISORSE = ['aureos', 'sybil', 'puntiCura']
+export const chiedeConferma = (a) => a.tipo === 'danno' || (RISORSE.includes(a.tipo) && a.dati.n < 0)
 
 const TIPO_DANNO = { fisico: 'fisici', magico: 'magici', puro: 'puri' }
 const NOME_RIS = { corpo: 'Corpo', mente: 'Mente' }
@@ -14,6 +15,14 @@ function applicaDono(a, c, d, up) {
   if (tipo === 'aureos') {
     up((s) => conLog({ ...s, aureos: Math.max(0, s.aureos + dati.n) }, `Master: ${dati.n >= 0 ? '+' : ''}${dati.n} Aureos`))
     return `${dati.n >= 0 ? 'Ricevi' : 'Perdi'} ${Math.abs(dati.n)} Aureos`
+  }
+  if (tipo === 'sybil') {
+    up((s) => conLog(conSybil(s, dati.n), `Master: ${dati.n >= 0 ? '+' : ''}${dati.n} Sybil`))
+    return `${dati.n >= 0 ? 'Ricevi' : 'Perdi'} ${Math.abs(dati.n)} Sybil`
+  }
+  if (tipo === 'puntiCura') {
+    up((s) => conLog(conPuntiCura(s, dati.n), `Master: ${dati.n >= 0 ? '+' : ''}${dati.n} punti Cura`))
+    return `${dati.n >= 0 ? 'Ricevi' : 'Perdi'} ${Math.abs(dati.n)} punti Cura`
   }
   if (tipo === 'oggetto') {
     const it = ITEMS_BY_ID[dati.id]
@@ -89,30 +98,40 @@ function Danno({ a, c, d, tv, up }) {
   )
 }
 
-// Aureos che il Master toglie: serve la conferma del giocatore
-function PerditaAureos({ a, c, tv, up }) {
+// Aureos, Sybil o punti Cura che il Master toglie: serve la conferma del giocatore
+const RISORSA = {
+  aureos: { nome: 'Aureos', icona: '💰', ha: (c) => c.aureos },
+  sybil: { nome: 'Sybil', icona: '🔮', ha: (c, d) => d.sybilAttuale },
+  puntiCura: { nome: 'punti Cura', icona: '💚', ha: (c, d) => d.curaAttuale },
+}
+
+function Perdita({ a, c, d, tv, up }) {
   const n = -a.dati.n
+  const ris = RISORSA[a.tipo]
+  const ha = ris.ha(c, d)
+  const tolti = Math.min(n, ha)
   const [busy, setBusy] = useState(false)
   const applica = async () => {
     setBusy(true)
     if (await tv.rispondiAzione(a.id, 'applicata')) {
-      const tolti = Math.min(n, c.aureos)
-      up((s) => conLog({ ...s, aureos: Math.max(0, s.aureos - n) }, `Master: −${tolti} Aureos`))
-      tv.registraEvento(`${c.nome} perde ${tolti} Aureos`)
+      if (a.tipo === 'aureos') up((s) => conLog({ ...s, aureos: Math.max(0, s.aureos - n) }, `Master: −${tolti} Aureos`))
+      if (a.tipo === 'sybil') up((s) => conLog(conSybil(s, -n), `Master: −${tolti} Sybil`))
+      if (a.tipo === 'puntiCura') up((s) => conLog(conPuntiCura(s, -n), `Master: −${tolti} punti Cura`))
+      tv.registraEvento(`${c.nome} perde ${tolti} ${ris.nome}`)
     }
     setBusy(false)
   }
   const rifiuta = async () => {
     setBusy(true)
-    if (await tv.rispondiAzione(a.id, 'rifiutata')) tv.registraEvento(`${c.nome} non ha dato ${n} Aureos`)
+    if (await tv.rispondiAzione(a.id, 'rifiutata')) tv.registraEvento(`${c.nome} non ha dato ${n} ${ris.nome}`)
     setBusy(false)
   }
   return (
     <div className="richiesta danno">
-      <strong>💰 Il Master ti toglie {n} Aureos</strong>
-      <small className="muted">Ne hai {c.aureos}.</small>
+      <strong>{ris.icona} Il Master ti toglie {n} {ris.nome}</strong>
+      <small className="muted">Ne hai {ha}.</small>
       <div className="riga">
-        <button className="primary" disabled={busy} onClick={applica}>Conferma −{Math.min(n, c.aureos)} Aureos</button>
+        <button className="primary" disabled={busy} onClick={applica}>Conferma −{tolti} {ris.nome}</button>
         <button className="ghost" disabled={busy} onClick={rifiuta}>Non applicare</button>
       </div>
     </div>
@@ -150,7 +169,7 @@ export default function RichiesteMaster({ tv, c, d, up }) {
   return (
     <div className="richieste">
       {avvisi.map((v) => <div key={v.id} className="msg richiesta-avviso">🎁 {v.msg}</div>)}
-      {daConfermare.map((a) => (a.tipo === 'danno' ? <Danno key={a.id} a={a} c={c} d={d} tv={tv} up={up} /> : <PerditaAureos key={a.id} a={a} c={c} tv={tv} up={up} />))}
+      {daConfermare.map((a) => (a.tipo === 'danno' ? <Danno key={a.id} a={a} c={c} d={d} tv={tv} up={up} /> : <Perdita key={a.id} a={a} c={c} d={d} tv={tv} up={up} />))}
     </div>
   )
 }

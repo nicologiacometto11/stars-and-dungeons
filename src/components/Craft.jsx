@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { ITEMS_BY_ID } from '../data/items.js'
 import { slug } from '../data/craft.js'
-import { RICETTE, conLog, qtaIn, tentaCraft } from '../lib/rules.js'
+import { COSTO_RICETTA, RICETTE, compraRicetta, conLog, qtaIn, ricetteDisponibili, tentaCraft } from '../lib/rules.js'
 
-export default function Craft({ c, up }) {
+export default function Craft({ c, d, up }) {
   const [sel, setSel] = useState([])
   const [msg, setMsg] = useState('')
 
@@ -13,6 +13,13 @@ export default function Craft({ c, up }) {
   const scegli = (id) => {
     setMsg('')
     setSel((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]))
+  }
+
+  const scopri = (gruppo) => {
+    const { ricetta } = compraRicetta(c, d, gruppo)
+    if (!ricetta) return
+    up((s) => compraRicetta(s, d, gruppo, Math.random()).c)
+    setMsg(`📜 Hai scoperto la ricetta di ${ricetta.nome}!`)
   }
 
   const tenta = (ids) => {
@@ -50,6 +57,23 @@ export default function Craft({ c, up }) {
           {sel.length > 0 && <button className="ghost" onClick={() => { setSel([]); setMsg('') }}>Svuota</button>}
         </div>
         {msg && <div className="msg" style={{ marginTop: 10 }}>{msg}</div>}
+      </section>
+
+      <section className="card">
+        <h2>Scopri una ricetta</h2>
+        <p className="muted">Paga Sybil per scoprire la ricetta di un'arma che non conosci e non hai ancora.</p>
+        <div className="riga">
+          {[['altro', 'A caso'], ['AS', 'Arma A o S']].map(([g, nome]) => {
+            const quante = ricetteDisponibili(c, g).length
+            const costo = COSTO_RICETTA[g]
+            const sybil = d.sybilAttuale >= costo
+            return (
+              <button key={g} disabled={!quante || !sybil} onClick={() => scopri(g)} title={!quante ? 'Nessuna ricetta di questo tipo da scoprire' : ''}>
+                {nome} · {costo} Sybil{!quante ? ' (nessuna)' : !sybil ? ' (Sybil insufficienti)' : ''}
+              </button>
+            )
+          })}
+        </div>
       </section>
 
       {conosciute.length > 0 && <h2 className="titolo-sez">Ricette scoperte</h2>}

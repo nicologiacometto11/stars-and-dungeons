@@ -183,6 +183,28 @@ export function studiaOggetto(c, d, id) {
 // ---- craft a tentativi ----
 export const RICETTE = [...ARMI_CRAFT_A, ...ARMI_CRAFT_S]
 
+// Acquisto di una ricetta: "altro" = armi craftabili che non sono A né S (1 Sybil), "AS" = armi A e S (5 Sybil)
+export const COSTO_RICETTA = { altro: 1, AS: 5 }
+const gruppoRicetta = (r) => (ARMI_CRAFT_A.includes(r) || ARMI_CRAFT_S.includes(r) ? 'AS' : 'altro')
+
+// Ricette ancora da scoprire: non conosciute e di un'arma che il giocatore non ha già
+export const ricetteDisponibili = (c, gruppo) =>
+  RICETTE.filter((r) => gruppoRicetta(r) === gruppo && !c.ricette.includes(r.nome) && qtaIn(c, slug(r.nome)) === 0)
+
+export function compraRicetta(c, d, gruppo, caso = Math.random()) {
+  const costo = COSTO_RICETTA[gruppo]
+  const pool = ricetteDisponibili(c, gruppo)
+  if (!pool.length || d.sybil - (c.usati?.sybil || 0) < costo) return { c, ricetta: null }
+  const ricetta = pool[Math.min(pool.length - 1, Math.floor(caso * pool.length))]
+  return {
+    ricetta,
+    c: conLog(
+      { ...c, usati: { ...c.usati, sybil: (c.usati?.sybil || 0) + costo }, ricette: [...c.ricette, ricetta.nome] },
+      `Scoperta la ricetta di ${ricetta.nome} (−${costo} Sybil)`,
+    ),
+  }
+}
+
 // La ricetta che corrisponde esattamente ai materiali scelti (nessuno in più, nessuno in meno)
 export function cercaRicetta(ids) {
   const set = new Set(ids)

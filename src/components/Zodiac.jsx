@@ -86,14 +86,13 @@ export default function Zodiac({ c, d, up }) {
         </p>
       </section>
 
-      {d.ofiuco ? (
+      {/* Ofiuco è segreto: compare solo quando il giocatore lo ha già sbloccato */}
+      {d.ofiuco && (
         <section className="card ofiuco-box">
           <h2>☉ {OFIUCO.nome}</h2>
           <p>{OFIUCO.effetto}</p>
           <ul>{OFIUCO.abilita.map((a) => <li key={a}>{a}</li>)}</ul>
         </section>
-      ) : (
-        <p className="muted centrato">Ofiuco (13° costellazione): si sblocca con almeno 1 punto in ogni segno ({SEGNI.filter((x) => effSegno(c, x.id) >= 1).length}/12).</p>
       )}
 
       <section className="card">

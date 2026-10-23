@@ -6,6 +6,16 @@ import { MOSTRI } from '../data/monsters.js'
 import { ordineIniziale, prossimoTurno } from '../lib/tavolo.js'
 
 // Vista del Master: codice, scontro (Round e turni) e giocatori al tavolo
+const TIPO_DANNO = { fisico: 'fisici', magico: 'magici', puro: 'puri' }
+function descriviAzione(a) {
+  if (a.tipo === 'danno') return `${a.dati.n} danni ${TIPO_DANNO[a.dati.tipo]}`
+  if (a.tipo === 'aureos') return `${a.dati.n > 0 ? '+' : ''}${a.dati.n} Aureos`
+  if (a.tipo === 'cura') return `cura ${a.dati.n} ${a.dati.riserva === 'corpo' ? 'Corpo' : 'Mente'}`
+  if (a.tipo === 'rango') return 'Rango +1'
+  if (a.tipo === 'bottino') return 'bottino'
+  return 'oggetto'
+}
+
 function Bottino({ tv }) {
   const [mostro, setMostro] = useState('')
   const [esclusi, setEsclusi] = useState({})
@@ -126,6 +136,12 @@ export default function Master({ tv }) {
           turnoId={inTurno?.id}
           extra={(g) => (
             <>
+              {tv.inAttesa.filter((a) => a.user_id === g.user_id).map((a) => (
+                <div key={a.id} className="in-attesa">
+                  <small>⏳ In attesa di conferma: {descriviAzione(a)}</small>
+                  <button className="ghost" onClick={() => tv.annullaAzione(a.id)}>Annulla</button>
+                </div>
+              ))}
               <button onClick={() => setAperto(aperto === g.user_id ? null : g.user_id)}>{aperto === g.user_id ? 'Chiudi azioni' : 'Azioni…'}</button>
               {aperto === g.user_id && <MasterAzioni g={g} tv={tv} />}
             </>

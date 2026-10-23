@@ -97,6 +97,7 @@ export default function MasterAzioni({ g, tv }) {
         {msg && <small className="muted">{msg}</small>}
       </div>
       {tipo === 'danno' && <small className="muted">Il giocatore vede il danno con l'Armor già sottratta e lo conferma.</small>}
+      {tipo === 'aureos' && segno === '-' && <small className="muted">Togliere Aureos chiede la conferma del giocatore.</small>}
     </div>
   )
 }

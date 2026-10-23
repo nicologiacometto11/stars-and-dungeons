@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { ITEMS_BY_ID } from '../data/items.js'
 import { RANGO_MAX, applicaBottino, bottinoDi, conCura, conDanno, conLog, dannoNetto, riceviOggetto, riservaDanno } from '../lib/rules.js'
 
+// I danni e gli Aureos tolti chiedono conferma; i doni si applicano da soli
+export const chiedeConferma = (a) => a.tipo === 'danno' || (a.tipo === 'aureos' && a.dati.n < 0)
+
 const TIPO_DANNO = { fisico: 'fisici', magico: 'magici', puro: 'puri' }
 const NOME_RIS = { corpo: 'Corpo', mente: 'Mente' }
 
@@ -86,6 +89,36 @@ function Danno({ a, c, d, tv, up }) {
   )
 }
 
+// Aureos che il Master toglie: serve la conferma del giocatore
+function PerditaAureos({ a, c, tv, up }) {
+  const n = -a.dati.n
+  const [busy, setBusy] = useState(false)
+  const applica = async () => {
+    setBusy(true)
+    if (await tv.rispondiAzione(a.id, 'applicata')) {
+      const tolti = Math.min(n, c.aureos)
+      up((s) => conLog({ ...s, aureos: Math.max(0, s.aureos - n) }, `Master: −${tolti} Aureos`))
+      tv.registraEvento(`${c.nome} perde ${tolti} Aureos`)
+    }
+    setBusy(false)
+  }
+  const rifiuta = async () => {
+    setBusy(true)
+    if (await tv.rispondiAzione(a.id, 'rifiutata')) tv.registraEvento(`${c.nome} non ha dato ${n} Aureos`)
+    setBusy(false)
+  }
+  return (
+    <div className="richiesta danno">
+      <strong>💰 Il Master ti toglie {n} Aureos</strong>
+      <small className="muted">Ne hai {c.aureos}.</small>
+      <div className="riga">
+        <button className="primary" disabled={busy} onClick={applica}>Conferma −{Math.min(n, c.aureos)} Aureos</button>
+        <button className="ghost" disabled={busy} onClick={rifiuta}>Non applicare</button>
+      </div>
+    </div>
+  )
+}
+
 // Richieste e doni del Master per questo giocatore: i danni chiedono conferma, il resto si applica da solo.
 export default function RichiesteMaster({ tv, c, d, up }) {
   const [avvisi, setAvvisi] = useState([])
@@ -93,7 +126,7 @@ export default function RichiesteMaster({ tv, c, d, up }) {
 
   useEffect(() => {
     for (const a of tv.azioni) {
-      if (a.tipo === 'danno' || inCorso.current.has(a.id)) continue
+      if (chiedeConferma(a) || inCorso.current.has(a.id)) continue
       inCorso.current.add(a.id)
       ;(async () => {
         try {
@@ -112,12 +145,12 @@ export default function RichiesteMaster({ tv, c, d, up }) {
     }
   }, [tv.azioni]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const danni = tv.azioni.filter((a) => a.tipo === 'danno')
-  if (!danni.length && !avvisi.length) return null
+  const daConfermare = tv.azioni.filter(chiedeConferma)
+  if (!daConfermare.length && !avvisi.length) return null
   return (
     <div className="richieste">
       {avvisi.map((v) => <div key={v.id} className="msg richiesta-avviso">🎁 {v.msg}</div>)}
-      {danni.map((a) => <Danno key={a.id} a={a} c={c} d={d} tv={tv} up={up} />)}
+      {daConfermare.map((a) => (a.tipo === 'danno' ? <Danno key={a.id} a={a} c={c} d={d} tv={tv} up={up} /> : <PerditaAureos key={a.id} a={a} c={c} tv={tv} up={up} />))}
     </div>
   )
 }

@@ -33,6 +33,7 @@ export function useTavolo(userId, c, d) {
   const [codice, setCodice] = useState('')
   const [azioni, setAzioni] = useState([]) // richieste del Master in attesa per me
   const [eventi, setEventi] = useState([])
+  const [inAttesa, setInAttesa] = useState([]) // per il Master: tutte le richieste non ancora confermate
   const [pronto, setPronto] = useState(false)
   const attivo = !!supabase && !!userId
 
@@ -62,9 +63,14 @@ export function useTavolo(userId, c, d) {
       ])
       setAzioni(az.data || [])
       setEventi(ev.data || [])
+      if (sonoMaster) {
+        const tutte = await supabase.from('azioni').select('*').eq('stato', 'attesa').order('created_at')
+        setInAttesa(tutte.data || [])
+      } else setInAttesa([])
     } else {
       setAzioni([])
       setEventi([])
+      setInAttesa([])
     }
     setPronto(true)
   }, [attivo, userId])
@@ -155,13 +161,19 @@ export function useTavolo(userId, c, d) {
     return (data || []).length > 0
   }, [carica])
 
+  const annullaAzione = useCallback(async (id) => {
+    const { error } = await supabase.from('azioni').delete().eq('id', id)
+    if (error) throw error
+    await carica()
+  }, [carica])
+
   const pulisciStorico = useCallback(async () => {
     await supabase.from('eventi').delete().gte('id', 0)
     await carica()
   }, [carica])
 
   return useMemo(
-    () => ({ attivo, pronto, master, membro, tavolo, giocatori, codice, azioni, eventi, entra, esci, aggiornaTavolo, espelli, nuovoCodice, registraEvento, inviaAzione, rispondiAzione, pulisciStorico }),
-    [attivo, pronto, master, membro, tavolo, giocatori, codice, azioni, eventi, entra, esci, aggiornaTavolo, espelli, nuovoCodice, registraEvento, inviaAzione, rispondiAzione, pulisciStorico],
+    () => ({ attivo, pronto, master, membro, tavolo, giocatori, codice, azioni, eventi, inAttesa, entra, esci, aggiornaTavolo, espelli, nuovoCodice, registraEvento, inviaAzione, rispondiAzione, annullaAzione, pulisciStorico }),
+    [attivo, pronto, master, membro, tavolo, giocatori, codice, azioni, eventi, inAttesa, entra, esci, aggiornaTavolo, espelli, nuovoCodice, registraEvento, inviaAzione, rispondiAzione, annullaAzione, pulisciStorico],
   )
 }

@@ -116,9 +116,9 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
             onPiu={() => up((s) => ({ ...s, usati: { ...s.usati, fato: Math.max(0, s.usati.fato - 1) } }))}
           />
           <Contatore
-            nome="Sybil" valore={d.sybilAttuale} max={d.sybil}
+            nome="Sybil" valore={d.sybilAttuale} max={d.sybil} libero nota={`base ${d.sybil} · modificabile`}
             onMeno={() => up((s) => ({ ...s, usati: { ...s.usati, sybil: s.usati.sybil + 1 } }))}
-            onPiu={() => up((s) => ({ ...s, usati: { ...s.usati, sybil: Math.max(0, s.usati.sybil - 1) } }))}
+            onPiu={() => up((s) => ({ ...s, usati: { ...s.usati, sybil: s.usati.sybil - 1 } }))}
           />
           <Contatore
             nome="Cura" valore={d.curaAttuale} max={d.cura} libero nota={`base ${d.cura} · modificabile`}

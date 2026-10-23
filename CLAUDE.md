@@ -119,4 +119,5 @@ Fase 3 (da fare): mostri in campo (i giocatori vedono solo l'immagine, i dettagl
 - Ofiuco è segreto: nessun indizio nell'interfaccia finché non è sbloccato.
 - Effetti e abilità di armi e oggetti sono nascosti nel Negozio finché il giocatore non paga 1 Sybil (`studiaOggetto`, `STUDIO_SYBIL`) o non li ottiene (comprati, ricevuti, forgiati: `conAggiunta` segna l'oggetto in `noti`). Restano visibili nome, grado, prezzo e requisiti.
 - Craft a tentativi: nessun elenco di ricette. Il giocatore sceglie i materiali e tenta (`tentaCraft`): se la combinazione è esatta i materiali si consumano e ottiene l'arma (e la ricetta si scopre), se è sbagliata non perde niente.
-- Da fare: acquisto della ricetta casuale con Sybil (costo da chiarire con il Master: 1 Sybil per la ricetta a caso, 5 per A e S?).
+- Ricette da comprare (tab Craft): ricetta a caso di un'arma A = 1 Sybil, di un'arma S = 5 Sybil (`COSTO_RICETTA`, `compraRicetta`); mai una ricetta già scoperta o di un'arma già posseduta.
+- Sybil e Cura si modificano liberamente (anche oltre la base), perché il Master li dà come premio: `usati.sybil` e `usati.cura` possono essere negativi.

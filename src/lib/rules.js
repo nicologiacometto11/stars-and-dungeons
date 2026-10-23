@@ -183,9 +183,9 @@ export function studiaOggetto(c, d, id) {
 // ---- craft a tentativi ----
 export const RICETTE = [...ARMI_CRAFT_A, ...ARMI_CRAFT_S]
 
-// Acquisto di una ricetta: "altro" = armi craftabili che non sono A né S (1 Sybil), "AS" = armi A e S (5 Sybil)
-export const COSTO_RICETTA = { altro: 1, AS: 5 }
-const gruppoRicetta = (r) => (ARMI_CRAFT_A.includes(r) || ARMI_CRAFT_S.includes(r) ? 'AS' : 'altro')
+// Acquisto di una ricetta a caso: armi A = 1 Sybil, armi S = 5 Sybil
+export const COSTO_RICETTA = { A: 1, S: 5 }
+const gruppoRicetta = (r) => (ARMI_CRAFT_S.includes(r) ? 'S' : 'A')
 
 // Ricette ancora da scoprire: non conosciute e di un'arma che il giocatore non ha già
 export const ricetteDisponibili = (c, gruppo) =>

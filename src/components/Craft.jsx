@@ -61,9 +61,9 @@ export default function Craft({ c, d, up }) {
 
       <section className="card">
         <h2>Scopri una ricetta</h2>
-        <p className="muted">Paga Sybil per scoprire la ricetta di un'arma che non conosci e non hai ancora.</p>
+        <p className="muted">Paga Sybil per scoprire la ricetta, a caso, di un'arma che non conosci e non hai ancora.</p>
         <div className="riga">
-          {[['altro', 'A caso'], ['AS', 'Arma A o S']].map(([g, nome]) => {
+          {[['A', 'Ricetta Arma A'], ['S', 'Ricetta Arma S']].map(([g, nome]) => {
             const quante = ricetteDisponibili(c, g).length
             const costo = COSTO_RICETTA[g]
             const sybil = d.sybilAttuale >= costo

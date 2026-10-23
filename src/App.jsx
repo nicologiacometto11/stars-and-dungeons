@@ -2,6 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { supabase, modalitaOnline } from './lib/supabase.js'
 import { caricaScheda, salvaScheda, eliminaScheda } from './lib/store.js'
 import { derive, nuovaScheda } from './lib/rules.js'
+import { useTavolo } from './lib/tavolo.js'
+import Tavolo from './components/Tavolo.jsx'
+import Master from './components/Master.jsx'
 import InstallBanner from './components/InstallBanner.jsx'
 import Auth, { NuovaPassword } from './components/Auth.jsx'
 import Sheet from './components/Sheet.jsx'
@@ -128,6 +131,7 @@ export default function App() {
   }, [])
 
   const d = useMemo(() => (c ? derive(c) : null), [c])
+  const tv = useTavolo(userId, c, d)
 
   if (session === undefined) return <div className="centro">Caricamento…</div>
   if (modalitaOnline && recupero && session) return <NuovaPassword onFatto={() => setRecupero(false)} />
@@ -163,8 +167,8 @@ export default function App() {
         <div className="avviso">Modalità locale: la scheda è salvata solo su questo browser. Configura Supabase per averla su ogni dispositivo.</div>
       )}
 
-      <nav className="tabs">
-        {TABS.map(([id, nome, ico]) => (
+      <nav className={`tabs ${modalitaOnline ? 'molte' : ''}`}>
+        {[...TABS, ...(modalitaOnline ? [['tavolo', 'Tavolo', '🎲']] : []), ...(tv.master ? [['master', 'Master', '👑']] : [])].map(([id, nome, ico]) => (
           <button key={id} className={tab === id ? 'on' : ''} onClick={() => { setTab(id); window.scrollTo({ top: 0 }) }}>
             <span className="ico" aria-hidden="true">{ico}</span>
             <span className="nome-tab">{nome}</span>
@@ -180,6 +184,8 @@ export default function App() {
         {tab === 'bestiario' && <Bestiary c={c} d={d} up={up} />}
         {tab === 'craft' && <Craft c={c} d={d} up={up} />}
         {tab === 'ricevi' && <Receive c={c} d={d} up={up} />}
+        {tab === 'tavolo' && <Tavolo c={c} userId={userId} tv={tv} />}
+        {tab === 'master' && tv.master && <Master tv={tv} />}
       </main>
     </div>
   )

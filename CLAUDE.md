@@ -63,7 +63,7 @@ Tutto il resto si ricalcola con `derive()` in `rules.js`, quindi non può disall
 ## Decisioni prese con Nicolò
 
 - Stack: React + Vite + Supabase, deploy Netlify.
-- Solo giocatori (nessuna vista Master): ogni giocatore modifica la propria scheda; il sistema resta sempre disponibile.
+- Vista Master e Tavolo (partita condivisa) in costruzione a fasi; un solo Master, scelto a mano nella tabella `masters`. Le schede dei giocatori non vengono mai toccate dal tavolo.
 - Prima versione con tutte le sezioni: Scheda + Zodiaco, Negozio + Inventario, Bestiario, Craft + Ricevi.
 - Le foto di mostri e luoghi vengono dalla cartella `dungeon_luoghi-mostri` (convertite in webp, max 640 px per i mostri).
 
@@ -103,3 +103,8 @@ Nessuna.
 ## Abilità
 
 `Abilities.jsx` (nella Scheda) elenca con `abilitaScheda(c)` in `rules.js`: abilità Zodiaco sbloccate, armi/oggetti equipaggiati, abilità uniche (mostri A) in inventario, perenni (armi S) e quelle scritte dal giocatore. I costi in Mente/Corpo sono letti dal testo con `parseCosti` e il bottone "Usa −N" li toglie dalla riserva; i costi variabili ("quanti Corpo vuoi") restano manuali con i +/− delle Riserve.
+
+## Tavolo e Master (in costruzione)
+
+SQL in `supabase/tavolo.sql` (tabelle `masters`, `tavolo`, `tavolo_codice`, `giocatori_tavolo`; funzione `entra_tavolo(codice, nome)`; Realtime). Hook `useTavolo` in `src/lib/tavolo.js`; viste `Tavolo.jsx` (giocatore) e `Master.jsx`. Fase 1: codice di accesso, giocatori in tempo reale, Round e turno. Prossime: azioni del Master (danni/oggetti, il giocatore conferma e l'Armor è già sottratta: fisico su Corpo, magico su Mente, puro a scelta), mostri in campo (i giocatori vedono solo l'immagine, i dettagli solo pagando 1 Sybil), abilità usate nello storico.
+Regole del Master: l'Armor Fisica/Magica si sottrae ai danni dello stesso tipo, i danni puri la ignorano; il turno avanza con il tasto del Master.

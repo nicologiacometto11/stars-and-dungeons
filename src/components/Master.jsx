@@ -74,8 +74,9 @@ export default function Master({ tv }) {
   const copia = async () => {
     try { await navigator.clipboard.writeText(tv.codice); setCopiato(true); setTimeout(() => setCopiato(false), 1500) } catch { /* ignora */ }
   }
-  const inizia = () => tv.aggiornaTavolo({ scontro: true, round: 1, turno: 0, ordine: ordineIniziale(tv.giocatori) })
-  const fine = () => confirm('Terminare lo scontro?') && tv.aggiornaTavolo({ scontro: false, round: 1, turno: 0, ordine: [] })
+  const inizia = () => tv.aggiornaTavolo({ scontro: true, round: 1, turno: 0, mostri: 0, ordine: ordineIniziale(tv.giocatori) })
+  const fine = () => confirm('Terminare lo scontro?') && tv.aggiornaTavolo({ scontro: false, round: 1, turno: 0, mostri: 0, ordine: [] })
+  const cambiaMostri = (delta) => tv.aggiornaTavolo({ mostri: Math.max(0, (t.mostri || 0) + delta) })
   const avanti = () => tv.aggiornaTavolo(prossimoTurno(t))
   const sposta = (i, dir) => {
     const ordine = [...t.ordine]
@@ -109,6 +110,12 @@ export default function Master({ tv }) {
               <strong className="round-n">{t.round}</strong>
             </div>
             <p className="turno-di">Turno di {inTurno?.nome || '…'}</p>
+            <div className="riga mostri-contatore">
+              <span>🐉 Mostri in campo</span>
+              <button onClick={() => cambiaMostri(-1)} disabled={!t.mostri} aria-label="Un mostro in meno">−</button>
+              <strong>{t.mostri || 0}</strong>
+              <button onClick={() => cambiaMostri(1)} aria-label="Un mostro in più">+</button>
+            </div>
             <ol className="ordine ordine-master">
               {t.ordine.map((o, i) => (
                 <li key={o.tipo + o.id} className={i === t.turno ? 'on' : ''}>

@@ -124,7 +124,7 @@ const db = r.derive(big)
 const g = [{ user_id: 'a', nome: 'Zeta', stato: { rango: 3, corpo: 10, corpoMax: 20, mente: 5, menteMax: 9, armorF: 2, armorM: 1, fato: 1, sybil: 2 } }, { user_id: 'b', nome: 'Alfa', stato: {} }]
 const ord = [{ tipo: 'pg', id: 'a', nome: 'Zeta' }, { tipo: 'pg', id: 'b', nome: 'Alfa' }]
 const noop = async () => true
-const tvB = { attivo: true, pronto: true, giocatori: g, codice: 'ABCD1234', eventi: [{ id: 1, created_at: new Date().toISOString(), testo: 'x' }], azioni: [], inAttesa: [], tavolo: { scontro: true, round: 2, turno: 1, ordine: ord }, entra: noop, esci: noop, aggiornaTavolo: noop, espelli: noop, nuovoCodice: noop, registraEvento: noop, inviaAzione: noop, rispondiAzione: noop, annullaAzione: noop, pulisciStorico: noop }
+const tvB = { attivo: true, pronto: true, giocatori: g, codice: 'ABCD1234', eventi: [{ id: 1, created_at: new Date().toISOString(), testo: 'x' }], azioni: [], inAttesa: [], tavolo: { scontro: true, round: 2, turno: 1, mostri: 3, ordine: ord }, entra: noop, esci: noop, aggiornaTavolo: noop, espelli: noop, nuovoCodice: noop, registraEvento: noop, inviaAzione: noop, rispondiAzione: noop, annullaAzione: noop, pulisciStorico: noop }
 const casi = [
   ['Sheet', { c: big, d: db, up, tv: { ...tvB, membro: true } }], ['Zodiac', { c: big, d: db, up }], ['Shop', { c: big, d: db, up }],
   ['Inventory', { c: big, d: db, up }], ['Bestiary', { c: big, d: db, up }], ['Craft', { c: big, d: db, up }], ['Receive', { c: big, d: db, up }],
@@ -141,6 +141,10 @@ for (const [n, props] of casi) {
 }
 const tz = testo(renderToString(React.createElement((await load('/src/components/Zodiac.jsx')).default, { c: (() => { const z = r.nuovaScheda('Z'); z.rango = 4; z.segni.ariete = 1; return z })(), d: r.derive({ ...r.nuovaScheda('Z'), rango: 4, segni: { ...r.nuovaScheda('Z').segni, ariete: 1 } }), up })))
 ok(/Muro di Cristallo/.test(tz) && !/Vello d.Oro/.test(tz) && !/prossima soglia/.test(tz) && !/Ofiuco/i.test(tz), 'Zodiaco: nascoste le abilità non sbloccate e nessun indizio su Ofiuco')
+const tvM = testo(renderToString(React.createElement((await load('/src/components/Master.jsx')).default, { tv: { ...tvB, master: true } })))
+const tvG = testo(renderToString(React.createElement((await load('/src/components/Tavolo.jsx')).default, { c: big, userId: 'a', tv: { ...tvB, membro: true } })))
+ok(/Mostri in campo/.test(tvM) && /3 mostri in campo/.test(tvG), 'contatore dei mostri: il Master lo gestisce, i giocatori vedono solo il numero')
+ok(!/PV/.test(tvG), 'i giocatori non vedono PV dei mostri')
 const th = testo(renderToString(React.createElement((await load('/src/components/Shop.jsx')).default, { c: sc, d: ds, up })))
 ok(/sconosciuto/.test(th) && /Studia · 1 Sybil/.test(th), 'Negozio: effetti nascosti con Studia')
 

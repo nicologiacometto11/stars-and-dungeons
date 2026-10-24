@@ -139,3 +139,28 @@ test('Elimina personaggio: serve scrivere il nome', async ({ page }) => {
   await elimina.click()
   await expect(page.getByText('Nuovo personaggio')).toBeVisible()
 })
+
+test('XP: il Cosmo Liquido dà 2 XP e con 3 XP si sale di Rango', async ({ page }) => {
+  await nuovo(page)
+  const salita = page.getByRole('button', { name: /Sali di Rango/ })
+  await expect(salita).toBeDisabled()
+  await tab(page, 'Ricevi')
+  await page.getByPlaceholder('Cerca…').fill('Cosmo Liquido')
+  const ricevi = page.locator('.item').filter({ has: page.getByText('Cosmo Liquido', { exact: true }) }).getByRole('button', { name: 'Ricevi' })
+  await ricevi.click()
+  await ricevi.click()
+  await tab(page, 'Inventario')
+  const carta = page.locator('.item', { hasText: 'Cosmo Liquido' })
+  await carta.getByRole('button', { name: 'Usa' }).click() // 2 XP: ancora non basta
+  await tab(page, 'Scheda')
+  await expect(page.getByText('2 XP', { exact: true })).toBeVisible()
+  await expect(salita).toBeDisabled()
+  await tab(page, 'Inventario')
+  await page.locator('.item', { hasText: 'Cosmo Liquido' }).getByRole('button', { name: 'Usa' }).click() // 4 XP
+  await tab(page, 'Scheda')
+  await expect(salita).toBeEnabled()
+  await salita.click()
+  await expect(page.locator('.rango strong').first()).toHaveText('2')
+  await expect(page.getByText('1 XP', { exact: true })).toBeVisible()
+  await expect(page.getByText(/Hai 2 punti da assegnare/)).toBeVisible()
+})

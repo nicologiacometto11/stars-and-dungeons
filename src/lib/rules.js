@@ -7,6 +7,7 @@ import { MOSTRI_BY_ID } from '../data/monsters.js'
 import { slug, ARMI_CRAFT_A, ARMI_CRAFT_S } from '../data/craft.js'
 
 export const RANGO_MAX = 12
+export const XP_PER_RANGO = 3
 export const ELEMENTI = ['fuoco', 'terra', 'aria', 'acqua']
 
 export function nuovaScheda(nome = '') {
@@ -24,6 +25,7 @@ export function nuovaScheda(nome = '') {
     extra: { corpoMax: 0, menteMax: 0, armor: 0, fato: 0, sybil: 0, cura: 0 }, // correzioni manuali
     armorSplit: null, // quanta Armor base è Fisica (null = tutta Fisica)
     aureos: 0,
+    xp: 0, // punti esperienza: 3 XP per salire di Rango
     inventario: [], // { id, qta, eq }
     bestiario: { scoperti: {}, rivelati: {} },
     noti: {}, // oggetti e armi di cui il giocatore conosce gli effetti (studiati, comprati, ricevuti, forgiati)
@@ -417,6 +419,13 @@ export function serveBackup(c, adesso = Date.now()) {
   return { serve: giorni >= GIORNI_BACKUP && !rimandato, giorni, mai: !c.ultimoBackup }
 }
 
+// Sale di un Rango spendendo 3 XP (il Rango non scende mai)
+export function saliRango(c) {
+  if (c.rango >= RANGO_MAX || (c.xp || 0) < XP_PER_RANGO) return c
+  return conLog({ ...c, xp: c.xp - XP_PER_RANGO, rango: c.rango + 1 }, `Rango ${c.rango + 1} (−${XP_PER_RANGO} XP)`)
+}
+export const conXp = (c, n) => ({ ...c, xp: Math.max(0, (c.xp || 0) + n) })
+
 export function conLog(c, testo) {
   const log = [{ t: new Date().toISOString(), testo }, ...(c.log || [])].slice(0, 150)
   return { ...c, log }
@@ -430,6 +439,7 @@ export function normalizza(raw) {
   c.usati = { ...base.usati, ...(raw?.usati || {}) }
   c.extra = { ...base.extra, ...(raw?.extra || {}) }
   c.bestiario = { scoperti: {}, rivelati: {}, ...(raw?.bestiario || {}) }
+  c.xp = Math.max(0, Number(raw?.xp) || 0)
   c.immagine = raw?.immagine || null
   c.creata = raw?.creata || new Date().toISOString()
   // oggetti e armi rinominati: l'id (e il nome della ricetta) cambia, la scheda resta valida

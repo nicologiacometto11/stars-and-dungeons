@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ITEMS_BY_ID } from '../data/items.js'
 import { SEGNI } from '../data/zodiac.js'
-import { conLog, conRimozione, riceviOggetto, scovaMateriale, verificaReq } from '../lib/rules.js'
+import { conLog, conRimozione, conXp, riceviOggetto, scovaMateriale, verificaReq } from '../lib/rules.js'
 import ItemCard from './ItemCard.jsx'
 
 const SEZIONI = [
@@ -27,6 +27,10 @@ export default function Inventory({ c, d, up }) {
 
   const usa = (r) => {
     if (r.it.uso === 'cinque-essenze') return setScegliSegno(true)
+    if (r.it.xp) {
+      up((s) => conLog(conXp(conRimozione(s, r.id), r.it.xp), `Usato ${r.it.nome}: +${r.it.xp} XP`))
+      return alert(`${r.it.nome}: +${r.it.xp} XP`)
+    }
     if (r.it.uso === 'scovare') {
       const trovato = scovaMateriale()
       up((s) => conLog(riceviOggetto(conRimozione(s, r.id), trovato), `Pergamena: Scovare → ${trovato.nome}`))

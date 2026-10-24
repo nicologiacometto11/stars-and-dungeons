@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { ITEMS_BY_ID } from '../data/items.js'
-import { RANGO_MAX, estraiPergamena, applicaBottino, bottinoDi, conCura, conDanno, conLog, conPuntiCura, conSybil, dannoNetto, riceviOggetto, riservaDanno } from '../lib/rules.js'
+import { RANGO_MAX, conXp, estraiPergamena, applicaBottino, bottinoDi, conCura, conDanno, conLog, conPuntiCura, conSybil, dannoNetto, riceviOggetto, riservaDanno } from '../lib/rules.js'
 
 // I danni e gli Aureos tolti chiedono conferma; i doni si applicano da soli
-const RISORSE = ['aureos', 'sybil', 'puntiCura']
+const RISORSE = ['aureos', 'sybil', 'puntiCura', 'xp']
 export const chiedeConferma = (a) => a.tipo === 'danno' || (RISORSE.includes(a.tipo) && a.dati.n < 0)
 
 const TIPO_DANNO = { fisico: 'fisici', magico: 'magici', puro: 'puri' }
@@ -15,6 +15,10 @@ function applicaDono(a, c, d, up) {
   if (tipo === 'aureos') {
     up((s) => conLog({ ...s, aureos: Math.max(0, s.aureos + dati.n) }, `Master: ${dati.n >= 0 ? '+' : ''}${dati.n} Aureos`))
     return `${dati.n >= 0 ? 'Ricevi' : 'Perdi'} ${Math.abs(dati.n)} Aureos`
+  }
+  if (tipo === 'xp') {
+    up((s) => conLog(conXp(s, dati.n), `Master: ${dati.n >= 0 ? '+' : ''}${dati.n} XP`))
+    return `${dati.n >= 0 ? 'Ricevi' : 'Perdi'} ${Math.abs(dati.n)} XP`
   }
   if (tipo === 'sybil') {
     up((s) => conLog(conSybil(s, dati.n), `Master: ${dati.n >= 0 ? '+' : ''}${dati.n} Sybil`))
@@ -109,6 +113,7 @@ const RISORSA = {
   aureos: { nome: 'Aureos', icona: '💰', ha: (c) => c.aureos },
   sybil: { nome: 'Sybil', icona: '🔮', ha: (c, d) => d.sybilAttuale },
   puntiCura: { nome: 'punti Cura', icona: '💚', ha: (c, d) => d.curaAttuale },
+  xp: { nome: 'XP', icona: '⭐', ha: (c) => c.xp || 0 },
 }
 
 function Perdita({ a, c, d, tv, up }) {
@@ -123,6 +128,7 @@ function Perdita({ a, c, d, tv, up }) {
       if (a.tipo === 'aureos') up((s) => conLog({ ...s, aureos: Math.max(0, s.aureos - n) }, `Master: −${tolti} Aureos`))
       if (a.tipo === 'sybil') up((s) => conLog(conSybil(s, -n), `Master: −${tolti} Sybil`))
       if (a.tipo === 'puntiCura') up((s) => conLog(conPuntiCura(s, -n), `Master: −${tolti} punti Cura`))
+      if (a.tipo === 'xp') up((s) => conLog(conXp(s, -n), `Master: −${tolti} XP`))
       tv.registraEvento(`${c.nome} perde ${tolti} ${ris.nome}`)
     }
     setBusy(false)

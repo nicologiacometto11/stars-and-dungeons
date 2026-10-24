@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { CATEGORIE } from '../data/zodiac.js'
-import { RANGO_MAX, segniUsati, conLog, conMax, normalizza, serveBackup } from '../lib/rules.js'
+import { RANGO_MAX, XP_PER_RANGO, saliRango, segniUsati, conLog, conMax, normalizza, serveBackup } from '../lib/rules.js'
 import { esportaJSON } from '../lib/store.js'
 import Abilities from './Abilities.jsx'
 import AssegnaPunto from './AssegnaPunto.jsx'
@@ -155,14 +155,14 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
           </div>
           <div className="rango">
             <small>RANGO</small>
-            <div className="riga">
-              <strong>{c.rango}</strong>
-              <button
-                disabled={c.rango >= RANGO_MAX}
-                onClick={() => up((s) => conLog({ ...s, rango: s.rango + 1 }, `Rango ${s.rango + 1}`))}
-              >+</button>
+            <strong>{c.rango}</strong>
+            <div className="xp-riga">
+              <span className="tag qta">{c.xp || 0} XP</span>
+              <button className="primary" disabled={c.rango >= RANGO_MAX || (c.xp || 0) < XP_PER_RANGO} onClick={() => up((s) => saliRango(s))}>
+                Sali di Rango · {XP_PER_RANGO} XP
+              </button>
             </div>
-            <small>{c.rango}/{RANGO_MAX} (non si può ridurre)</small>
+            <small>{c.rango}/{RANGO_MAX} · gli XP li dà il Master</small>
           </div>
         </div>
         <p className={liberi > 0 ? 'avviso-int' : 'muted'}>

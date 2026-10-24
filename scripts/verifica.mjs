@@ -35,6 +35,18 @@ ok(con2.corpoMax === sen.corpoMax + 2, 'Cinque Essenze: il segno raggiunge la so
 ok(r.puntiLiberi(es) === 2 && es.rango === 3, 'Cinque Essenze: Rango e punti da assegnare invariati')
 ok(r.effSegno(es, 'ariete') === 3 && r.abilitaSbloccate(es, 'ariete').length === 2, 'Cinque Essenze: il segno sale a 3 e sblocca le sue abilità (1 e 2)')
 
+// ---- XP: 3 XP per salire di Rango, gli XP li dà il Master o il Cosmo Liquido
+let xpS = r.nuovaScheda('X'); xpS.xp = 2
+ok(r.saliRango(xpS) === xpS, 'XP: con 2 XP non si sale di Rango')
+xpS = r.conXp(xpS, 4)
+const su = r.saliRango(xpS)
+ok(su.rango === 2 && su.xp === 3, 'XP: con 6 XP si sale di Rango e ne restano 3')
+ok(r.conXp(r.nuovaScheda('X'), -9).xp === 0, 'XP: mai sotto 0')
+ok(r.saliRango({ ...r.nuovaScheda('X'), rango: 12, xp: 9 }).rango === 12, 'XP: il Rango non supera 12')
+const cosmo = ITEMS.find((i) => i.nome === 'Cosmo Liquido')
+ok(cosmo.xp === 2 && cosmo.consumabile, 'Cosmo Liquido: +2 XP in automatico')
+ok(r.normalizza({ nome: 'V' }).xp === 0, 'XP: le schede vecchie partono da 0')
+
 // ---- danni, cure, bottino
 let c = r.nuovaScheda('T'); c.rango = 12; c.segni.pesci = 3; c.segni.ariete = 2
 let d = r.derive(c)

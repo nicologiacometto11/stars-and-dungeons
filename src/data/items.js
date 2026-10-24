@@ -214,7 +214,7 @@ const OGGETTI_A = [
   ogg("Borsa dell'Alba", 'A', 600, '(Item Agg) Usa 3 oggetti da Craft per ottenere una Pozione Rossa, o 5 per un Tonico, o 8 per una Pozione di Vita, o 15 per un Elisir.'),
   ogg('Cinque Essenze', 'A', 800, 'Ottieni +2 a una qualunque Costellazione (aumenta perennemente, dando i BONUS). Poi distruggi questo Item.', { consumabile: true, uso: 'cinque-essenze' }),
   ogg('Corona del Teschio', 'A', 600, '(Item Agg) Sei immune agli status e al controllo mentale. +5 Armor Magica.', { mods: { armorMagica: 5 } }),
-  ogg('Cosmo Liquido', 'A', 900, 'Ottieni +2 EXP, poi distruggi questo Item.', { consumabile: true }),
+  ogg('Cosmo Liquido', 'A', 900, 'Ottieni +2 XP, poi distruggi questo Item (si applica da solo quando lo usi).', { consumabile: true, xp: 2 }),
   ogg('Elisir', 'A', 400, 'Cura completamente tutte le tue Riserve.', { consumabile: true }),
   ogg('Fiore senza Fiore', 'A', 450, 'Puoi perdere x punti Corpo o Mente e un bersaglio ne guadagna altrettanti.', { consumabile: true }),
   ogg('Galassia Portatile', 'A', 450, 'Cambi Dungeon, qualunque esso sia, senza perdere Loot o Aureos: verrai trasportato in un Dungeon di Grado inferiore, in un ambiente diverso.', { consumabile: true }),

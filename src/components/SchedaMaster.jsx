@@ -34,7 +34,7 @@ export function SchedaLettura({ c, onAggiorna }) {
       {c.immagine && <img className="avatar-grande" src={c.immagine} alt={c.nome} />}
       <div className="riga spazio">
         <strong>Rango {c.rango}{d.ofiuco && ' · ☉ Ofiuco'}</strong>
-        <span className="oro">{c.aureos} Aureos</span>
+        <span className="oro">{c.aureos} Aureos · {c.xp || 0} XP</span>
         <button className="ghost" onClick={onAggiorna}>Aggiorna</button>
       </div>
 

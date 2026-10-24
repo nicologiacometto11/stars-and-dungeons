@@ -48,7 +48,7 @@ Tutto il resto si ricalcola con `derive()` in `rules.js`, quindi non può disall
 
 ## Regole implementate (da `rules.js`)
 
-- Rango 1-12, solo in aumento. I punti Rango si spendono sui 12 segni (max 10 per segno). Per togliere punti serve la "modalità correzione".
+- Rango 1-12, solo in aumento. Si sale spendendo 3 XP (`saliRango`, pulsante "Sali di Rango"): gli XP li dà il Master dalle "Azioni…" (`supabase/tavolo7.sql`, togliere chiede conferma) e il Cosmo Liquido ne dà 2 da solo. Gli XP non raddoppiano con Ofiuco. I punti Rango si spendono sui 12 segni (max 10 per segno). Per togliere punti serve la "modalità correzione".
 - Categoria = somma dei due segni della coppia (Resistenza = Pesci+Ariete, Carisma = Toro+Gemelli, Forza = Cancro+Leone, Arcano = Vergine+Bilancia, Fortuna = Scorpione+Sagittario, Saggezza = Capricorno+Acquario). Gli oggetti possono aumentare le categorie oltre il Rango, ma non Rango né Costellazioni.
 - Per punto: Resistenza +3 Corpo MAX +1 Armor; Carisma +3 dadi sociale +1 Sybil; Forza +3 dadi attacco fisico +1 danni fisici; Arcano +3 dadi attacco magico +1 danni magici; Fortuna +1 Fato +10% critico (parte da 1%); Saggezza +3 Mente MAX +1 Cura.
 - Soglia 2 di ogni segno = "Segno" con bonus fissi + un +1 a scelta (Fuoco/Terra/Aria/Acqua).

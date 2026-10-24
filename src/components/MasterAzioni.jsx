@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { ITEMS } from '../data/items.js'
 
-const TIPI = [['danno', 'Danno'], ['cura', 'Cura'], ['aureos', 'Aureos'], ['sybil', 'Sybil'], ['puntiCura', 'Punti Cura'], ['oggetto', 'Oggetto'], ['rango', 'Rango +1']]
-const RISORSE = { aureos: 'Aureos', sybil: 'Sybil', puntiCura: 'punti Cura' }
+const TIPI = [['danno', 'Danno'], ['cura', 'Cura'], ['aureos', 'Aureos'], ['sybil', 'Sybil'], ['puntiCura', 'Punti Cura'], ['xp', 'XP'], ['oggetto', 'Oggetto'], ['rango', 'Rango +1']]
+const RISORSE = { aureos: 'Aureos', sybil: 'Sybil', puntiCura: 'punti Cura', xp: 'XP' }
 const TIPO_DANNO = { fisico: 'fisici', magico: 'magici', puro: 'puri' }
 
 // Azioni del Master verso un giocatore

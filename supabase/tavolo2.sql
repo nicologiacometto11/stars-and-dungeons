@@ -4,7 +4,7 @@
 create table if not exists public.azioni (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users (id) on delete cascade, -- il giocatore a cui è rivolta
-  tipo text not null check (tipo in ('danno', 'cura', 'aureos', 'oggetto', 'rango', 'bottino', 'sybil', 'puntiCura')),
+  tipo text not null check (tipo in ('danno', 'cura', 'aureos', 'oggetto', 'rango', 'bottino', 'sybil', 'puntiCura', 'xp')),
   dati jsonb not null default '{}'::jsonb,
   stato text not null default 'attesa' check (stato in ('attesa', 'applicata', 'rifiutata')),
   created_at timestamptz not null default now()

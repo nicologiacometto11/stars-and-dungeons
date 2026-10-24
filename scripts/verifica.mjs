@@ -90,6 +90,17 @@ const drc = r.derive(rc)
 const ra = r.compraRicetta(rc, drc, 'A', 0), rs = r.compraRicetta(rc, drc, 'S', 0)
 ok(ra.c.usati.sybil === 1 && rs.c.usati.sybil === 5, 'ricette: arma A 1 Sybil, arma S 5 Sybil')
 
+// ---- Pergamene: l'estrazione a caso avviene quando si ottengono
+const { PERGAMENE_ESTRATTE } = await load('/src/data/items.js')
+const perg = ITEMS.find((i) => i.id === 'pergamena')
+let pz = r.riceviOggetto(r.nuovaScheda('P'), perg, 3, () => 0.99)
+ok(PERGAMENE_ESTRATTE.length === 6 && PERGAMENE_ESTRATTE.every((id) => ITEMS.some((i) => i.id === id && i.consumabile)), '6 pergamene consumabili')
+ok(r.qtaIn(pz, 'pergamena') === 0 && r.qtaIn(pz, PERGAMENE_ESTRATTE[5]) === 3, 'la Pergamena generica diventa una delle 6 (3 ricevute = 3 estratte)')
+const viste = new Set()
+for (let k = 0; k < 400; k++) { const q = r.riceviOggetto(r.nuovaScheda('P'), perg); for (const id of PERGAMENE_ESTRATTE) if (r.qtaIn(q, id)) viste.add(id) }
+ok(viste.size === 6, 'a caso: escono tutte e 6 le pergamene')
+ok(!ITEMS.some((i) => i.cat === 'materiale' && i.id === 'pergamena') && r.parseCosti('x').length === 0, 'la Pergamena non è più un materiale')
+
 // ---- tutte le armi/oggetti equipaggiati senza NaN; parsing costi
 let nan = 0
 for (const it of ITEMS) { const x = con(r.nuovaScheda('x'), it.nome); for (const v of Object.values(r.derive(x))) if (typeof v === 'number' && Number.isNaN(v)) nan++ }

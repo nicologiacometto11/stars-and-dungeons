@@ -36,7 +36,6 @@ export const MATERIALI_AUREOS = {
 }
 
 export const ALTRI_MATERIALI = [
-  'Pergamena',
   'Frammento Gemma Dimensionale C',
   'Frammento Gemma Dimensionale B',
   'Frammento Gemma Dimensionale A',

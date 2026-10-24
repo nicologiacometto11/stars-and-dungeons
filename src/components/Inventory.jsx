@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ITEMS_BY_ID } from '../data/items.js'
 import { SEGNI } from '../data/zodiac.js'
-import { conLog, conRimozione, verificaReq } from '../lib/rules.js'
+import { conLog, conRimozione, riceviOggetto, verificaReq } from '../lib/rules.js'
 import ItemCard from './ItemCard.jsx'
 
 const SEZIONI = [
@@ -27,6 +27,7 @@ export default function Inventory({ c, d, up }) {
 
   const usa = (r) => {
     if (r.it.uso === 'cinque-essenze') return setScegliSegno(true)
+    if (r.it.uso === 'apri-pergamena') return up((s) => riceviOggetto(conRimozione(s, r.id), r.it))
     if (r.it.uso === 'reset-segni') {
       if (!confirm('Resettare TUTTI i punti nei segni dello Zodiaco? Il Rango resta invariato e l\'anello si distrugge.')) return
       return up((s) =>

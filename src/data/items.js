@@ -244,9 +244,26 @@ const ABILITA_UNICHE = [
   ['Crescita Spropositata', 'Il tuo prossimo attacco infligge 3 x Danni (10 Corpo).'],
 ].map(([nome, desc]) => ({ cat: 'abilita', nome, tier: 'A', desc: `Abilità UNICA. ${desc}` }))
 
+// ---------- PERGAMENE (le dà il Master) ----------
+// "Pergamena" è l'oggetto generico: quando la si ottiene si trasforma subito in una delle 6 a caso (vedi riceviOggetto).
+// Le 6 sono consumabili: l'effetto lo applica il giocatore a mano.
+const PERGAMENE_EFFETTI = [
+  ['Fortuna', '+1 Fato e +100% di critico alla prossima azione.'],
+  ['Analisi', '+1 Sybil.'],
+  ['Difesa', 'Eviti un attacco.'],
+  ['Scovare', 'Ottieni un oggetto di craft almeno Raro (da grado C in su).'],
+  ['Colpo avverso', 'Infliggi tanti Danni quanti sono i Danni subiti da una tua Riserva.'],
+  ['Cura', 'Cura completamente una delle tue Riserve.'],
+]
+const PERGAMENE = [
+  ogg('Pergamena', 'Speciale', 0, 'Quando la ottieni si trasforma in una delle 6 Pergamene, a caso.', { shop: false, consumabile: true, uso: 'apri-pergamena' }),
+  ...PERGAMENE_EFFETTI.map(([n, d]) => ogg(`Pergamena: ${n}`, 'Speciale', 0, d, { shop: false, consumabile: true })),
+]
+export const PERGAMENE_ESTRATTE = PERGAMENE_EFFETTI.map(([n]) => slug(`Pergamena: ${n}`))
+
 const TUTTI = [
   ...ARMI_C, ...ARMI_B, ...ARMI_A, ...ARMI_SPECIALI, ...OGGETTI_CHIAVE, ...ARMI_S_RARE, ...ARMI_ZODIACO,
-  ...ARMI_ELEMENTI, ...ARMI_CRAFT, ...OGGETTI_C, ...OGGETTI_B, ...OGGETTI_A, ...MATERIALI_ITEMS, ...ABILITA_UNICHE,
+  ...ARMI_ELEMENTI, ...ARMI_CRAFT, ...OGGETTI_C, ...OGGETTI_B, ...OGGETTI_A, ...MATERIALI_ITEMS, ...PERGAMENE, ...ABILITA_UNICHE,
 ]
 
 // Nomi cambiati in seguito (vecchio → nuovo): servono per aggiornare le schede già salvate

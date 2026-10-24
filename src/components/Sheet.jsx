@@ -1,11 +1,12 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CATEGORIE } from '../data/zodiac.js'
-import { RANGO_MAX, segniUsati, conLog, normalizza } from '../lib/rules.js'
+import { RANGO_MAX, segniUsati, conLog, conMax, normalizza } from '../lib/rules.js'
 import { esportaJSON } from '../lib/store.js'
 import Abilities from './Abilities.jsx'
 import AssegnaPunto from './AssegnaPunto.jsx'
+import { ridimensiona } from '../lib/immagine.js'
 
-function Riserva({ nome, valore, max, onChange, onRipristina }) {
+function Riserva({ nome, valore, max, onChange, onRipristina, onMaxMeno, onMaxPiu }) {
   const pct = max > 0 ? Math.min(100, (valore / max) * 100) : 0
   return (
     <div className="riserva">
@@ -20,6 +21,11 @@ function Riserva({ nome, valore, max, onChange, onRipristina }) {
         <button onClick={() => onChange(Math.min(max, valore + 1))}>+1</button>
         <button onClick={() => onChange(Math.min(max, valore + 5))}>+5</button>
         <button className="ghost" onClick={onRipristina}>Ripristina</button>
+      </div>
+      <div className="riga riserva-max">
+        <small className="muted">Massimo (punti bonus)</small>
+        <button onClick={onMaxMeno} disabled={max <= 0} aria-label={`Diminuisci il massimo di ${nome}`}>−</button>
+        <button onClick={onMaxPiu} aria-label={`Aumenta il massimo di ${nome}`}>+</button>
       </div>
     </div>
   )
@@ -59,6 +65,47 @@ function ZonaPericolo({ nome, onElimina }) {
   )
 }
 
+// Campo numerico che si può svuotare per scrivere un numero nuovo (lo 0 non resta bloccato)
+function CampoAureos({ valore, onChange }) {
+  const [testo, setTesto] = useState(String(valore))
+  useEffect(() => { setTesto((t) => (Number(t) === valore && t !== '' ? t : String(valore))) }, [valore])
+  return (
+    <input
+      type="number" inputMode="numeric" min="0" value={testo}
+      onChange={(e) => {
+        setTesto(e.target.value)
+        if (e.target.value !== '') onChange(Math.max(0, Math.floor(Number(e.target.value)) || 0))
+      }}
+      onBlur={() => { if (testo === '') { setTesto('0'); onChange(0) } }}
+    />
+  )
+}
+
+// Foto del personaggio: si sceglie dal telefono o dal computer e viene ridotta prima di salvarla
+function Avatar({ c, up }) {
+  const ref = useRef(null)
+  const carica = async (e) => {
+    const f = e.target.files?.[0]
+    e.target.value = ''
+    if (!f) return
+    try {
+      const img = await ridimensiona(f)
+      up((s) => ({ ...s, immagine: img }))
+    } catch {
+      alert('Non riesco a leggere questa immagine.')
+    }
+  }
+  return (
+    <div className="avatar-box">
+      <button type="button" className="avatar" onClick={() => ref.current?.click()} aria-label="Cambia la foto del personaggio">
+        {c.immagine ? <img src={c.immagine} alt="" /> : <span>📷</span>}
+      </button>
+      <input ref={ref} type="file" accept="image/*" hidden onChange={carica} />
+      {c.immagine && <button type="button" className="ghost avatar-x" onClick={() => up((s) => ({ ...s, immagine: null }))} aria-label="Togli la foto">×</button>}
+    </div>
+  )
+}
+
 export default function Sheet({ c, d, up, onElimina, tv }) {
   const fileRef = useRef(null)
   const usati = segniUsati(c)
@@ -84,7 +131,10 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
     <div className="stack">
       <section className="card">
         <div className="riga spazio">
-          <input className="nome" value={c.nome} onChange={(e) => up((s) => ({ ...s, nome: e.target.value }))} />
+          <div className="riga" style={{ flex: 1, minWidth: 0, flexWrap: 'nowrap' }}>
+            <Avatar c={c} up={up} />
+            <input className="nome" value={c.nome} onChange={(e) => up((s) => ({ ...s, nome: e.target.value }))} />
+          </div>
           <div className="rango">
             <small>RANGO</small>
             <div className="riga">
@@ -107,13 +157,13 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
 
       <section className="card">
         <h2>Riserve</h2>
-        <Riserva nome="Corpo" valore={corpo} max={d.corpoMax} onChange={(v) => up((s) => ({ ...s, corpo: v }))} onRipristina={() => up((s) => ({ ...s, corpo: null }))} />
-        <Riserva nome="Mente" valore={mente} max={d.menteMax} onChange={(v) => up((s) => ({ ...s, mente: v }))} onRipristina={() => up((s) => ({ ...s, mente: null }))} />
+        <Riserva nome="Corpo" valore={corpo} max={d.corpoMax} onChange={(v) => up((s) => ({ ...s, corpo: v }))} onRipristina={() => up((s) => ({ ...s, corpo: null }))} onMaxMeno={() => up((s) => conMax(s, 'corpoMax', -1))} onMaxPiu={() => up((s) => conMax(s, 'corpoMax', 1))} />
+        <Riserva nome="Mente" valore={mente} max={d.menteMax} onChange={(v) => up((s) => ({ ...s, mente: v }))} onRipristina={() => up((s) => ({ ...s, mente: null }))} onMaxMeno={() => up((s) => conMax(s, 'menteMax', -1))} onMaxPiu={() => up((s) => conMax(s, 'menteMax', 1))} />
         <div className="griglia">
           <Contatore
-            nome="Fato" valore={d.fatoAttuale} max={d.fato}
+            nome="Fato" valore={d.fatoAttuale} max={d.fato} libero nota={`base ${d.fato} · modificabile`}
             onMeno={() => up((s) => ({ ...s, usati: { ...s.usati, fato: s.usati.fato + 1 } }))}
-            onPiu={() => up((s) => ({ ...s, usati: { ...s.usati, fato: Math.max(0, s.usati.fato - 1) } }))}
+            onPiu={() => up((s) => ({ ...s, usati: { ...s.usati, fato: s.usati.fato - 1 } }))}
           />
           <Contatore
             nome="Sybil" valore={d.sybilAttuale} max={d.sybil} libero nota={`base ${d.sybil} · modificabile`}
@@ -127,10 +177,7 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
           />
           <div className="stat">
             <span className="stat-n">Aureos</span>
-            <input
-              type="number" min="0" value={c.aureos}
-              onChange={(e) => up((s) => ({ ...s, aureos: Math.max(0, Number(e.target.value) || 0) }))}
-            />
+            <CampoAureos valore={c.aureos} onChange={(n) => up((s) => ({ ...s, aureos: n }))} />
             <small>moneta di gioco</small>
           </div>
         </div>
@@ -172,6 +219,8 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
           <div className="stat"><span className="stat-n">Sociale</span><strong>+{d.dadiSociale}</strong></div>
           <div className="stat"><span className="stat-n">Attacco fisico</span><strong>+{d.dadiFisico}</strong><small>ai dadi</small></div>
           <div className="stat"><span className="stat-n">Attacco magico</span><strong>+{d.dadiMagico}</strong><small>ai dadi</small></div>
+          <div className="stat"><span className="stat-n">Difesa fisica</span><strong>+{d.dadiDifFisica}</strong><small>ai dadi</small></div>
+          <div className="stat"><span className="stat-n">Difesa magica</span><strong>+{d.dadiDifMagica}</strong><small>ai dadi</small></div>
           <div className="stat"><span className="stat-n">Danni fisici</span><strong>+{d.dmgFisici}</strong><small>ogni Arma/Abilità</small></div>
           <div className="stat"><span className="stat-n">Danni magici</span><strong>+{d.dmgMagici}</strong><small>ogni Arma/Abilità</small></div>
           <div className="stat"><span className="stat-n">Critico</span><strong>{1 + d.critico}%</strong><small>in ogni tiro (parte da 1%)</small></div>

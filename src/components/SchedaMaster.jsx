@@ -31,6 +31,7 @@ export function SchedaLettura({ c, onAggiorna }) {
 
   return (
     <div className="scheda-master">
+      {c.immagine && <img className="avatar-grande" src={c.immagine} alt={c.nome} />}
       <div className="riga spazio">
         <strong>Rango {c.rango}{d.ofiuco && ' · ☉ Ofiuco'}</strong>
         <span className="oro">{c.aureos} Aureos</span>
@@ -46,6 +47,7 @@ export function SchedaLettura({ c, onAggiorna }) {
         <div className="stat"><span className="stat-n">Cura</span><strong>{d.curaAttuale} / {d.cura}</strong></div>
         <div className="stat"><span className="stat-n">Critico</span><strong>{1 + d.critico}%</strong></div>
         <div className="stat"><span className="stat-n">Dadi Soc · Fis · Mag</span><strong>+{d.dadiSociale} · +{d.dadiFisico} · +{d.dadiMagico}</strong></div>
+        <div className="stat"><span className="stat-n">Difesa Fis · Mag</span><strong>+{d.dadiDifFisica} · +{d.dadiDifMagica}</strong></div>
         <div className="stat"><span className="stat-n">Danni Fis · Mag</span><strong>+{d.dmgFisici} · +{d.dmgMagici}</strong></div>
       </div>
 

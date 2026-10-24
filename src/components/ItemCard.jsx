@@ -1,11 +1,20 @@
+import { useState } from 'react'
 import { verificaReq } from '../lib/rules.js'
+import IMMAGINI from '../data/immagini-oggetti.json' // elenco degli id che hanno un'immagine in public/images/oggetti/
 
 const TIER_CLASS = { C: 't-c', B: 't-b', A: 't-a', S: 't-s', SS: 't-s', Zodiaco: 't-z', Speciale: 't-z', Chiave: 't-k' }
 
 export default function ItemCard({ it, c, d, qta, children, compact, noto = true, puoiStudiare, onStudia }) {
   const reqOk = it.req ? verificaReq(it.req, c, d) : true
+  const [conImmagine, setConImmagine] = useState(false)
   return (
     <div className={`item ${TIER_CLASS[it.tier] || ''}`}>
+      {IMMAGINI.includes(it.id) && (
+        <img
+          className="item-img" src={`${import.meta.env.BASE_URL}images/oggetti/${it.id}.webp`} alt={it.nome} loading="lazy"
+          style={conImmagine ? undefined : { display: 'none' }} onLoad={() => setConImmagine(true)} onError={() => setConImmagine(false)}
+        />
+      )}
       <div className="item-head">
         <strong>{it.nome}</strong>
         <span className="tag">{it.tier}</span>

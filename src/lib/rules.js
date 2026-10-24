@@ -28,6 +28,7 @@ export function nuovaScheda(nome = '') {
     bestiario: { scoperti: {}, rivelati: {} },
     noti: {}, // oggetti e armi di cui il giocatore conosce gli effetti (studiati, comprati, ricevuti, forgiati)
     ricette: [], // ricette di craft scoperte (nome dell'arma)
+    immagine: null, // foto del personaggio (data URL ridotta)
     abilita: [], // abilità perenni ottenute (armi S): { da, testo }
     abilitaPers: [], // abilità scritte dal giocatore: { id, nome, testo, mente, corpo }
     noteAbilita: {}, // appunti per abilità, per chiave
@@ -70,7 +71,7 @@ export function scelteBonus(c, segnoId) {
 export function derive(c) {
   const cat = Object.fromEntries(CATEGORIE.map((k) => [k.id, 0]))
   const catItem = { ...cat }
-  const mod = { corpoMax: 0, menteMax: 0, armor: 0, armorFisica: 0, armorMagica: 0, fato: 0, sybil: 0, cura: 0, dmgFisici: 0, dmgMagici: 0 }
+  const mod = { corpoMax: 0, menteMax: 0, armor: 0, armorFisica: 0, armorMagica: 0, fato: 0, sybil: 0, cura: 0, dmgFisici: 0, dmgMagici: 0, dadiSociale: 0, dadiFisico: 0, dadiMagico: 0, dadiDifFisica: 0, dadiDifMagica: 0 }
 
   // categorie = somma dei due segni
   for (const k of CATEGORIE) cat[k.id] = k.segni.reduce((a, s) => a + effSegno(c, s), 0)
@@ -81,6 +82,13 @@ export function derive(c) {
     const ab = s.abilita.find((a) => a.tipo === 'segno')
     for (const [k, v] of Object.entries(ab.bonus)) mod[k] += v
     mod[scelteBonus(c, s.id)] += 1
+  }
+
+  // bonus ai dadi delle abilità dello Zodiaco sbloccate
+  for (const s of SEGNI) {
+    for (const a of s.abilita) {
+      if (a.dadi && effSegno(c, s.id) >= a.soglia) for (const [k, v] of Object.entries(a.dadi)) mod[k] += v
+    }
   }
 
   // oggetti equipaggiati
@@ -108,9 +116,11 @@ export function derive(c) {
     fato: tot.fortuna + mod.fato + (ex.fato || 0),
     sybil: tot.carisma + mod.sybil + (ex.sybil || 0),
     cura: tot.saggezza + mod.cura + (ex.cura || 0),
-    dadiSociale: 3 * tot.carisma,
-    dadiFisico: 3 * tot.forza,
-    dadiMagico: 3 * tot.arcano,
+    dadiSociale: 3 * tot.carisma + mod.dadiSociale,
+    dadiFisico: 3 * tot.forza + mod.dadiFisico,
+    dadiMagico: 3 * tot.arcano + mod.dadiMagico,
+    dadiDifFisica: mod.dadiDifFisica,
+    dadiDifMagica: mod.dadiDifMagica,
     dmgFisici: tot.forza + mod.dmgFisici,
     dmgMagici: tot.arcano + mod.dmgMagici,
     critico: 10 * tot.fortuna,
@@ -118,7 +128,7 @@ export function derive(c) {
 
   const ofiuco = ofiucoAttivo(c)
   if (ofiuco) {
-    for (const k of ['corpoMax', 'menteMax', 'armorBase', 'armorItemF', 'armorItemM', 'fato', 'sybil', 'cura', 'dadiSociale', 'dadiFisico', 'dadiMagico', 'dmgFisici', 'dmgMagici', 'critico'])
+    for (const k of ['corpoMax', 'menteMax', 'armorBase', 'armorItemF', 'armorItemM', 'fato', 'sybil', 'cura', 'dadiSociale', 'dadiFisico', 'dadiMagico', 'dadiDifFisica', 'dadiDifMagica', 'dmgFisici', 'dmgMagici', 'critico'])
       d[k] *= 2
   }
   d.ofiuco = ofiuco
@@ -366,6 +376,16 @@ export function conPuntiCura(c, n) {
   return { ...c, usati: { ...c.usati, cura: d.cura - Math.max(0, d.curaAttuale + n) } }
 }
 
+// Cambia il massimo di Corpo o Mente a mano (punti bonus): il valore attuale non supera mai il massimo.
+export function conMax(c, chiave, delta) {
+  const ris = chiave === 'corpoMax' ? 'corpo' : 'mente'
+  let x = { ...c, extra: { ...c.extra, [chiave]: (c.extra?.[chiave] || 0) + delta } }
+  const max = derive(x)[chiave]
+  if (max < 0) return c
+  if (x[ris] != null && x[ris] > max) x = { ...x, [ris]: max }
+  return x
+}
+
 export function conLog(c, testo) {
   const log = [{ t: new Date().toISOString(), testo }, ...(c.log || [])].slice(0, 150)
   return { ...c, log }
@@ -379,6 +399,7 @@ export function normalizza(raw) {
   c.usati = { ...base.usati, ...(raw?.usati || {}) }
   c.extra = { ...base.extra, ...(raw?.extra || {}) }
   c.bestiario = { scoperti: {}, rivelati: {}, ...(raw?.bestiario || {}) }
+  c.immagine = raw?.immagine || null
   c.noti = raw?.noti || {}
   c.ricette = raw?.ricette || []
   c.abilita = raw?.abilita || []

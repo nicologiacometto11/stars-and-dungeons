@@ -1,6 +1,7 @@
 // Catalogo di armi e oggetti.
 // cat: arma | oggetto | materiale | chiave | abilita
 // shop: true = in vendita nel Negozio (prezzo in Aureos)
+// dadi: dadiSociale dadiFisico dadiMagico (attacco) dadiDifFisica dadiDifMagica (difesa) si sommano ai bonus delle Caratteristiche
 // mods: bonus applicati quando l'oggetto è equipaggiato (categorie e statistiche)
 //   categorie: forza resistenza carisma arcano fortuna saggezza
 //   statistiche: corpoMax menteMax armorFisica armorMagica fato sybil cura dmgFisici dmgMagici
@@ -149,11 +150,11 @@ const OGGETTI_C = [
   ogg('Amuleto delle Rune', 'C', 150, '+1 Saggezza, +1 Arcano.', { mods: { saggezza: 1, arcano: 1 } }),
   ogg('Amuleto di Fuoco', 'C', 150, 'Puoi lanciare una "Palla di Fuoco": 5 Mente, 8 Danni Magici. Sei resistente al Fuoco e non subisci Danni da esso. (Mappa Antica Fucina se hai anche Anello del Calore)'),
   ogg('Amuleto di Cristallo', 'C', 150, 'Difesa naturale contro la Magia: Armor Magica +3. Non puoi essere incantato, confuso, terrorizzato o manipolato.', { mods: { armorMagica: 3 } }),
-  ogg("Amuleto dell'Equilibrio", 'C', 150, '+5 Mente MAX, +5 Corpo MAX. Equilibrio: +3 nei DADI nel muoverti e nella difesa a Corpo.', { mods: { menteMax: 5, corpoMax: 5 } }),
+  ogg("Amuleto dell'Equilibrio", 'C', 150, '+5 Mente MAX, +5 Corpo MAX. Equilibrio: +3 nei DADI nel muoverti e nella difesa a Corpo.', { mods: { menteMax: 5, corpoMax: 5, dadiDifFisica: 3 } }),
   ogg('Anello del Calore', 'C', 150, 'Incanali il fuoco nelle tue Armi: +3 Danni Magici. Sei resistente al Fuoco e non subisci Danni da esso. (Mappa Antica Fucina se hai anche Amuleto di Fuoco)', { mods: { dmgMagici: 3 } }),
   ogg('Anello di Guardia', 'C', 150, '+2 Armor Fisica.', { mods: { armorFisica: 2 } }),
   ogg('Anello di Perla Rossa', 'C', 150, '+1 Carisma, +1 Fortuna.', { mods: { carisma: 1, fortuna: 1 } }),
-  ogg('Anello di Piume', 'C', 150, '+3 ai DADI in DIFESA di Corpo. Levitare: puoi alzarti da terra per pochi minuti quasi potessi volare.'),
+  ogg('Anello di Piume', 'C', 150, '+3 ai DADI in DIFESA di Corpo. Levitare: puoi alzarti da terra per pochi minuti quasi potessi volare.', { mods: { dadiDifFisica: 3 } }),
   ogg("Anello d'Oro", 'C', 150, 'Ottieni il doppio degli Aureos che ottieni combattendo Mostri.'),
   ogg('Anello Gelato', 'C', 150, 'Difesa naturale contro gli attacchi elementali: Armor Magica +3. (Ottieni la mappa delle Isole Ghiacciate)', { mods: { armorMagica: 3 } }),
   ogg('Anello Reale', 'C', 150, 'Puoi impartire "Comando" pagando 5 Mente: il bersaglio eseguirà un comando che non danneggi sé stesso. +1 Armor Fisica.', { mods: { armorFisica: 1 } }),
@@ -163,16 +164,16 @@ const OGGETTI_C = [
   ogg('Pozione Rossa', 'C', 40, 'Tira 2d4 e ti curi di altrettanti punti.', { consumabile: true }),
   ogg('Elettro Liquido', 'C', 100, '+5 Danni Magici.', { consumabile: true }),
   ogg('Armatura Alata', 'C', 250, '(Item Agg) +2 Armor Fisica. Levitare: puoi alzarti da terra per pochi minuti quasi potessi volare.', { mods: { armorFisica: 2 } }),
-  ogg('Cerchio Magico', 'C', 250, '(Item Agg) +3 ai DADI in DIFESA MAGICA e +3 Armor Magica. (Ottieni la mappa Città dei Morti)', { mods: { armorMagica: 3 } }),
+  ogg('Cerchio Magico', 'C', 250, '(Item Agg) +3 ai DADI in DIFESA MAGICA e +3 Armor Magica. (Ottieni la mappa Città dei Morti)', { mods: { armorMagica: 3, dadiDifMagica: 3 } }),
   ogg('Dadi Incantati', 'C', 100, '20% di critico nei prossimi tuoi 6 Round, +1 Fato.', { consumabile: true }),
   ogg('Pietra del Ritorno', 'C', 150, 'Ti permette di scappare dal dungeon corrente senza perdere Loot.', { consumabile: true }),
-  ogg('Sciarpa dei Tarocchi', 'C', 250, '(Item Agg) +3 ai DADI di DIFESA sia FISICA che MAGICA.'),
+  ogg('Sciarpa dei Tarocchi', 'C', 250, '(Item Agg) +3 ai DADI di DIFESA sia FISICA che MAGICA.', { mods: { dadiDifFisica: 3, dadiDifMagica: 3 } }),
   ogg('Scudo Cuore di Rubino', 'C', 250, '+2 Armor Fisica, +3 Armor Magica.', { mods: { armorFisica: 2, armorMagica: 3 } }),
 ]
 
 // ---------- OGGETTI B (350-700) ----------
 const OGGETTI_B = [
-  ogg('Ambra Pura', 'B', 350, '(Amuleto) Sei fortunato: +3 ai DADI di DIFESA FISICA e MAGICA. +1 Fortuna.', { mods: { fortuna: 1 } }),
+  ogg('Ambra Pura', 'B', 350, '(Amuleto) Sei fortunato: +3 ai DADI di DIFESA FISICA e MAGICA. +1 Fortuna.', { mods: { fortuna: 1, dadiDifFisica: 3, dadiDifMagica: 3 } }),
   ogg('Amuleto del Vagabondo', 'B', 350, 'Sei immune agli status.'),
   ogg('Amuleto dello Spirito Naga', 'B', 350, 'Puoi evocare una serpe che combatta per te. Sei immune al Veleno.'),
   ogg('Anello Celeste', 'B', 350, '+2 Arcano. Puoi lanciare "Fulmine": 5 Danni Magici su 2 bersagli (7 Mente).', { mods: { arcano: 2 } }),
@@ -185,8 +186,8 @@ const OGGETTI_B = [
   ogg('Armatura Mentale', 'B', 450, '+3 Armor Magica.', { mods: { armorMagica: 3 } }),
   ogg('Campana Angelica', 'B', 400, '(Amuleto) +2 Cura.', { mods: { cura: 2 } }),
   ogg('Candela Nera', 'B', 500, 'Puoi spegnere questa candela per rianimare un morto. Poi distruggi questo oggetto.', { consumabile: true }),
-  ogg('Cappa Arcobaleno', 'B', 350, '(Item Agg) +3 ai DADI nella DIFESA FISICA, puoi evitare un Danno (7 Corpo).'),
-  ogg('Cappa Lucente', 'B', 350, '(Item Agg) +3 ai DADI di ATTACCO FISICO e MAGICO, puoi evitare un Danno (7 Mente).'),
+  ogg('Cappa Arcobaleno', 'B', 350, '(Item Agg) +3 ai DADI nella DIFESA FISICA, puoi evitare un Danno (7 Corpo).', { mods: { dadiDifFisica: 3 } }),
+  ogg('Cappa Lucente', 'B', 350, '(Item Agg) +3 ai DADI di ATTACCO FISICO e MAGICO, puoi evitare un Danno (7 Mente).', { mods: { dadiFisico: 3, dadiMagico: 3 } }),
   ogg('Ingarbuglia Incubi', 'B', 600, 'Chi lo beve osserva l\'oscurità più profonda, un\'esperienza simile alla morte.', { consumabile: true }),
   ogg('Koi di Luce', 'B', 400, '(Item Agg) Critico +30%. Puoi evocare la Karpa che ti cura nel tempo per 3 Round.'),
   ogg('Perle del Riflesso', 'B', 350, '(Amuleto) Rifletti al nemico il prossimo Danno che subiresti (7 Mente).'),
@@ -194,7 +195,7 @@ const OGGETTI_B = [
   ogg('ScriviPensiero', 'B', 500, 'Puoi modificare il Danno di un\'Arma da Fisico a Magico o viceversa, oppure il costo di una Tecnica.', { consumabile: true }),
   ogg('Scudo di Forza', 'B', 700, '(Item Agg) Occupa due mani. Tutti i Danni che subisci vengono inflitti a un altro bersaglio a tua scelta. +5 Armor Fisica, +5 Armor Magica.', { mods: { armorFisica: 5, armorMagica: 5 } }),
   ogg('Thè dai Dieci Sapori', 'B', 500, 'Puoi spostare un tuo punto caratteristica, oppure scambiare 5 punti tra Corpo e Mente, oppure 2 punti tra Fato/Sybil/Armor/Cura.', { consumabile: true }),
-  ogg('Totem della Rana', 'B', 350, '(Amuleto) +3 ai DADI di DIFESA FISICA e MAGICA. Sei immune al Veleno.'),
+  ogg('Totem della Rana', 'B', 350, '(Amuleto) +3 ai DADI di DIFESA FISICA e MAGICA. Sei immune al Veleno.', { mods: { dadiDifFisica: 3, dadiDifMagica: 3 } }),
 ]
 
 // ---------- OGGETTI A (550-900) ----------

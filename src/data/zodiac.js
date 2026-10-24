@@ -101,7 +101,7 @@ export const SEGNI = [
   {
     id: 'scorpione', nome: 'Scorpione', elemento: 'acqua', categoria: 'fortuna',
     abilita: [
-      { soglia: 1, nome: 'Il Nemico del Cacciatore', desc: 'Vedi sempre i punti deboli dei nemici: se li colpisci (-3 ai DADI di ATTACCO) infliggi +3 Danni PURI. Non lasci mai aperture: +3 ai DADI nella tua difesa.' },
+      { soglia: 1, nome: 'Il Nemico del Cacciatore', desc: 'Vedi sempre i punti deboli dei nemici: se li colpisci (-3 ai DADI di ATTACCO) infliggi +3 Danni PURI. Non lasci mai aperture: +3 ai DADI nella tua difesa.', dadi: { dadiDifFisica: 3, dadiDifMagica: 3 } },
       seg('acqua'),
       { soglia: 4, nome: 'Cuspide Scarlatta', costo: '5 Corpo', desc: 'Terribile attacco (7 Danni PURI) che colpisce sempre un punto debole, lasciando una cicatrice. Ogni Cuspide ha il x% di uccidere istantaneamente un nemico (x = Punti Fortuna nella Ruota).' },
       { soglia: 6, nome: 'Sei Debole!', costo: '1 volta al giorno', desc: 'Comprendi doti, abilità e caratteristiche dei tuoi nemici e puoi nullificare un\'abilità di un nemico che combatterà solo ed esclusivamente con te.' },
@@ -123,7 +123,7 @@ export const SEGNI = [
   {
     id: 'capricorno', nome: 'Capricorno', elemento: 'terra', categoria: 'saggezza',
     abilita: [
-      { soglia: 1, nome: 'Pietre Saltellanti', desc: 'Forza e velocità: +3 ai DADI nei tiri di difesa Corpo. Colpendo un nemico a mani nude infliggi 3 Danni Fisici.' },
+      { soglia: 1, nome: 'Pietre Saltellanti', desc: 'Forza e velocità: +3 ai DADI nei tiri di difesa Corpo. Colpendo un nemico a mani nude infliggi 3 Danni Fisici.', dadi: { dadiDifFisica: 3 } },
       seg('terra'),
       { soglia: 4, nome: 'La Sacra Spada', costo: '5 Mente (lama di vento)', desc: "Hai sempre un'Arma anche quando non ne hai equipaggiata nessuna: le tue braccia tagliano come lame, infliggendo 5 Danni Fisici. Sferzando l'aria lanci una lama di vento: 5 Danni Magici." },
       { soglia: 6, nome: 'Sussurro di Pan', costo: '1 volta al giorno', desc: 'Consulti gli astri: 3 domande a cui il GM risponderà con sì o no.' },

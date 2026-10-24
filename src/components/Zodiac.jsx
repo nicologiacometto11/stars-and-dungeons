@@ -54,7 +54,6 @@ export default function Zodiac({ c, d, up }) {
   const eff = effSegno(c, sel)
   const liberi = c.rango - segniUsati(c)
   const cat = CATEGORIE.find((k) => k.id === s.categoria)
-  const prossima = prossimaSoglia(c, sel)
 
   const modifica = (delta) =>
     up((x) => {
@@ -101,7 +100,6 @@ export default function Zodiac({ c, d, up }) {
             <h2 style={{ margin: 0 }}>{s.nome} <small className="muted">· {ELEM_NOME[s.elemento]} · {cat.nome}</small></h2>
             <small className="muted">
               {pt} punt{pt === 1 ? 'o' : 'i'}{eff !== pt && ` (+${eff - pt} bonus)`}
-              {prossima && ` · prossima soglia: ${prossima}`}
             </small>
           </div>
           <div className="riga">
@@ -115,9 +113,10 @@ export default function Zodiac({ c, d, up }) {
           Modalità correzione (permette di togliere punti)
         </label>
 
+        {eff === 0 && <p className="muted">Nessun punto in questo segno.</p>}
         <ul className="abilita">
-          {s.abilita.map((a) => {
-            const sbloccata = eff >= a.soglia
+          {s.abilita.filter((a) => eff >= a.soglia).map((a) => {
+            const sbloccata = true
             return (
               <li key={a.soglia} className={sbloccata ? 'sbloccata' : 'bloccata'}>
                 <div className="riga spazio">

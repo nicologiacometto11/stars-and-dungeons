@@ -16,6 +16,7 @@ React 18 + Vite 5, `@supabase/supabase-js` per auth e database. Deploy previsto 
 npm install
 npm run dev      # http://localhost:5173
 npm run build
+npm run verifica # controlli automatici su calcoli e schermate: da lanciare prima di ogni push
 ```
 
 Supabase: eseguire `supabase/schema.sql` (tabella `characters`, una riga per utente, jsonb `data`, RLS solo proprietario). Copiare `.env.example` in `.env` con `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`. Per i test disattivare "Confirm email" in Authentication.
@@ -121,3 +122,11 @@ Fase 3 (da fare): mostri in campo (i giocatori vedono solo l'immagine, i dettagl
 - Craft a tentativi: nessun elenco di ricette. Il giocatore sceglie i materiali e tenta (`tentaCraft`): se la combinazione è esatta i materiali si consumano e ottiene l'arma (e la ricetta si scopre), se è sbagliata non perde niente.
 - Ricette da comprare (tab Craft): ricetta a caso di un'arma A = 1 Sybil, di un'arma S = 5 Sybil (`COSTO_RICETTA`, `compraRicetta`); mai una ricetta già scoperta o di un'arma già posseduta.
 - Sybil e Cura si modificano liberamente (anche oltre la base), perché il Master li dà come premio: `usati.sybil` e `usati.cura` possono essere negativi.
+
+## Altre richieste del Master (applicate)
+
+- Corpo e Mente: il massimo si modifica a mano (`conMax`, punti bonus di creazione; raddoppiati da Ofiuco) e l'attuale non supera mai il massimo. Fato, Sybil e Cura sono contatori liberi. Il campo Aureos si può svuotare.
+- Le abilità dello Zodiaco non ancora sbloccate sono nascoste (nessuna soglia mostrata).
+- Bonus ai dadi: oltre all'Attacco ci sono Difesa fisica e Difesa magica. Vengono da `mods` degli oggetti (`dadiDifFisica`, `dadiDifMagica`, `dadiFisico`, `dadiMagico`, `dadiSociale`) e da `dadi` nelle abilità Zodiaco sbloccate.
+- Foto del personaggio (`immagine` nella scheda, ridotta a 256 px in `src/lib/immagine.js`), visibile al Master in "Vedi scheda".
+- Immagini di armi e oggetti: file `public/images/oggetti/<id>.webp` e id elencato in `src/data/immagini-oggetti.json` (la scheda dell'oggetto mostra l'immagine solo se l'id è in elenco).

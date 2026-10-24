@@ -171,7 +171,7 @@ export default function App() {
 
       <nav className={`tabs ${modalitaOnline ? 'molte' : ''}`}>
         {[...TABS, ...(modalitaOnline ? [['tavolo', 'Tavolo', '🎲']] : []), ...(tv.master ? [['master', 'Master', '👑']] : [])].map(([id, nome, ico]) => (
-          <button key={id} className={tab === id ? 'on' : ''} onClick={() => { setTab(id); window.scrollTo({ top: 0 }) }}>
+          <button key={id} aria-label={nome} aria-current={tab === id ? 'page' : undefined} className={tab === id ? 'on' : ''} onClick={() => { setTab(id); window.scrollTo({ top: 0 }) }}>
             <span className="ico" aria-hidden="true">{ico}</span>
             <span className="nome-tab">{nome}</span>
           </button>

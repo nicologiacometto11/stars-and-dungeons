@@ -1,0 +1,141 @@
+import { test, expect } from '@playwright/test'
+
+// Crea un personaggio nuovo (ogni test parte con il browser pulito)
+async function nuovo(page, nome = 'Prova') {
+  page.on('dialog', (d) => d.accept())
+  page.on('pageerror', (e) => { throw e })
+  await page.goto('/')
+  await page.getByPlaceholder('Nome del personaggio').fill(nome)
+  await page.getByRole('button', { name: 'Crea scheda' }).click()
+  await expect(page.getByText('Modalità locale')).toBeVisible()
+}
+const tab = (page, nome) => page.locator('nav.tabs').getByRole('button', { name: new RegExp(nome) }).click()
+const stat = (page, nome) => page.locator('.stat', { has: page.locator('.stat-n', { hasText: new RegExp(`^${nome}$`) }) })
+
+test('assegnare un punto: prima la Caratteristica, poi il Segno', async ({ page }) => {
+  await nuovo(page)
+  await expect(page.getByText(/Hai 1 punto da assegnare/)).toBeVisible()
+  await page.getByRole('button', { name: /^Resistenza/ }).click()
+  await expect(page.getByText(/Scegli il Segno per/)).toBeVisible()
+  await page.getByRole('button', { name: /^Ariete/ }).click()
+  await expect(page.getByRole('heading', { name: 'Assegna un punto' })).toHaveCount(0)
+  await expect(page.getByText('Tutti i punti Rango sono assegnati')).toBeVisible()
+})
+
+test('Aureos: lo 0 si può cancellare e il valore resta dopo il ricaricamento', async ({ page }) => {
+  await nuovo(page)
+  const au = stat(page, 'Aureos').locator('input')
+  await au.fill('')
+  await au.pressSequentially('150')
+  await expect(au).toHaveValue('150')
+  await page.waitForTimeout(1200)
+  await page.reload()
+  await expect(stat(page, 'Aureos').locator('input')).toHaveValue('150')
+})
+
+test('Fato, Sybil e Cura salgono oltre la base; il massimo di Corpo si modifica', async ({ page }) => {
+  await nuovo(page)
+  for (const n of ['Fato', 'Sybil', 'Cura']) {
+    await stat(page, n).getByRole('button', { name: '+' }).click()
+    await expect(stat(page, n).locator('strong')).toHaveText('1')
+  }
+  await page.getByRole('button', { name: 'Aumenta il massimo di Corpo' }).click()
+  await expect(page.locator('.riserva', { hasText: 'Corpo' }).getByText('1 / 1')).toBeVisible()
+  await page.getByRole('button', { name: 'Diminuisci il massimo di Corpo' }).click()
+  await expect(page.locator('.riserva', { hasText: 'Corpo' }).getByText('0 / 0')).toBeVisible()
+})
+
+test('Zodiaco: si vedono solo le abilità sbloccate e nessun indizio su Ofiuco', async ({ page }) => {
+  await nuovo(page)
+  await page.getByRole('button', { name: /^Resistenza/ }).click()
+  await page.getByRole('button', { name: /^Ariete/ }).click()
+  await tab(page, 'Zodiaco')
+  await expect(page.getByText('Muro di Cristallo')).toBeVisible()
+  await expect(page.getByText('Rivoluzione di Stelle')).toHaveCount(0)
+  await expect(page.getByText(/Ofiuco/i)).toHaveCount(0)
+  await expect(page.getByText(/prossima soglia/i)).toHaveCount(0)
+})
+
+test('Negozio: effetti nascosti, si studiano con 1 Sybil, comprando si vedono; equipaggiare dà la Difesa', async ({ page }) => {
+  await nuovo(page)
+  // 1 Sybil e 1000 Aureos
+  await stat(page, 'Sybil').getByRole('button', { name: '+' }).click()
+  await tab(page, 'Ricevi')
+  await page.getByPlaceholder('Aureos ricevuti').fill('1000')
+  await page.getByRole('button', { name: 'Aggiungi' }).click()
+  await tab(page, 'Negozio')
+  await page.getByPlaceholder('Cerca per nome…').fill('Amuleto di Cristallo')
+  const carta = page.locator('.item', { hasText: 'Amuleto di Cristallo' }).first()
+  await expect(carta.getByText(/sconosciuto/)).toBeVisible()
+  await expect(carta.getByText(/Armor Magica \+3/)).toHaveCount(0)
+  await carta.getByRole('button', { name: /Studia/ }).click()
+  await expect(carta.getByText(/Armor Magica \+3/)).toBeVisible()
+  // il Sybil è stato speso
+  await tab(page, 'Scheda')
+  await expect(stat(page, 'Sybil').locator('strong')).toHaveText('0')
+  // comprare e equipaggiare l'Anello di Piume (+3 difesa fisica)
+  await tab(page, 'Negozio')
+  await page.getByPlaceholder('Cerca per nome…').fill('Anello di Piume')
+  const anello = page.locator('.item', { hasText: 'Anello di Piume' }).first()
+  await expect(anello.getByText(/sconosciuto/)).toBeVisible()
+  await anello.getByRole('button', { name: 'Compra' }).click()
+  await expect(anello.getByText(/DIFESA di Corpo/)).toBeVisible()
+  await tab(page, 'Inventario')
+  await page.locator('.item', { hasText: 'Anello di Piume' }).getByRole('button', { name: 'Equipaggia' }).click()
+  await tab(page, 'Scheda')
+  await expect(stat(page, 'Difesa fisica').locator('strong')).toHaveText('+3')
+})
+
+test('Craft a tentativi: sbagliato non perde niente, giusto forgia e scopre la ricetta', async ({ page }) => {
+  await nuovo(page)
+  await tab(page, 'Ricevi')
+  for (const m of ["Fibra d'Acqua", 'Zanna selvaggia', 'Becco di Ghiaccio']) {
+    await page.getByPlaceholder('Cerca…').fill(m)
+    await page.locator('.item', { hasText: m }).first().getByRole('button', { name: 'Ricevi' }).click()
+  }
+  await tab(page, 'Craft')
+  await expect(page.getByText('Ricette scoperte')).toHaveCount(0)
+  await page.locator('label', { hasText: "Fibra d'Acqua" }).click()
+  await page.locator('label', { hasText: 'Zanna selvaggia' }).click()
+  await page.getByRole('button', { name: /^Tenta con 2/ }).click()
+  await expect(page.getByText(/Non succede niente/)).toBeVisible()
+  await page.locator('label', { hasText: 'Becco di Ghiaccio' }).click()
+  await page.getByRole('button', { name: /^Tenta con 3/ }).click()
+  await expect(page.getByText(/Hai forgiato Verglas/)).toBeVisible()
+  await expect(page.getByText('Ricette scoperte')).toBeVisible()
+  await tab(page, 'Inventario')
+  await expect(page.locator('.item', { hasText: 'Verglas' }).first()).toBeVisible()
+})
+
+test('Pergamena: diventa una delle 6 e si usa', async ({ page }) => {
+  await nuovo(page)
+  await tab(page, 'Ricevi')
+  await page.getByPlaceholder('Cerca…').fill('Pergamena')
+  await page.locator('.item').filter({ has: page.getByText('Pergamena', { exact: true }) }).getByRole('button', { name: 'Ricevi' }).click()
+  await tab(page, 'Inventario')
+  const carta = page.locator('.item', { hasText: 'Pergamena:' }).first()
+  await expect(carta).toBeVisible()
+  await carta.getByRole('button', { name: 'Usa' }).click()
+  await expect(page.locator('.item', { hasText: 'Pergamena:' })).toHaveCount(0)
+})
+
+test('Foto del personaggio: si carica e si toglie', async ({ page }) => {
+  await nuovo(page)
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64')
+  await page.locator('.avatar-box input[type=file]').setInputFiles({ name: 'foto.png', mimeType: 'image/png', buffer: png })
+  await expect(page.locator('.avatar img')).toBeVisible()
+  await page.getByRole('button', { name: 'Togli la foto' }).click()
+  await expect(page.locator('.avatar img')).toHaveCount(0)
+})
+
+test('Elimina personaggio: serve scrivere il nome', async ({ page }) => {
+  await nuovo(page, 'Giaco')
+  await page.getByText('Correzioni manuali e backup').click()
+  await page.getByRole('button', { name: 'Elimina personaggio…' }).click()
+  const elimina = page.getByRole('button', { name: 'Elimina per sempre' })
+  await expect(elimina).toBeDisabled()
+  await page.getByPlaceholder('Giaco').fill('giaco')
+  await expect(elimina).toBeEnabled()
+  await elimina.click()
+  await expect(page.getByText('Nuovo personaggio')).toBeVisible()
+})

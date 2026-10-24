@@ -47,24 +47,24 @@ VELENOCNE|Foresta Fungina|E+|20|15|10|Tossina pura;${GCD} C|Attacco 5F. Veleno 4
 MANTICORA|Valle Decadente|E+|20|15|10|Ali di Manticora;${GCD} C|Attacco 3M e/o 3F. Veleno 20%. Soffio di Fuoco 5M
 LUZARRAK|Antica Fucina|E+|20|15|10|Ferro Etereo;${GCD} C|Armor 2M. Attacco 3M. Catene di Pietra: blocca un nemico 4F
 TROLL|Altopiani Cristallini|E+|20|15|10|Grasso Spesso;${GCD} C|Armor 2. Regen 2. Attacco 5F. Sradica-alberi 3F a tutti
-B DELTA|Isole Ghiacciate|D|25|15|12|Pelliccia bestia;Zanna selvaggia;Pergamena|Attacco 5F. Armor 2. Scuoti-Terra 3F a tutti. Pilastro ghiacciato 8M
-VINCULUM|Isole Ghiacciate|D|20|15|10|Bende fantasma;Pergamena|Attacco 5M. Assorbi magia (metà danni magici). Incanala Caos 3M a tutti
-B BETA|Città dei Morti|D|25|15|12|Pelliccia bestia;Zanna selvaggia;Pergamena|Attacco 5F. Armor 2. Scuoti-Terra 3F a tutti. Scaglia ossa 5M
-XAZLAHR|Città dei Morti|D|20|15|10|Zampa recisa;Pergamena|Attacco 3F a tutti. Maledizione 8M. Regen 2. Sangue Vorace 3M a tutti
-B LAMBDA|Foresta Fungina|D|25|15|12|Pelliccia bestia;Zanna selvaggia;Pergamena|Attacco 5F. Veleno 40%. Armor 2. Scuoti-Terra 3F a tutti. Aculeo Velenoso 8F, Veleno 60%
-PACU|Foresta Fungina|D|20|15|10|Bava aliena;Pergamena|Attacco 6F. Armor 3. Bava alienante 4M a tutti, 30% Paralisi. Rullo Feroce 8F a un bersaglio fermo
-B EPSILON|Valle Decadente|D|25|15|12|Pelliccia bestia;Zanna selvaggia;Pergamena|Attacco 5F. Armor 2. Scuoti-Terra 3F a tutti. Coda a Squarcio 3M a tutti
-VIRIDE|Valle Decadente|D|20|15|10|Roccia di Malachite;Pergamena|Attacco 6F. Armor 2. Zanne di Pietra 10F
-B ALPHA|Antica Fucina|D|25|15|12|Pelliccia bestia;Zanna selvaggia;Pergamena|Attacco 5F. Armor 2. Scuoti-Terra 3F a tutti. Crea Fuoco 4M a tutti
-SHAVASH|Antica Fucina|D|20|15|10|Anello arcano;Pergamena|Attacco 5M. Catene d'Oro 5M a tutti. Sfera epocale 8F
-B GAMMA|Altopiani Cristallini|D|25|15|12|Pelliccia bestia;Zanna selvaggia;Pergamena|Attacco 5F. Armor 2. Scuoti-Terra 3F a tutti. Zanne Cerulee 5M a tutti
-MIDAS|Altopiani Cristallini|D|20|15|10|Collana d'Oro;Pergamena|Attacco 5F. Armor 3. Regen 2. Sfere cromate 4F a tutti. Crisi d'Oro 8M
-MAMMOTH|Isole Ghiacciate|D+|30|18|15|Zanna Antica;Proboscide Forte;Pergamena|Attacco 8F. Armor 2. Regen 2. Zanna Potente 5F a tutti. Valanga 3M a tutti
-GIUDICATORE|Città dei Morti|D+|30|18|15|Corazza aurea;Giudizio in bottiglia;Pergamena|Attacco 8F. Armor 5. Giudizio 10M poi ricarica. Grido di paura (+1 diff prox tiro)
-CHIMERA|Foresta Fungina|D+|30|18|15|Scaglia chimerica;Coda a scaglie;Pergamena|Attacca 2 volte (5F/5M). Fiamma 4M a tutti. Assalto 8F a un bersaglio
-DEMOGORGONE|Valle Decadente|D+|30|18|15|Corno del Demone;Scaglia Nera;Pergamena|Attacco 6F. Armor 3. Regen 3. Fuoco Arcano 5M a tutti. Colpo Potente 10F poi ricarica
-GOLEM GUARDIANO|Antica Fucina|D+|30|18|15|Placca arcana;Chiave del Sistema;Pergamena|Attacco 6F. Ignora danni fisici. Raggio Obliterante 8M. Scudi Rotanti 3M a tutti
-LYCAN|Altopiani Cristallini|D+|30|18|15|Pelliccia di Lupo;Zanna della Luna;Pergamena|Attacco 5M. Reclutare: chiama a raccolta 2 Mostri E. Taglia Gemme 10F
+B DELTA|Isole Ghiacciate|D|25|15|12|Pelliccia bestia;Zanna selvaggia|Attacco 5F. Armor 2. Scuoti-Terra 3F a tutti. Pilastro ghiacciato 8M
+VINCULUM|Isole Ghiacciate|D|20|15|10|Bende fantasma|Attacco 5M. Assorbi magia (metà danni magici). Incanala Caos 3M a tutti
+B BETA|Città dei Morti|D|25|15|12|Pelliccia bestia;Zanna selvaggia|Attacco 5F. Armor 2. Scuoti-Terra 3F a tutti. Scaglia ossa 5M
+XAZLAHR|Città dei Morti|D|20|15|10|Zampa recisa|Attacco 3F a tutti. Maledizione 8M. Regen 2. Sangue Vorace 3M a tutti
+B LAMBDA|Foresta Fungina|D|25|15|12|Pelliccia bestia;Zanna selvaggia|Attacco 5F. Veleno 40%. Armor 2. Scuoti-Terra 3F a tutti. Aculeo Velenoso 8F, Veleno 60%
+PACU|Foresta Fungina|D|20|15|10|Bava aliena|Attacco 6F. Armor 3. Bava alienante 4M a tutti, 30% Paralisi. Rullo Feroce 8F a un bersaglio fermo
+B EPSILON|Valle Decadente|D|25|15|12|Pelliccia bestia;Zanna selvaggia|Attacco 5F. Armor 2. Scuoti-Terra 3F a tutti. Coda a Squarcio 3M a tutti
+VIRIDE|Valle Decadente|D|20|15|10|Roccia di Malachite|Attacco 6F. Armor 2. Zanne di Pietra 10F
+B ALPHA|Antica Fucina|D|25|15|12|Pelliccia bestia;Zanna selvaggia|Attacco 5F. Armor 2. Scuoti-Terra 3F a tutti. Crea Fuoco 4M a tutti
+SHAVASH|Antica Fucina|D|20|15|10|Anello arcano|Attacco 5M. Catene d'Oro 5M a tutti. Sfera epocale 8F
+B GAMMA|Altopiani Cristallini|D|25|15|12|Pelliccia bestia;Zanna selvaggia|Attacco 5F. Armor 2. Scuoti-Terra 3F a tutti. Zanne Cerulee 5M a tutti
+MIDAS|Altopiani Cristallini|D|20|15|10|Collana d'Oro|Attacco 5F. Armor 3. Regen 2. Sfere cromate 4F a tutti. Crisi d'Oro 8M
+MAMMOTH|Isole Ghiacciate|D+|30|18|15|Zanna Antica;Proboscide Forte|Attacco 8F. Armor 2. Regen 2. Zanna Potente 5F a tutti. Valanga 3M a tutti
+GIUDICATORE|Città dei Morti|D+|30|18|15|Corazza aurea;Giudizio in bottiglia|Attacco 8F. Armor 5. Giudizio 10M poi ricarica. Grido di paura (+1 diff prox tiro)
+CHIMERA|Foresta Fungina|D+|30|18|15|Scaglia chimerica;Coda a scaglie|Attacca 2 volte (5F/5M). Fiamma 4M a tutti. Assalto 8F a un bersaglio
+DEMOGORGONE|Valle Decadente|D+|30|18|15|Corno del Demone;Scaglia Nera|Attacco 6F. Armor 3. Regen 3. Fuoco Arcano 5M a tutti. Colpo Potente 10F poi ricarica
+GOLEM GUARDIANO|Antica Fucina|D+|30|18|15|Placca arcana;Chiave del Sistema|Attacco 6F. Ignora danni fisici. Raggio Obliterante 8M. Scudi Rotanti 3M a tutti
+LYCAN|Altopiani Cristallini|D+|30|18|15|Pelliccia di Lupo;Zanna della Luna|Attacco 5M. Reclutare: chiama a raccolta 2 Mostri E. Taglia Gemme 10F
 CHIGARU|Altopiani Cristallini|C|40|18|18|Corazza animale;Nucleo di Luce|Armor 3. Attacco 8F. Controllo cinetico 8M a tutti. Zampata 10F
 DEMONE|Antica Fucina|C|40|18|16|Antica Roccia;Carbone rovente|Immune al fisico. Attacco 8F. Crollo di Lava 8M a tutti. Esplosione: infligge tanti danni quanti i suoi PV rimanenti
 MAHK|Città dei Morti|C|40|18|20|Ali spettrali;Lingua di Drago|Regen 5. Attacco 8M. Alito venefico 10M a tutti, Veleno 50%. Recarn 30%

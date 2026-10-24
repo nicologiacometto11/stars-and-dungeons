@@ -99,6 +99,7 @@ ok(r.qtaIn(pz, 'pergamena') === 0 && r.qtaIn(pz, PERGAMENE_ESTRATTE[5]) === 3, '
 const viste = new Set()
 for (let k = 0; k < 400; k++) { const q = r.riceviOggetto(r.nuovaScheda('P'), perg); for (const id of PERGAMENE_ESTRATTE) if (r.qtaIn(q, id)) viste.add(id) }
 ok(viste.size === 6, 'a caso: escono tutte e 6 le pergamene')
+ok(r.estraiPergamena(() => 0).id === PERGAMENE_ESTRATTE[0] && r.estraiPergamena(() => 0.999).id === PERGAMENE_ESTRATTE[5], 'estraiPergamena rispetta il caso')
 ok(!ITEMS.some((i) => i.cat === 'materiale' && i.id === 'pergamena') && r.parseCosti('x').length === 0, 'la Pergamena non è più un materiale')
 
 // ---- tutte le armi/oggetti equipaggiati senza NaN; parsing costi

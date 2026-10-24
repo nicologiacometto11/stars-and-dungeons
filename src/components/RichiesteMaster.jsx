@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ITEMS_BY_ID } from '../data/items.js'
-import { RANGO_MAX, applicaBottino, bottinoDi, conCura, conDanno, conLog, conPuntiCura, conSybil, dannoNetto, riceviOggetto, riservaDanno } from '../lib/rules.js'
+import { RANGO_MAX, estraiPergamena, applicaBottino, bottinoDi, conCura, conDanno, conLog, conPuntiCura, conSybil, dannoNetto, riceviOggetto, riservaDanno } from '../lib/rules.js'
 
 // I danni e gli Aureos tolti chiedono conferma; i doni si applicano da soli
 const RISORSE = ['aureos', 'sybil', 'puntiCura']
@@ -27,6 +27,12 @@ function applicaDono(a, c, d, up) {
   if (tipo === 'oggetto') {
     const it = ITEMS_BY_ID[dati.id]
     if (!it) return null
+    if (it.id === 'pergamena') {
+      // si estrae qui, così il giocatore vede subito quali Pergamene sono uscite
+      const uscite = Array.from({ length: dati.qta || 1 }, () => estraiPergamena())
+      up((s) => uscite.reduce((x, v) => riceviOggetto(x, v), s))
+      return `Ricevi ${uscite.map((v) => v.nome).join(', ')}`
+    }
     up((s) => riceviOggetto(s, it, dati.qta || 1))
     return `Ricevi ${dati.qta > 1 ? dati.qta + '× ' : ''}${it.nome}`
   }

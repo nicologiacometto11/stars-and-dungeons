@@ -319,12 +319,15 @@ export function conRimozione(c, id, qta = 1) {
 }
 
 // Aggiunge un oggetto alla scheda. I materiali "che danno Aureos" si convertono subito.
+// Estrae a caso una delle 6 Pergamene
+export const estraiPergamena = (caso = Math.random) => ITEMS_BY_ID[PERGAMENE_ESTRATTE[Math.floor(caso() * PERGAMENE_ESTRATTE.length)]]
+
 export function riceviOggetto(s, it, qta = 1, caso = Math.random) {
   // la Pergamena generica diventa subito una delle 6, estratta a caso per ognuna
   if (it.id === 'pergamena') {
     let x = s
     for (let i = 0; i < qta; i++) {
-      const vera = ITEMS_BY_ID[PERGAMENE_ESTRATTE[Math.floor(caso() * PERGAMENE_ESTRATTE.length)]]
+      const vera = estraiPergamena(caso)
       x = conLog(conAggiunta(x, vera.id), `Ricevuta una Pergamena: ${vera.nome.replace('Pergamena: ', '')}`)
     }
     return x

@@ -56,7 +56,7 @@ Tutto il resto si ricalcola con `derive()` in `rules.js`, quindi non può disall
 - Armor: quella di base (Resistenza + Segni) si divide a mano tra Fisica e Magica con un cursore; gli oggetti aggiungono Fisica o Magica.
 - Oggetti equipaggiati applicano `mods` (categorie e statistiche). I requisiti (`req`) bloccano l'equipaggiamento.
 - Armi dello Zodiaco: con 5 punti nel segno si ottengono dalla tab Zodiaco. Armi dei 4 elementi: 1 punto in tutti e 3 i segni dell'elemento.
-- Consumabili con effetto speciale: Anello della Stella Cadente (azzera i segni, Rango invariato), Cinque Essenze (+2 a una costellazione). Gli altri consumabili si consumano e l'effetto si applica a mano con le "correzioni manuali".
+- Consumabili con effetto speciale: Anello della Stella Cadente (azzera i segni, Rango invariato), Cinque Essenze (+2 a un segno: contano solo per le abilità di quel segno, NON per la Caratteristica né per il Rango). Gli altri consumabili si consumano e l'effetto si applica a mano con le "correzioni manuali".
 - Materiali che si convertono subito in Aureos (Corazza aurea, Collana d'Oro: 50; Capelli d'Argento, Grumo d'oro, Criniera d'oro, Corona gemmata, Nucleo di Luce, Artiglio dell'Alfa: 150).
 - Craft: armi A = 1 materiale E + 1 D + 1 C diversi; armi S = 2 materiali B diversi, danno anche un'abilità perenne. Galaxis non si forgia: la assegna il Master.
 - Bestiario: l'immagine compare quando il giocatore segna il mostro come incontrato; "Paga Sybil" rivela PV, dado minimo per colpire, il primo attacco, Aureos e bottino. Tab "Ricevi" ha "Mostro sconfitto" (Aureos, raddoppiati con Anello d'Oro equipaggiato, e materiali).

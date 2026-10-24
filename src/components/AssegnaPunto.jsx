@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { CATEGORIE, SEGNI_BY_ID } from '../data/zodiac.js'
-import { assegnaPunto, effSegno, puntiLiberi } from '../lib/rules.js'
+import { assegnaPunto, puntiLiberi } from '../lib/rules.js'
 
 const ELEM_NOME = { fuoco: 'Fuoco', terra: 'Terra', aria: 'Aria', acqua: 'Acqua' }
 
@@ -28,7 +28,7 @@ export default function AssegnaPunto({ c, up }) {
           <p className="muted">1. Scegli la Caratteristica.</p>
           <div className="assegna-lista">
             {CATEGORIE.map((k) => {
-              const tot = k.segni.reduce((a, s) => a + effSegno(c, s), 0)
+              const tot = k.segni.reduce((a, s) => a + (c.segni[s] || 0), 0)
               return (
                 <button key={k.id} onClick={() => setCat(k.id)}>
                   <strong>{k.nome}</strong>

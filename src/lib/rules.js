@@ -36,6 +36,7 @@ export function nuovaScheda(nome = '') {
   }
 }
 
+// Punti del segno per le sue abilità: assegnati + bonus (Cinque Essenze). I bonus NON contano per Rango né per la Caratteristica.
 export const effSegno = (c, id) => (c.segni[id] || 0) + (c.bonusSegni?.[id] || 0)
 
 export const puntiLiberi = (c) => c.rango - segniUsati(c)
@@ -74,7 +75,8 @@ export function derive(c) {
   const mod = { corpoMax: 0, menteMax: 0, armor: 0, armorFisica: 0, armorMagica: 0, fato: 0, sybil: 0, cura: 0, dmgFisici: 0, dmgMagici: 0, dadiSociale: 0, dadiFisico: 0, dadiMagico: 0, dadiDifFisica: 0, dadiDifMagica: 0 }
 
   // categorie = somma dei due segni
-  for (const k of CATEGORIE) cat[k.id] = k.segni.reduce((a, s) => a + effSegno(c, s), 0)
+  // la Caratteristica conta solo i punti assegnati (non i bonus del segno, es. Cinque Essenze)
+  for (const k of CATEGORIE) cat[k.id] = k.segni.reduce((a, s) => a + (c.segni[s] || 0), 0)
 
   // bonus dei Segni (soglia 2)
   for (const s of SEGNI) {

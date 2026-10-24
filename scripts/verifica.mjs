@@ -25,6 +25,16 @@ const con = (c, nome, eq = true) => {
   return x
 }
 
+// ---- Cinque Essenze: contano solo per il segno, non per Caratteristica né Rango
+let es = r.nuovaScheda('E'); es.rango = 3; es.segni.ariete = 1
+const sen = r.derive(es)
+es = { ...es, bonusSegni: { ariete: 2 } }
+const con2 = r.derive(es)
+ok(con2.cat.resistenza === sen.cat.resistenza && con2.catSegni.resistenza === 1, 'Cinque Essenze: la Caratteristica (Resistenza) non cambia')
+ok(con2.corpoMax === sen.corpoMax + 2, 'Cinque Essenze: il segno raggiunge la soglia 2 e dà il suo bonus fisso (+2 Corpo MAX)')
+ok(r.puntiLiberi(es) === 2 && es.rango === 3, 'Cinque Essenze: Rango e punti da assegnare invariati')
+ok(r.effSegno(es, 'ariete') === 3 && r.abilitaSbloccate(es, 'ariete').length === 2, 'Cinque Essenze: il segno sale a 3 e sblocca le sue abilità (1 e 2)')
+
 // ---- danni, cure, bottino
 let c = r.nuovaScheda('T'); c.rango = 12; c.segni.pesci = 3; c.segni.ariete = 2
 let d = r.derive(c)

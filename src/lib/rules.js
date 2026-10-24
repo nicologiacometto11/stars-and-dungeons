@@ -2,7 +2,7 @@
 // viene calcolato qui a partire dalla scheda salvata, così non si può mai disallineare.
 
 import { SEGNI, SEGNI_BY_ID, CATEGORIE, SOGLIE } from '../data/zodiac.js'
-import { ITEMS_BY_ID } from '../data/items.js'
+import { ITEMS_BY_ID, RINOMINATI, ID_VECCHI } from '../data/items.js'
 import { MOSTRI_BY_ID } from '../data/monsters.js'
 import { slug, ARMI_CRAFT_A, ARMI_CRAFT_S } from '../data/craft.js'
 
@@ -400,12 +400,17 @@ export function normalizza(raw) {
   c.extra = { ...base.extra, ...(raw?.extra || {}) }
   c.bestiario = { scoperti: {}, rivelati: {}, ...(raw?.bestiario || {}) }
   c.immagine = raw?.immagine || null
-  c.noti = raw?.noti || {}
-  c.ricette = raw?.ricette || []
-  c.abilita = raw?.abilita || []
+  // oggetti e armi rinominati: l'id (e il nome della ricetta) cambia, la scheda resta valida
+  const nuovoId = (id) => ID_VECCHI[id] || id
+  const nuovoNome = (n) => RINOMINATI[n] || n
+  c.noti = Object.fromEntries(Object.entries(raw?.noti || {}).map(([k, v]) => [nuovoId(k), v]))
+  c.ricette = (raw?.ricette || []).map(nuovoNome)
+  c.abilita = (raw?.abilita || []).map((a) => ({ ...a, da: nuovoNome(a.da) }))
   c.abilitaPers = raw?.abilitaPers || []
-  c.noteAbilita = raw?.noteAbilita || {}
-  c.inventario = raw?.inventario || []
+  c.noteAbilita = Object.fromEntries(
+    Object.entries(raw?.noteAbilita || {}).map(([k, v]) => [k.startsWith('i:') ? 'i:' + nuovoId(k.slice(2)) : k.startsWith('p:') ? 'p:' + nuovoNome(k.slice(2)) : k, v]),
+  )
+  c.inventario = (raw?.inventario || []).map((r) => ({ ...r, id: nuovoId(r.id) }))
   c.log = raw?.log || []
   return c
 }

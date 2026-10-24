@@ -91,6 +91,14 @@ ok(r.costiPagabili([{ n: 5, ris: 'mente' }], true).length === 2, 'Forma dell\'Eq
 const elenco = JSON.parse(fs.readFileSync(R + 'src/data/immagini-oggetti.json', 'utf8'))
 ok(elenco.every((id) => fs.existsSync(R + `public/images/oggetti/${id}.webp`) && ITEMS.some((i) => i.id === id)), 'immagini oggetti: ogni id ha il file e un oggetto')
 
+// ---- oggetti rinominati: le schede salvate con i vecchi nomi restano valide
+const { ID_VECCHI } = await load('/src/data/items.js')
+const vec = r.normalizza({ nome: 'V', inventario: [{ id: 'levin', qta: 1, eq: true }, { id: 'daga-della-corrione', qta: 1, eq: false }], noti: { 'pozione-di-veleno': true }, ricette: ['Onix', 'Verglas'], abilita: [{ da: 'Holy', testo: 'x' }], noteAbilita: { 'i:levin': 'nota', 'p:Holy': 'nota2' } })
+ok(vec.inventario.map((i) => i.id).join() === 'levin-lance,daga-della-corrosione' && vec.inventario[0].eq === true, 'scheda vecchia: inventario con i nuovi id')
+ok(vec.noti['pozione-del-veleno'] && vec.ricette.join() === 'Onix Digger,Verglas' && vec.abilita[0].da === 'Holy Defender', 'scheda vecchia: noti, ricette e abilità aggiornate')
+ok(vec.noteAbilita['i:levin-lance'] === 'nota' && vec.noteAbilita['p:Holy Defender'] === 'nota2', 'scheda vecchia: appunti aggiornati')
+ok(Object.entries(ID_VECCHI).every(([v, n]) => !ITEMS.some((i) => i.id === v) && ITEMS.some((i) => i.id === n)), 'ogni vecchio id punta a un oggetto esistente e non è più in uso')
+
 // ---- schede vecchie
 const vecchia = r.normalizza({ nome: 'V' })
 ok(vecchia.noti && vecchia.ricette && vecchia.abilitaPers && vecchia.immagine === null && vecchia.usati.cura === 0, 'scheda vecchia normalizzata')

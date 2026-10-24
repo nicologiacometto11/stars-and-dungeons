@@ -28,7 +28,7 @@ const ARMI_C = [
   C('Cercasangue', 2, 'Fisico', '1 Costellazione di Fuoco', { elem: { fuoco: 1 } }, 'Sangue Nero: se hai eliminato un avversario con questa Arma puoi pagare 5 Corpo per colpire un bersaglio infliggendo +3 Danni Fisici.'),
   C('Colossale', 1, 'Fisico', '1 Costellazione di Terra', { elem: { terra: 1 } }, 'Colpo Gigante: puoi pagare 10 Mente per triplicare i Danni Fisici di quest\'Arma per 6 Round.'),
   C('Coppia Gemini', 2, 'Magico', '1 Costellazione d\'Aria', { elem: { aria: 1 } }, 'Colpo Illusorio: puoi pagare 5 Mente per attaccare 2 volte ad ogni attacco per 6 Round.'),
-  C('Daga della Corrione', 1, 'Fisico', '1 Carisma', { cat: { carisma: 1 } }, 'Veleno persistente: il tuo prossimo attacco distrugge l\'Armor avversaria e avvelena all\'80% (3 Mente).'),
+  C('Daga della Corrosione', 1, 'Fisico', '1 Carisma', { cat: { carisma: 1 } }, 'Veleno persistente: il tuo prossimo attacco distrugge l\'Armor avversaria e avvelena all\'80% (3 Mente).'),
   C('Dente di Squalo', 1, 'Magico', '1 Costellazione d\'Acqua', { elem: { acqua: 1 } }, 'Taglia Onde: il tuo fendente taglia ogni materiale (3 Mente).'),
   C('Lama di Cristallo', 1, 'Magico', '1 Fortuna', { cat: { fortuna: 1 } }, 'Punta di Diamante: colpo estremamente accurato sul punto debole, x2 Danni (3 Mente). Ottieni la mappa per gli Altopiani Cristallini.'),
   C('Leone Minore', 1, 'Fisico', '1 Resistenza', { cat: { resistenza: 1 } }, 'Lupus Minor: evoca un lupo spirituale (livello 4) che esegue un tuo ordine o combatte con te (5 Mente).'),
@@ -83,7 +83,7 @@ const ARMI_SPECIALI = [
   ass('Presenza di Urabrask', 'Ogni volta che infliggi Danno', 'ottieni altrettanti Aureos.'),
   ass('Aculeo di Sheoldred', 'Ogni volta che infliggi Danno', 'infliggi altrettanti Danni a un bersaglio diverso.'),
   ass('Pienezza di Vorinclex', 'Ogni volta che infliggi Danno', 'puoi curarti della metà del Danno inflitto.'),
-  ass('Astuzie di Gin-Jitaxias', 'Ogni volta che infliggi Danno', 'il bersaglio colpito non ti attaccherà alla sua prossima azione.'),
+  ass('Astuzie di Jin-Gitaxis', 'Ogni volta che infliggi Danno', 'il bersaglio colpito non ti attaccherà alla sua prossima azione.'),
   ass('Miracolo di Elesh-Norn', 'Ogni volta che infliggi Danno', 'tira per Cura come se avessi Saggezza 2.'),
   ass('Lancia della Legione Dispersa', 'Ogni volta che infliggi Danno', 'evoca uno Spettro che combatte al tuo fianco.'),
   ass('Crysis', 'Ogni volta che ti viene inflitto Danno', 'esegui un contrattacco.'),
@@ -159,7 +159,7 @@ const OGGETTI_C = [
   ogg('Anello Gelato', 'C', 150, 'Difesa naturale contro gli attacchi elementali: Armor Magica +3. (Ottieni la mappa delle Isole Ghiacciate)', { mods: { armorMagica: 3 } }),
   ogg('Anello Reale', 'C', 150, 'Puoi impartire "Comando" pagando 5 Mente: il bersaglio eseguirà un comando che non danneggi sé stesso. +1 Armor Fisica.', { mods: { armorFisica: 1 } }),
   ogg('Tonico', 'C', 80, 'Bevendolo ottieni +1 Sybil / +1 Fato / +1 Cura.', { consumabile: true }),
-  ogg('Pozione di Veleno', 'C', 100, '80% di avvelenare il bersaglio se la beve, 50% se colpito da Armi impregnate con essa.', { consumabile: true }),
+  ogg('Pozione del Veleno', 'C', 100, '80% di avvelenare il bersaglio se la beve, 50% se colpito da Armi impregnate con essa.', { consumabile: true }),
   ogg('Pozione del Drago', 'C', 100, '+5 Danni Fisici. (Ottieni la mappa della Valle Decadente)', { consumabile: true }),
   ogg('Pozione Rossa', 'C', 40, 'Tira 2d4 e ti curi di altrettanti punti.', { consumabile: true }),
   ogg('Elettro Liquido', 'C', 100, '+5 Danni Magici.', { consumabile: true }),
@@ -194,7 +194,7 @@ const OGGETTI_B = [
   ogg('Pozione di Vita', 'B', 200, 'Cura completamente una tua riserva.', { consumabile: true }),
   ogg('ScriviPensiero', 'B', 500, 'Puoi modificare il Danno di un\'Arma da Fisico a Magico o viceversa, oppure il costo di una Tecnica.', { consumabile: true }),
   ogg('Scudo di Forza', 'B', 700, '(Item Agg) Occupa due mani. Tutti i Danni che subisci vengono inflitti a un altro bersaglio a tua scelta. +5 Armor Fisica, +5 Armor Magica.', { mods: { armorFisica: 5, armorMagica: 5 } }),
-  ogg('Thè dai Dieci Sapori', 'B', 500, 'Puoi spostare un tuo punto caratteristica, oppure scambiare 5 punti tra Corpo e Mente, oppure 2 punti tra Fato/Sybil/Armor/Cura.', { consumabile: true }),
+  ogg('The dei Dieci Sapori', 'B', 500, 'Puoi spostare un tuo punto caratteristica, oppure scambiare 5 punti tra Corpo e Mente, oppure 2 punti tra Fato/Sybil/Armor/Cura.', { consumabile: true }),
   ogg('Totem della Rana', 'B', 350, '(Amuleto) +3 ai DADI di DIFESA FISICA e MAGICA. Sei immune al Veleno.', { mods: { dadiDifFisica: 3, dadiDifMagica: 3 } }),
 ]
 
@@ -248,6 +248,25 @@ const TUTTI = [
   ...ARMI_C, ...ARMI_B, ...ARMI_A, ...ARMI_SPECIALI, ...OGGETTI_CHIAVE, ...ARMI_S_RARE, ...ARMI_ZODIACO,
   ...ARMI_ELEMENTI, ...ARMI_CRAFT, ...OGGETTI_C, ...OGGETTI_B, ...OGGETTI_A, ...MATERIALI_ITEMS, ...ABILITA_UNICHE,
 ]
+
+// Nomi cambiati in seguito (vecchio → nuovo): servono per aggiornare le schede già salvate
+export const RINOMINATI = {
+  "Levin": "Levin Lance",
+  "Onix": "Onix Digger",
+  "Green": "Green Rings",
+  "Iguana": "Sleeping Iguana",
+  "Dry Caliche": "Dry Chalice",
+  "Amber": "Amber Sword",
+  "Volcano": "Volcano Forgid",
+  "Springtide": "Springtide Glass",
+  "Phantom": "Phantom Needle",
+  "Holy": "Holy Defender",
+  "Daga della Corrione": "Daga della Corrosione",
+  "Astuzie di Gin-Jitaxias": "Astuzie di Jin-Gitaxis",
+  "Pozione di Veleno": "Pozione del Veleno",
+  "Thè dai Dieci Sapori": "The dei Dieci Sapori",
+}
+export const ID_VECCHI = Object.fromEntries(Object.entries(RINOMINATI).map(([o, n]) => [slug(o), slug(n)]))
 
 export const ITEMS = TUTTI.map((i) => ({ ...i, id: slug(i.nome) }))
 export const ITEMS_BY_ID = Object.fromEntries(ITEMS.map((i) => [i.id, i]))

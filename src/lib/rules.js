@@ -29,6 +29,9 @@ export function nuovaScheda(nome = '') {
     noti: {}, // oggetti e armi di cui il giocatore conosce gli effetti (studiati, comprati, ricevuti, forgiati)
     ricette: [], // ricette di craft scoperte (nome dell'arma)
     immagine: null, // foto del personaggio (data URL ridotta)
+    creata: new Date().toISOString(), // per il promemoria del backup
+    ultimoBackup: null, // ultima esportazione della scheda (JSON)
+    backupRimandato: null, // il promemoria non compare prima di questa data
     abilita: [], // abilità perenni ottenute (armi S): { da, testo }
     abilitaPers: [], // abilità scritte dal giocatore: { id, nome, testo, mente, corpo }
     noteAbilita: {}, // appunti per abilità, per chiave
@@ -404,6 +407,16 @@ export function conMax(c, chiave, delta) {
   return x
 }
 
+// Promemoria del backup: compare se l'ultimo (o la creazione della scheda) è più vecchio di 30 giorni
+export const GIORNI_BACKUP = 30
+export function serveBackup(c, adesso = Date.now()) {
+  const giorno = 864e5
+  const ultimo = Date.parse(c.ultimoBackup || c.creata || '') || adesso
+  const giorni = Math.floor((adesso - ultimo) / giorno)
+  const rimandato = c.backupRimandato ? Date.parse(c.backupRimandato) > adesso : false
+  return { serve: giorni >= GIORNI_BACKUP && !rimandato, giorni, mai: !c.ultimoBackup }
+}
+
 export function conLog(c, testo) {
   const log = [{ t: new Date().toISOString(), testo }, ...(c.log || [])].slice(0, 150)
   return { ...c, log }
@@ -418,6 +431,7 @@ export function normalizza(raw) {
   c.extra = { ...base.extra, ...(raw?.extra || {}) }
   c.bestiario = { scoperti: {}, rivelati: {}, ...(raw?.bestiario || {}) }
   c.immagine = raw?.immagine || null
+  c.creata = raw?.creata || new Date().toISOString()
   // oggetti e armi rinominati: l'id (e il nome della ricetta) cambia, la scheda resta valida
   const nuovoId = (id) => ID_VECCHI[id] || id
   const nuovoNome = (n) => RINOMINATI[n] || n

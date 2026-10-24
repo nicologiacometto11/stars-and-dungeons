@@ -126,6 +126,16 @@ ok(vec.noti['pozione-del-veleno'] && vec.ricette.join() === 'Onix Digger,Verglas
 ok(vec.noteAbilita['i:levin-lance'] === 'nota' && vec.noteAbilita['p:Holy Defender'] === 'nota2', 'scheda vecchia: appunti aggiornati')
 ok(Object.entries(ID_VECCHI).every(([v, n]) => !ITEMS.some((i) => i.id === v) && ITEMS.some((i) => i.id === n)), 'ogni vecchio id punta a un oggetto esistente e non è più in uso')
 
+// ---- promemoria del backup
+const gg = 864e5, ora = Date.now()
+const nuovaB = r.nuovaScheda('B')
+ok(!r.serveBackup(nuovaB, ora).serve, 'backup: scheda appena creata, nessun promemoria')
+ok(r.serveBackup(nuovaB, ora + 31 * gg).serve && r.serveBackup(nuovaB, ora + 31 * gg).mai, 'backup: dopo 30 giorni senza copie compare')
+ok(!r.serveBackup({ ...nuovaB, ultimoBackup: new Date(ora).toISOString() }, ora + 10 * gg).serve, 'backup: copia recente, nessun promemoria')
+ok(!r.serveBackup({ ...nuovaB, backupRimandato: new Date(ora + 40 * gg).toISOString() }, ora + 31 * gg).serve, 'backup: rimandato, non compare')
+ok(r.serveBackup({ ...nuovaB, backupRimandato: new Date(ora + 5 * gg).toISOString() }, ora + 31 * gg).serve, 'backup: finito il rinvio, torna')
+ok(typeof r.normalizza({ nome: 'x' }).creata === 'string', 'backup: le schede vecchie ricevono la data di creazione')
+
 // ---- schede vecchie
 const vecchia = r.normalizza({ nome: 'V' })
 ok(vecchia.noti && vecchia.ricette && vecchia.abilitaPers && vecchia.immagine === null && vecchia.usati.cura === 0, 'scheda vecchia normalizzata')

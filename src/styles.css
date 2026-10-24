@@ -324,3 +324,6 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 .mostro-campo img { width: 96px; height: 96px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line2); display: block; background: #000; }
 .mostro-campo figcaption { margin-top: 4px; font-size: .85rem; }
 .mostro-campo strong { color: var(--oro); font-size: 1.1rem; }
+
+.promemoria { border-color: rgba(185, 162, 255, .45); background: linear-gradient(160deg, rgba(185, 162, 255, .1), var(--card)); }
+.promemoria p { margin: 6px 0 10px; }

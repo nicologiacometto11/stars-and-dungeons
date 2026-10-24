@@ -134,3 +134,9 @@ Decisione del Master sulla fase 3: NIENTE combattimento sul tavolo (PV e azioni 
 - I nomi giusti sono quelli delle immagini: Daga della Corrosione, Astuzie di Jin-Gitaxis, Pozione del Veleno, The dei Dieci Sapori e le armi Craft con il nome completo (Levin Lance, Onix Digger, Green Rings, Sleeping Iguana, Dry Chalice, Amber Sword, Volcano Forgid, Springtide Glass, Phantom Needle, Holy Defender). La Pozione Rossa resta Pozione Rossa.
 - Rinominare un oggetto cambia il suo id: aggiungere la coppia vecchio nome → nuovo in `RINOMINATI` (`items.js`), così `normalizza()` aggiorna le schede già salvate.
 - Pergamena: i mostri non la lasciano più, la dà il Master a caso ("Azioni… → Oggetto") o il giocatore dalla tab Ricevi. Quando la si ottiene (`riceviOggetto`) si trasforma subito in una delle 6 estratte a caso: Fortuna (+1 Fato, +100% critico alla prossima azione), Analisi (+1 Sybil), Difesa (eviti un attacco), Scovare (un oggetto craft da grado C in su), Colpo avverso (Danni pari ai Danni subiti da una Riserva), Cura (cura completamente una Riserva). Sono consumabili e l'effetto lo applica il giocatore a mano (decisione del Master), tranne Scovare, che è automatica: usandola l'app dà un materiale di craft a caso di grado C o B (`scovaMateriale`, esclusi quelli che si convertono in Aureos).
+
+## Manutenzione
+
+- `supabase/keepalive.sql` + `.github/workflows/keepalive.yml`: una chiamata a `ping()` lunedì e giovedì tiene sveglio il progetto Supabase gratuito (si ferma dopo 7 giorni senza richieste). GitHub disattiva i workflow programmati dopo 60 giorni senza attività nel repository: se succede, basta un push o riattivarlo dalla tab Actions.
+- Promemoria del backup nella Scheda (`serveBackup`, ogni 30 giorni; campi `creata`, `ultimoBackup`, `backupRimandato`). Il piano gratuito di Supabase non fa backup automatici.
+- `npm run verifica` prima di ogni push.

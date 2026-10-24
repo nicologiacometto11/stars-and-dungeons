@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { CATEGORIE } from '../data/zodiac.js'
-import { RANGO_MAX, segniUsati, conLog, conMax, normalizza } from '../lib/rules.js'
+import { RANGO_MAX, segniUsati, conLog, conMax, normalizza, serveBackup } from '../lib/rules.js'
 import { esportaJSON } from '../lib/store.js'
 import Abilities from './Abilities.jsx'
 import AssegnaPunto from './AssegnaPunto.jsx'
@@ -81,6 +81,24 @@ function CampoAureos({ valore, onChange }) {
   )
 }
 
+// Ogni tanto ricorda di salvare una copia della scheda sul proprio dispositivo
+function PromemoriaBackup({ c, up }) {
+  const { serve, giorni, mai } = serveBackup(c)
+  if (!serve) return null
+  return (
+    <section className="card promemoria">
+      <strong>💾 Salva una copia della tua scheda</strong>
+      <p className="muted">
+        {mai ? 'Non hai ancora mai esportato la scheda.' : `L'ultima copia è di ${giorni} giorni fa.`} Una copia sul tuo telefono o computer ti protegge se un giorno il servizio dovesse avere problemi.
+      </p>
+      <div className="riga">
+        <button className="primary" onClick={() => { esportaJSON(c); up((s) => ({ ...s, ultimoBackup: new Date().toISOString() })) }}>Esporta ora</button>
+        <button className="ghost" onClick={() => up((s) => ({ ...s, backupRimandato: new Date(Date.now() + 7 * 864e5).toISOString() }))}>Tra una settimana</button>
+      </div>
+    </section>
+  )
+}
+
 // Foto del personaggio: si sceglie dal telefono o dal computer e viene ridotta prima di salvarla
 function Avatar({ c, up }) {
   const ref = useRef(null)
@@ -152,6 +170,8 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
         </p>
         {d.ofiuco && <p className="ofiuco">☉ Hai trovato Ofiuco: tutte le tue caratteristiche sono raddoppiate.</p>}
       </section>
+
+      <PromemoriaBackup c={c} up={up} />
 
       <AssegnaPunto c={c} up={up} />
 
@@ -239,7 +259,7 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
           ))}
         </div>
         <div className="riga">
-          <button onClick={() => esportaJSON(c)}>Esporta scheda (JSON)</button>
+          <button onClick={() => { esportaJSON(c); up((s) => ({ ...s, ultimoBackup: new Date().toISOString() })) }}>Esporta scheda (JSON)</button>
           <button onClick={() => fileRef.current?.click()}>Importa scheda</button>
           <input ref={fileRef} type="file" accept="application/json" hidden onChange={importa} />
         </div>

@@ -100,6 +100,11 @@ const viste = new Set()
 for (let k = 0; k < 400; k++) { const q = r.riceviOggetto(r.nuovaScheda('P'), perg); for (const id of PERGAMENE_ESTRATTE) if (r.qtaIn(q, id)) viste.add(id) }
 ok(viste.size === 6, 'a caso: escono tutte e 6 le pergamene')
 ok(r.estraiPergamena(() => 0).id === PERGAMENE_ESTRATTE[0] && r.estraiPergamena(() => 0.999).id === PERGAMENE_ESTRATTE[5], 'estraiPergamena rispetta il caso')
+ok(r.SCOVABILI.length > 0 && r.SCOVABILI.every((i) => ['C', 'B'].includes(i.tier) && !i.aureosAlRicevimento && i.cat === 'materiale'), `Scovare: ${r.SCOVABILI.length} oggetti craft di grado C/B, nessuno che si converte in Aureos`)
+ok(r.scovaMateriale(() => 0).id === r.SCOVABILI[0].id && r.scovaMateriale(() => 0.999).id === r.SCOVABILI.at(-1).id, 'Scovare: estrazione a caso dentro l\'elenco')
+ok(ITEMS.find((i) => i.id === 'pergamena-scovare').uso === 'scovare', 'Pergamena: Scovare si usa in automatico')
+const uso = r.riceviOggetto(r.conRimozione(r.conAggiunta(r.nuovaScheda('S'), 'pergamena-scovare'), 'pergamena-scovare'), r.scovaMateriale(() => 0))
+ok(r.qtaIn(uso, 'pergamena-scovare') === 0 && uso.inventario.length === 1 && ITEMS.find((i) => i.id === uso.inventario[0].id).cat === 'materiale', 'usare Scovare: la Pergamena sparisce e arriva un materiale')
 ok(!ITEMS.some((i) => i.cat === 'materiale' && i.id === 'pergamena') && r.parseCosti('x').length === 0, 'la Pergamena non è più un materiale')
 
 // ---- tutte le armi/oggetti equipaggiati senza NaN; parsing costi

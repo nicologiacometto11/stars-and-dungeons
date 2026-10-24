@@ -251,13 +251,13 @@ const PERGAMENE_EFFETTI = [
   ['Fortuna', '+1 Fato e +100% di critico alla prossima azione.'],
   ['Analisi', '+1 Sybil.'],
   ['Difesa', 'Eviti un attacco.'],
-  ['Scovare', 'Ottieni un oggetto di craft almeno Raro (da grado C in su).'],
+  ['Scovare', 'Ottieni un oggetto di craft almeno Raro (da grado C in su): lo estrae l\'app, a caso, quando la usi.', { uso: 'scovare' }],
   ['Colpo avverso', 'Infliggi tanti Danni quanti sono i Danni subiti da una tua Riserva.'],
   ['Cura', 'Cura completamente una delle tue Riserve.'],
 ]
 const PERGAMENE = [
   ogg('Pergamena', 'Speciale', 0, 'Quando la ottieni si trasforma in una delle 6 Pergamene, a caso.', { shop: false, consumabile: true, uso: 'apri-pergamena' }),
-  ...PERGAMENE_EFFETTI.map(([n, d]) => ogg(`Pergamena: ${n}`, 'Speciale', 0, d, { shop: false, consumabile: true })),
+  ...PERGAMENE_EFFETTI.map(([n, d, extra]) => ogg(`Pergamena: ${n}`, 'Speciale', 0, d, { shop: false, consumabile: true, ...extra })),
 ]
 export const PERGAMENE_ESTRATTE = PERGAMENE_EFFETTI.map(([n]) => slug(`Pergamena: ${n}`))
 

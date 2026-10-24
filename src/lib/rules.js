@@ -2,7 +2,7 @@
 // viene calcolato qui a partire dalla scheda salvata, così non si può mai disallineare.
 
 import { SEGNI, SEGNI_BY_ID, CATEGORIE, SOGLIE } from '../data/zodiac.js'
-import { ITEMS_BY_ID, RINOMINATI, ID_VECCHI, PERGAMENE_ESTRATTE } from '../data/items.js'
+import { ITEMS, ITEMS_BY_ID, RINOMINATI, ID_VECCHI, PERGAMENE_ESTRATTE } from '../data/items.js'
 import { MOSTRI_BY_ID } from '../data/monsters.js'
 import { slug, ARMI_CRAFT_A, ARMI_CRAFT_S } from '../data/craft.js'
 
@@ -321,6 +321,10 @@ export function conRimozione(c, id, qta = 1) {
 // Aggiunge un oggetto alla scheda. I materiali "che danno Aureos" si convertono subito.
 // Estrae a caso una delle 6 Pergamene
 export const estraiPergamena = (caso = Math.random) => ITEMS_BY_ID[PERGAMENE_ESTRATTE[Math.floor(caso() * PERGAMENE_ESTRATTE.length)]]
+
+// Pergamena di Scovare: un oggetto di craft a caso di grado C o B (quelli che si convertono in Aureos sono esclusi)
+export const SCOVABILI = ITEMS.filter((i) => i.cat === 'materiale' && ['C', 'B'].includes(i.tier) && !i.aureosAlRicevimento)
+export const scovaMateriale = (caso = Math.random) => SCOVABILI[Math.floor(caso() * SCOVABILI.length)]
 
 export function riceviOggetto(s, it, qta = 1, caso = Math.random) {
   // la Pergamena generica diventa subito una delle 6, estratta a caso per ognuna

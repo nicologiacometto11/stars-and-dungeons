@@ -1,0 +1,30 @@
+name: Segna attività mensile
+
+# GitHub disattiva i controlli programmati dopo 60 giorni senza attività nel repository.
+# Una volta al mese questo workflow aggiorna un piccolo file di testo, così il repository risulta sempre attivo
+# e "Tieni sveglio Supabase" non si spegne mai. Non modifica il sito.
+on:
+  schedule:
+    - cron: '23 5 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  attivita:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Aggiorna il file e salva
+        run: |
+          date -u +"Ultimo controllo automatico: %Y-%m-%d" > .github/ultimo-controllo.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/ultimo-controllo.txt
+          if git diff --cached --quiet; then
+            echo "Niente da salvare: il file è già aggiornato a oggi."
+          else
+            git commit -m "Controllo mensile automatico (tiene attivo il repository)"
+            git push
+          fi

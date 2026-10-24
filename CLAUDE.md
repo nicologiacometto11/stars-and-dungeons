@@ -140,3 +140,4 @@ Decisione del Master sulla fase 3: NIENTE combattimento sul tavolo (PV e azioni 
 - `supabase/keepalive.sql` + `.github/workflows/keepalive.yml`: una chiamata a `ping()` lunedì e giovedì tiene sveglio il progetto Supabase gratuito (si ferma dopo 7 giorni senza richieste). GitHub disattiva i workflow programmati dopo 60 giorni senza attività nel repository: se succede, basta un push o riattivarlo dalla tab Actions.
 - Promemoria del backup nella Scheda (`serveBackup`, ogni 30 giorni; campi `creata`, `ultimoBackup`, `backupRimandato`). Il piano gratuito di Supabase non fa backup automatici.
 - `npm run verifica` prima di ogni push.
+- `.github/workflows/attivita-mensile.yml`: il 1° di ogni mese un commit automatico (`.github/ultimo-controllo.txt`) tiene attivo il repository, così GitHub non disattiva i workflow programmati. Quel commit non fa ripartire il deploy. In Fork compare come "1 commit indietro": basta un Pull.

@@ -124,7 +124,7 @@ const db = r.derive(big)
 const g = [{ user_id: 'a', nome: 'Zeta', stato: { rango: 3, corpo: 10, corpoMax: 20, mente: 5, menteMax: 9, armorF: 2, armorM: 1, fato: 1, sybil: 2 } }, { user_id: 'b', nome: 'Alfa', stato: {} }]
 const ord = [{ tipo: 'pg', id: 'a', nome: 'Zeta' }, { tipo: 'pg', id: 'b', nome: 'Alfa' }]
 const noop = async () => true
-const tvB = { attivo: true, pronto: true, giocatori: g, codice: 'ABCD1234', eventi: [{ id: 1, created_at: new Date().toISOString(), testo: 'x' }], azioni: [], inAttesa: [], tavolo: { scontro: true, round: 2, turno: 1, mostri: 3, ordine: ord }, entra: noop, esci: noop, aggiornaTavolo: noop, espelli: noop, nuovoCodice: noop, registraEvento: noop, inviaAzione: noop, rispondiAzione: noop, annullaAzione: noop, pulisciStorico: noop }
+const tvB = { attivo: true, pronto: true, giocatori: g, codice: 'ABCD1234', eventi: [{ id: 1, created_at: new Date().toISOString(), testo: 'x' }], azioni: [], inAttesa: [], tavolo: { scontro: true, round: 2, turno: 1, mostri: [{ id: 'midas', qta: 3 }, { id: 'ashuz', qta: 1 }], ordine: ord }, entra: noop, esci: noop, aggiornaTavolo: noop, espelli: noop, nuovoCodice: noop, registraEvento: noop, inviaAzione: noop, rispondiAzione: noop, annullaAzione: noop, pulisciStorico: noop }
 const casi = [
   ['Sheet', { c: big, d: db, up, tv: { ...tvB, membro: true } }], ['Zodiac', { c: big, d: db, up }], ['Shop', { c: big, d: db, up }],
   ['Inventory', { c: big, d: db, up }], ['Bestiary', { c: big, d: db, up }], ['Craft', { c: big, d: db, up }], ['Receive', { c: big, d: db, up }],
@@ -143,7 +143,9 @@ const tz = testo(renderToString(React.createElement((await load('/src/components
 ok(/Muro di Cristallo/.test(tz) && !/Vello d.Oro/.test(tz) && !/prossima soglia/.test(tz) && !/Ofiuco/i.test(tz), 'Zodiaco: nascoste le abilità non sbloccate e nessun indizio su Ofiuco')
 const tvM = testo(renderToString(React.createElement((await load('/src/components/Master.jsx')).default, { tv: { ...tvB, master: true } })))
 const tvG = testo(renderToString(React.createElement((await load('/src/components/Tavolo.jsx')).default, { c: big, userId: 'a', tv: { ...tvB, membro: true } })))
-ok(/Mostri in campo/.test(tvM) && /3 mostri in campo/.test(tvG), 'contatore dei mostri: il Master lo gestisce, i giocatori vedono solo il numero')
+ok(/Mostri in campo/.test(tvM) && /MIDAS/i.test(tvM) && /3\s*×/.test(tvM), 'mostri in campo: il Master vede tipo e quantità')
+ok(/3\s*×/.test(tvG) && /1\s*×/.test(tvG) && /images\/monsters\/midas/.test(renderToString(React.createElement((await load('/src/components/Tavolo.jsx')).default, { c: big, userId: 'a', tv: { ...tvB, membro: true } }))), 'mostri in campo: i giocatori vedono foto e quantità')
+ok(!/MIDAS/i.test(tvG), 'mostri in campo: il nome non si vede se il mostro non è stato incontrato')
 ok(!/PV/.test(tvG), 'i giocatori non vedono PV dei mostri')
 const th = testo(renderToString(React.createElement((await load('/src/components/Shop.jsx')).default, { c: sc, d: ds, up })))
 ok(/sconosciuto/.test(th) && /Studia · 1 Sybil/.test(th), 'Negozio: effetti nascosti con Studia')

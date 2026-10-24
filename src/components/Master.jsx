@@ -3,7 +3,7 @@ import Compagni from './Compagni.jsx'
 import MasterAzioni from './MasterAzioni.jsx'
 import SchedaMaster from './SchedaMaster.jsx'
 import Storico from './Storico.jsx'
-import { MOSTRI } from '../data/monsters.js'
+import { MOSTRI, MOSTRI_BY_ID } from '../data/monsters.js'
 import { ordineIniziale, prossimoTurno } from '../lib/tavolo.js'
 
 // Vista del Master: codice, scontro (Round e turni) e giocatori al tavolo
@@ -74,9 +74,16 @@ export default function Master({ tv }) {
   const copia = async () => {
     try { await navigator.clipboard.writeText(tv.codice); setCopiato(true); setTimeout(() => setCopiato(false), 1500) } catch { /* ignora */ }
   }
-  const inizia = () => tv.aggiornaTavolo({ scontro: true, round: 1, turno: 0, mostri: 0, ordine: ordineIniziale(tv.giocatori) })
-  const fine = () => confirm('Terminare lo scontro?') && tv.aggiornaTavolo({ scontro: false, round: 1, turno: 0, mostri: 0, ordine: [] })
-  const cambiaMostri = (delta) => tv.aggiornaTavolo({ mostri: Math.max(0, (t.mostri || 0) + delta) })
+  const inizia = () => tv.aggiornaTavolo({ scontro: true, round: 1, turno: 0, mostri: [], ordine: ordineIniziale(tv.giocatori) })
+  const fine = () => confirm('Terminare lo scontro?') && tv.aggiornaTavolo({ scontro: false, round: 1, turno: 0, mostri: [], ordine: [] })
+  const mostriCampo = Array.isArray(t.mostri) ? t.mostri : []
+  // aggiunge o toglie un mostro di quel tipo; a 0 il tipo sparisce dall'elenco
+  const cambiaMostri = (id, delta) => {
+    const trovato = mostriCampo.find((x) => x.id === id)
+    const resto = mostriCampo.filter((x) => x.id !== id)
+    const qta = Math.max(0, (trovato?.qta || 0) + delta)
+    tv.aggiornaTavolo({ mostri: qta > 0 ? [...resto, { id, qta }].sort((a, b) => a.id.localeCompare(b.id)) : resto })
+  }
   const avanti = () => tv.aggiornaTavolo(prossimoTurno(t))
   const sposta = (i, dir) => {
     const ordine = [...t.ordine]
@@ -110,11 +117,21 @@ export default function Master({ tv }) {
               <strong className="round-n">{t.round}</strong>
             </div>
             <p className="turno-di">Turno di {inTurno?.nome || '…'}</p>
-            <div className="riga mostri-contatore">
-              <span>🐉 Mostri in campo</span>
-              <button onClick={() => cambiaMostri(-1)} disabled={!t.mostri} aria-label="Un mostro in meno">−</button>
-              <strong>{t.mostri || 0}</strong>
-              <button onClick={() => cambiaMostri(1)} aria-label="Un mostro in più">+</button>
+            <div className="mostri-editor">
+              <strong>🐉 Mostri in campo</strong>
+              {mostriCampo.map((x) => (
+                <div key={x.id} className="riga mostri-riga">
+                  <img src={`${import.meta.env.BASE_URL}images/monsters/${x.id}.webp`} alt="" onError={(e) => { e.currentTarget.style.visibility = 'hidden' }} />
+                  <span>{MOSTRI_BY_ID[x.id]?.nome || x.id}</span>
+                  <button onClick={() => cambiaMostri(x.id, -1)} aria-label="Uno in meno">−</button>
+                  <strong>{x.qta}×</strong>
+                  <button onClick={() => cambiaMostri(x.id, 1)} aria-label="Uno in più">+</button>
+                </div>
+              ))}
+              <select value="" onChange={(e) => e.target.value && cambiaMostri(e.target.value, 1)}>
+                <option value="">+ Aggiungi un mostro…</option>
+                {MOSTRI.map((x) => <option key={x.id} value={x.id}>{x.nome} (Grado {x.grado})</option>)}
+              </select>
             </div>
             <ol className="ordine ordine-master">
               {t.ordine.map((o, i) => (

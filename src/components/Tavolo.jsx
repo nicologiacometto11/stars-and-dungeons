@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Compagni from './Compagni.jsx'
 import Storico from './Storico.jsx'
+import MostriInCampo from './MostriInCampo.jsx'
 
 // Vista del giocatore: entra con il codice, poi vede i compagni, il Round e il turno
 export default function Tavolo({ c, userId, tv }) {
@@ -50,7 +51,7 @@ export default function Tavolo({ c, userId, tv }) {
               <strong className="round-n">{t.round}</strong>
             </div>
             <p className="turno-di">{tocca ? '⚔️ Tocca a te!' : `Turno di ${inTurno?.nome || '…'}`}</p>
-            {t.mostri > 0 && <p className="mostri-n">🐉 {t.mostri} {t.mostri === 1 ? 'mostro' : 'mostri'} in campo</p>}
+            <MostriInCampo mostri={t.mostri} c={c} />
             <ol className="ordine">
               {t.ordine.map((o, i) => (
                 <li key={o.tipo + o.id} className={i === t.turno ? 'on' : ''}>{o.nome}</li>

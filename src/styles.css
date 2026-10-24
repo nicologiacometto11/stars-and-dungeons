@@ -312,3 +312,15 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 .mostri-contatore button { padding: 2px 14px; min-height: 0; }
 .mostri-contatore strong { min-width: 1.5em; text-align: center; font-size: 1.2rem; font-variant-numeric: tabular-nums; }
 .mostri-n { margin: 0 0 12px; color: var(--muted); }
+
+.mostri-editor { display: flex; flex-direction: column; gap: 8px; margin: 0 0 12px; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg2); }
+.mostri-riga { gap: 8px; flex-wrap: nowrap; }
+.mostri-riga img { width: 36px; height: 36px; border-radius: 6px; object-fit: cover; flex: none; }
+.mostri-riga span { flex: 1; min-width: 0; }
+.mostri-riga button { padding: 2px 12px; min-height: 0; }
+.mostri-riga strong { min-width: 2em; text-align: center; font-variant-numeric: tabular-nums; }
+.mostri-campo { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 12px; }
+.mostro-campo { margin: 0; width: 96px; text-align: center; }
+.mostro-campo img { width: 96px; height: 96px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line2); display: block; background: #000; }
+.mostro-campo figcaption { margin-top: 4px; font-size: .85rem; }
+.mostro-campo strong { color: var(--oro); font-size: 1.1rem; }

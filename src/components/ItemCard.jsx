@@ -6,14 +6,19 @@ const TIER_CLASS = { C: 't-c', B: 't-b', A: 't-a', S: 't-s', SS: 't-s', Zodiaco:
 
 export default function ItemCard({ it, c, d, qta, children, compact, noto = true, puoiStudiare, onStudia }) {
   const reqOk = it.req ? verificaReq(it.req, c, d) : true
-  const [conImmagine, setConImmagine] = useState(false)
+  const [zoom, setZoom] = useState(false)
   return (
     <div className={`item ${TIER_CLASS[it.tier] || ''}`}>
       {IMMAGINI.includes(it.id) && (
-        <img
-          className="item-img" src={`${import.meta.env.BASE_URL}images/oggetti/${it.id}.webp`} alt={it.nome} loading="lazy"
-          style={conImmagine ? undefined : { display: 'none' }} onLoad={() => setConImmagine(true)} onError={() => setConImmagine(false)}
-        />
+        <button type="button" className="item-img" onClick={() => setZoom(true)} aria-label={`Ingrandisci l'immagine di ${it.nome}`}>
+          <img src={`${import.meta.env.BASE_URL}images/oggetti/${it.id}.webp`} alt="" loading="lazy" />
+        </button>
+      )}
+      {zoom && (
+        <div className="lightbox" onClick={() => setZoom(false)}>
+          <img src={`${import.meta.env.BASE_URL}images/oggetti/${it.id}.webp`} alt={it.nome} />
+          <span>{it.nome}</span>
+        </div>
       )}
       <div className="item-head">
         <strong>{it.nome}</strong>

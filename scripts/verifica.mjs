@@ -2,6 +2,7 @@
 import { createServer } from 'vite'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
+import fs from 'node:fs'
 
 const R = fileURLToPath(new URL('..', import.meta.url))
 const vite = await createServer({ root: R, server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' })
@@ -85,6 +86,10 @@ for (const it of ITEMS) { const x = con(r.nuovaScheda('x'), it.nome); for (const
 ok(nan === 0, 'nessun NaN equipaggiando ogni oggetto')
 ok(r.parseCosti('Bucanuvole (5 Mente)').length === 1 && r.parseCosti('(3 Mente + 3 Corpo)').length === 2, 'costi letti dal testo')
 ok(r.costiPagabili([{ n: 5, ris: 'mente' }], true).length === 2, 'Forma dell\'Equilibrio: costi in Mente o Corpo')
+
+// ---- immagini di armi e oggetti: ogni id in elenco ha il file e un oggetto
+const elenco = JSON.parse(fs.readFileSync(R + 'src/data/immagini-oggetti.json', 'utf8'))
+ok(elenco.every((id) => fs.existsSync(R + `public/images/oggetti/${id}.webp`) && ITEMS.some((i) => i.id === id)), 'immagini oggetti: ogni id ha il file e un oggetto')
 
 // ---- schede vecchie
 const vecchia = r.normalizza({ nome: 'V' })

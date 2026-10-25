@@ -149,31 +149,41 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
   return (
     <div className="stack">
       <section className="card">
-        <div className="riga spazio">
-          <div className="riga nome-riga">
-            <Avatar c={c} up={up} />
-            <input className="nome" value={c.nome} onChange={(e) => up((s) => ({ ...s, nome: e.target.value }))} />
-          </div>
+        <div className="testa-top">
+          <Avatar c={c} up={up} />
+          <input className="nome" value={c.nome} onChange={(e) => up((s) => ({ ...s, nome: e.target.value }))} aria-label="Nome del personaggio" />
+        </div>
+
+        <div className="testa-stat">
           <div className="rango">
             <small>RANGO</small>
-            <strong>{c.rango}</strong>
-            <div className="xp-riga">
-              <span className="tag qta">{c.xp || 0} XP</span>
-              <button className="primary" disabled={c.rango >= RANGO_MAX || (c.xp || 0) < XP_PER_RANGO} onClick={() => up((s) => saliRango(s))}>
-                Sali di Rango · {XP_PER_RANGO} XP
-              </button>
-            </div>
-            <small>{c.rango}/{RANGO_MAX} · gli XP li dà il Master</small>
-            <button
-              className="ghost rango-meno" disabled={c.rango <= 1 || liberi <= 0}
-              title={liberi <= 0 ? 'Prima togli un punto dallo Zodiaco (modalità correzione)' : ''}
-              onClick={() => confirm('Scendere di un Rango? Serve solo per correggere un errore.') && up((x) => togliRango(x))}
-            >− Togli un Rango</button>
+            <div className="rango-num"><strong>{c.rango}</strong><span className="muted">/ {RANGO_MAX}</span></div>
+          </div>
+          <div className="xp-box">
+            <small>ESPERIENZA</small>
+            <div className="xp-num"><span className="tag qta">{c.xp || 0} XP</span><span className="muted">{XP_PER_RANGO} XP = 1 Rango</span></div>
+            <div className="xp-barra" aria-hidden="true"><div style={{ width: `${Math.min(100, ((c.xp || 0) / XP_PER_RANGO) * 100)}%` }} /></div>
           </div>
         </div>
+
+        <button
+          className="primary sali-rango" disabled={c.rango >= RANGO_MAX || (c.xp || 0) < XP_PER_RANGO}
+          onClick={() => up((s) => saliRango(s))}
+        >
+          {c.rango >= RANGO_MAX ? 'Rango massimo' : (c.xp || 0) >= XP_PER_RANGO ? `Sali di Rango · ${XP_PER_RANGO} XP` : `Sali di Rango · servono ${XP_PER_RANGO - (c.xp || 0)} XP in più`}
+        </button>
+
         <p className={liberi > 0 ? 'avviso-int' : 'muted'}>
           {liberi > 0 ? `Hai ${liberi} punt${liberi === 1 ? 'o' : 'i'} da assegnare nello Zodiaco.` : 'Tutti i punti Rango sono assegnati.'}
         </p>
+        <div className="riga spazio testa-nota">
+          <small className="muted">Gli XP li dà il Master.</small>
+          <button
+            className="ghost rango-meno" disabled={c.rango <= 1 || liberi <= 0}
+            title={liberi <= 0 ? 'Prima togli un punto dallo Zodiaco (modalità correzione)' : ''}
+            onClick={() => confirm('Scendere di un Rango? Serve solo per correggere un errore.') && up((x) => togliRango(x))}
+          >− Togli un Rango</button>
+        </div>
         {d.ofiuco && <p className="ofiuco">☉ Hai trovato Ofiuco: tutte le tue caratteristiche sono raddoppiate.</p>}
       </section>
 

@@ -346,3 +346,19 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 .nome-riga { flex: 1 1 100%; flex-wrap: nowrap; min-width: 0; }
 .nome-riga input.nome { min-width: 0; width: 100%; }
 @media (min-width: 560px) { .nome-riga { flex: 1 1 260px; } }
+
+/* ---- intestazione della Scheda ---- */
+.testa-top { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.testa-top input.nome { flex: 1; min-width: 0; font-size: 1.35rem; }
+.testa-stat { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: stretch; margin-bottom: 12px; }
+.rango, .xp-box { background: var(--bg2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; text-align: left; }
+.rango small, .xp-box small { letter-spacing: .12em; color: var(--muted); font-size: .7rem; }
+.rango-num { display: flex; align-items: baseline; gap: 6px; }
+.rango-num strong { font-family: var(--serif); font-size: 2.4rem; line-height: 1.1; color: var(--oro); }
+.xp-num { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 6px 0 8px; flex-wrap: wrap; }
+.xp-num .muted { font-size: .78rem; }
+.xp-barra { height: 8px; background: var(--card); border-radius: 99px; overflow: hidden; }
+.xp-barra div { height: 100%; background: linear-gradient(90deg, #b8923f, var(--oro)); transition: width .25s; }
+.sali-rango { width: 100%; padding: 12px; font-size: .95rem; margin-bottom: 12px; }
+.testa-nota { align-items: center; margin-top: 8px; }
+.testa-nota .rango-meno { margin: 0; }

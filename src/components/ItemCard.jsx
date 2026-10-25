@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { verificaReq } from '../lib/rules.js'
+import { dannoArma, testoDanno, verificaReq } from '../lib/rules.js'
 import { SLOT_NOME } from '../data/items.js'
 import IMMAGINI from '../data/immagini-oggetti.json' // elenco degli id che hanno un'immagine in public/images/oggetti/
 
@@ -30,7 +30,7 @@ export default function ItemCard({ it, c, d, qta, children, compact, noto = true
       </div>
       {it.cat === 'arma' && (
         <div className="item-meta">
-          {it.danni != null && <span>{it.danni} Danni</span>}
+          {it.danni != null && <span>{d && dannoArma(it, d) ? testoDanno(dannoArma(it, d)) : `${it.danni} Danni`}</span>}
           {it.tipo && <span>{it.tipo}</span>}
           {it.mani && <span>{it.mani === 2 ? 'Due mani' : 'Una mano'}</span>}
         </div>

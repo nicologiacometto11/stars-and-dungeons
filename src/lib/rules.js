@@ -467,9 +467,9 @@ export function dannoArma(it, d) {
   return { base: it.danni, parti, alternativa, totale }
 }
 export function testoDanno(g) {
-  if (g.alternativa) return `${g.base} (+${g.parti[0].n} se fisico, +${g.parti[1].n} se magico)`
-  const bonus = g.parti.map((p) => ` +${p.n} ${p.tipo}`).join('')
-  return bonus ? `${g.base}${bonus} = ${g.totale}` : `${g.base}`
+  if (g.alternativa) return `${g.base} danni (+ ${g.parti[0].n} fisici se fisico, + ${g.parti[1].n} magici se magico)`
+  const bonus = g.parti.map((p) => ` + ${p.n} ${p.tipo}`).join('')
+  return bonus ? `${g.base} danni${bonus} = ${g.totale}` : `${g.base} danni`
 }
 
 // Sale di un Rango spendendo 3 XP (il Rango non scende mai)

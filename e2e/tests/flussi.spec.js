@@ -222,6 +222,7 @@ test('Danni delle armi equipaggiate con i bonus', async ({ page }) => {
   await nuovo(page)
   await ricevi(page, 'Spada di Guerra e Sangue')
   await tab(page, 'Inventario')
+  await expect(page.locator('.item', { hasText: 'Spada di Guerra e Sangue' }).first().locator('.item-meta')).toContainText('9 danni')
   await page.locator('.item', { hasText: 'Spada di Guerra e Sangue' }).first().getByRole('button', { name: 'Equipaggia' }).click()
   await tab(page, 'Scheda')
   await expect(page.locator('.danni-armi')).toContainText('Spada di Guerra e Sangue')

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ITEMS_BY_ID } from '../data/items.js'
-import { RANGO_MAX, costoLibero, conXp, estraiPergamena, applicaBottino, bottinoDi, conCura, conDanno, conLog, conPuntiCura, conSybil, dannoNetto, riceviOggetto, riservaDanno } from '../lib/rules.js'
+import { RANGO_MAX, conversioniBottino, costoLibero, testoConversioni, conXp, estraiPergamena, applicaBottino, bottinoDi, conCura, conDanno, conLog, conPuntiCura, conSybil, dannoNetto, riceviOggetto, riservaDanno } from '../lib/rules.js'
 
 // I danni e gli Aureos tolti chiedono conferma; i doni si applicano da soli
 const RISORSE = ['aureos', 'sybil', 'puntiCura', 'xp']
@@ -38,6 +38,7 @@ function applicaDono(a, c, d, up) {
       return `Ricevi ${uscite.map((v) => v.nome).join(', ')}`
     }
     up((s) => riceviOggetto(s, it, dati.qta || 1))
+    if (it.aureosAlRicevimento) return `${it.nome} convertito in ${it.aureosAlRicevimento * (dati.qta || 1)} Aureos`
     return `Ricevi ${dati.qta > 1 ? dati.qta + '× ' : ''}${it.nome}`
   }
   if (tipo === 'rango') {
@@ -52,7 +53,8 @@ function applicaDono(a, c, d, up) {
     const m = bottinoDi(dati.mostro)
     if (!m) return null
     up((s) => applicaBottino(s, m, { drop: !dati.soloAureos }))
-    return dati.soloAureos ? `Aureos di ${m.nome}` : `Bottino di ${m.nome}`
+    const conv = dati.soloAureos ? [] : conversioniBottino(m)
+    return (dati.soloAureos ? `Aureos di ${m.nome}` : `Bottino di ${m.nome}`) + (conv.length ? ` (${testoConversioni(conv)})` : '')
   }
   return null
 }

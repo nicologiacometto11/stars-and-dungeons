@@ -3,6 +3,7 @@ import { MOSTRI, AMBIENTI, GRADI, SYBIL_COSTO } from '../data/monsters.js'
 import { slug } from '../data/craft.js'
 import { conLog } from '../lib/rules.js'
 import AMBIENTI_IMG from '../data/ambienti.json'
+import { STUDI_VUOTI } from '../lib/studi.js'
 
 const BASE = import.meta.env.BASE_URL
 const img = (p) => `${BASE}${p}`
@@ -36,7 +37,7 @@ function Luoghi({ ambiente }) {
   )
 }
 
-export default function Bestiary({ c, d, up }) {
+export default function Bestiary({ c, d, up, studi = STUDI_VUOTI }) {
   const [amb, setAmb] = useState(AMBIENTI[0])
   const [grado, setGrado] = useState('tutti')
   const [vista, setVista] = useState('mostri')
@@ -60,11 +61,12 @@ export default function Bestiary({ c, d, up }) {
         `Studiato ${m.nome} (−${costo} Sybil)`,
       )
     })
+    if (d.sybilAttuale >= costo) studi.condividi('mostro', m.id) // da ora lo vedono anche gli altri giocatori
   }
 
   const Card = ({ m }) => {
     const scoperto = !!c.bestiario.scoperti[m.id]
-    const rivelato = scoperto && !!c.bestiario.rivelati[m.id]
+    const rivelato = scoperto && (!!c.bestiario.rivelati[m.id] || studi.mostri.has(m.id))
     const costo = SYBIL_COSTO
     const primo = m.abilita.split('. ')[0]
     return (

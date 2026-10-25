@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
 import { ITEMS } from '../data/items.js'
 import { MOSTRI } from '../data/monsters.js'
-import { applicaBottino, haAnelloOro, riceviOggetto, conLog, qtaIn } from '../lib/rules.js'
+import { applicaBottino, conversioniBottino, haAnelloOro, riceviOggetto, conLog, qtaIn, testoConversioni } from '../lib/rules.js'
 import ItemCard from './ItemCard.jsx'
 
-function Bottino({ c, up }) {
+function Bottino({ c, up, onAvviso }) {
   const [id, setId] = useState('')
   const m = MOSTRI.find((x) => x.id === id)
   const anelloOro = haAnelloOro(c)
@@ -12,6 +12,8 @@ function Bottino({ c, up }) {
   const incassa = () => {
     if (!m) return
     up((s) => applicaBottino(s, m))
+    const conv = conversioniBottino(m)
+    if (conv.length) onAvviso(`${m.nome}: ${testoConversioni(conv)}`)
     setId('')
   }
 
@@ -40,6 +42,11 @@ export default function Receive({ c, d, up }) {
   const [q, setQ] = useState('')
   const [cat, setCat] = useState('tutti')
   const [au, setAu] = useState('')
+  const [avviso, setAvviso] = useState('')
+  const mostraAvviso = (testo) => {
+    setAvviso(testo)
+    setTimeout(() => setAvviso(''), 9000)
+  }
 
   const lista = useMemo(() => {
     const t = q.trim().toLowerCase()
@@ -63,7 +70,9 @@ export default function Receive({ c, d, up }) {
         </div>
       </section>
 
-      <Bottino c={c} up={up} />
+      {avviso && <div className="msg avviso-conv" role="status">💰 {avviso}</div>}
+
+      <Bottino c={c} up={up} onAvviso={mostraAvviso} />
 
       <section className="card">
         <h2>Oggetti, armi e abilità</h2>
@@ -78,7 +87,7 @@ export default function Receive({ c, d, up }) {
       {lista.slice(0, 80).map((it) => (
         <ItemCard key={it.id} it={it} c={c} d={d} qta={qtaIn(c, it.id)} compact>
           {it.aureosAlRicevimento && <small className="muted">Si converte subito in {it.aureosAlRicevimento} Aureos</small>}
-          <button onClick={() => up((s) => riceviOggetto(s, it))}>Ricevi</button>
+          <button onClick={() => { up((s) => riceviOggetto(s, it)); if (it.aureosAlRicevimento) mostraAvviso(`${it.nome} convertito in ${it.aureosAlRicevimento} Aureos`) }}>Ricevi</button>
         </ItemCard>
       ))}
       {lista.length > 80 && <p className="muted centrato">Mostrati 80 risultati su {lista.length}: affina la ricerca.</p>}

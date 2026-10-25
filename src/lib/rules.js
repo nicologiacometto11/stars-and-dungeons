@@ -367,6 +367,12 @@ export function applicaBottino(s, m, { drop = true } = {}) {
 }
 export const bottinoDi = (idMostro) => MOSTRI_BY_ID[idMostro]
 
+// Materiali del bottino che si convertono subito in Aureos (es. Capelli d'Argento = 150 Aureos)
+export function conversioniBottino(m) {
+  return m.drop.map((n) => ITEMS_BY_ID[slug(n)]).filter((it) => it?.aureosAlRicevimento).map((it) => ({ nome: it.nome, aureos: it.aureosAlRicevimento }))
+}
+export const testoConversioni = (lista) => lista.map((x) => `${x.nome} convertito in ${x.aureos} Aureos`).join(', ')
+
 // ---- danni e cure del Master ----
 // L'Armor dello stesso tipo si sottrae al danno (minimo 0); i danni puri la ignorano.
 export function dannoNetto(d, tipo, n) {

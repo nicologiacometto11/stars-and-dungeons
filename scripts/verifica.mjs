@@ -72,6 +72,13 @@ ok(r.abilitaScheda(con(r.nuovaScheda('S'), 'Amuleto del Sole Infranto')).some((x
 const soloAu = r.applicaBottino(r.nuovaScheda('B'), r.bottinoDi('giudicatore'), { drop: false })
 ok(soloAu.aureos === 15 && soloAu.inventario.length === 0, 'bottino: solo Aureos (gli oggetti si assegnano a parte)')
 
+// ---- Capelli d'Argento: l'Elfo li lascia, ma diventano 150 Aureos (con avviso)
+const elfo = r.bottinoDi('elfo')
+const convE = r.conversioniBottino(elfo)
+ok(convE.length === 1 && convE[0].nome === "Capelli d'Argento" && convE[0].aureos === 150, "Elfo: i Capelli d'Argento si convertono in 150 Aureos")
+ok(/Capelli d'Argento convertito in 150 Aureos/.test(r.testoConversioni(convE)), 'avviso della conversione')
+ok(r.applicaBottino(r.nuovaScheda('E'), elfo).aureos === elfo.aureos + 150, "Elfo: gli Aureos del mostro più i 150 dei Capelli d'Argento")
+
 // ---- XP: 3 XP per salire di Rango, gli XP li dà il Master o il Cosmo Liquido
 let xpS = r.nuovaScheda('X'); xpS.xp = 2
 ok(r.saliRango(xpS) === xpS, 'XP: con 2 XP non si sale di Rango')
@@ -223,6 +230,10 @@ ok(/Mostri in campo/.test(tvM) && /MIDAS/i.test(tvM) && /3\s*×/.test(tvM), 'mos
 ok(/3\s*×/.test(tvG) && /1\s*×/.test(tvG) && /images\/monsters\/midas/.test(renderToString(React.createElement((await load('/src/components/Tavolo.jsx')).default, { c: big, userId: 'a', tv: { ...tvB, membro: true } }))), 'mostri in campo: i giocatori vedono foto e quantità')
 ok(!/MIDAS/i.test(tvG), 'mostri in campo: il nome non si vede se il mostro non è stato incontrato')
 ok(!/PV/.test(tvG), 'i giocatori non vedono PV dei mostri')
+const tuttiNoti = testo(renderToString(React.createElement((await load('/src/components/Shop.jsx')).default, { c: sc, d: ds, up, studi: { oggetti: new Set(ITEMS.map((i) => i.id)), mostri: new Set(), condividi() {} } })))
+ok(!/Studia · 1 Sybil/.test(tuttiNoti) && !/sconosciuto/.test(tuttiNoti), 'studio condiviso: se un altro giocatore ha studiato un oggetto, nel Negozio si vede senza pagare')
+const beStud = testo(renderToString(React.createElement((await load('/src/components/Bestiary.jsx')).default, { c: { ...big, bestiario: { scoperti: { ashuz: true }, rivelati: {} } }, d: db, up, studi: { oggetti: new Set(), mostri: new Set(['ashuz']), condividi() {} } })))
+ok(/Attacco/.test(beStud) && !/Paga 1 Sybil/.test(beStud.split('ASHUZ')[1]?.slice(0, 200) || ''), 'studio condiviso: i dettagli di un mostro studiato da un altro si vedono')
 const th = testo(renderToString(React.createElement((await load('/src/components/Shop.jsx')).default, { c: sc, d: ds, up })))
 ok(/sconosciuto/.test(th) && /Studia · 1 Sybil/.test(th), 'Negozio: effetti nascosti con Studia')
 

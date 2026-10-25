@@ -107,7 +107,7 @@ Nessuna.
 
 ## Tavolo e Master
 
-SQL in `supabase/tavolo.sql` (fase 1: `masters`, `tavolo`, `tavolo_codice`, `giocatori_tavolo`, `entra_tavolo(codice, nome)`, Realtime), `supabase/tavolo2.sql` (fase 2: `azioni`, `eventi`) `supabase/tavolo3.sql` (il Master legge in sola lettura le schede dei giocatori al tavolo) `supabase/tavolo4.sql` (azioni Sybil e punti Cura) e `supabase/tavolo5.sql` e `supabase/tavolo6.sql` (mostri in campo). Si eseguono in ordine dopo `schema.sql`. Il Master si sceglie a mano: `insert into public.masters (user_id) select id from auth.users where email = '...'`.
+SQL in `supabase/tavolo.sql` (fase 1: `masters`, `tavolo`, `tavolo_codice`, `giocatori_tavolo`, `entra_tavolo(codice, nome)`, Realtime), `supabase/tavolo2.sql` (fase 2: `azioni`, `eventi`) `supabase/tavolo3.sql` (il Master legge in sola lettura le schede dei giocatori al tavolo) `supabase/tavolo4.sql` (azioni Sybil e punti Cura) e `supabase/tavolo5.sql` e `supabase/tavolo6.sql` (mostri in campo), `supabase/tavolo7.sql` (azione XP) e `supabase/tavolo8.sql` (studio condiviso). Si eseguono in ordine dopo `schema.sql`. Il Master si sceglie a mano: `insert into public.masters (user_id) select id from auth.users where email = '...'`.
 Hook `useTavolo` in `src/lib/tavolo.js`; viste `Tavolo.jsx` (giocatore), `Master.jsx`, `MasterAzioni.jsx`, `RichiesteMaster.jsx` (giocatore: danni da confermare e doni automatici), `Compagni.jsx`, `Storico.jsx`.
 Il Master vede la scheda intera di un giocatore con "Vedi scheda" (`SchedaMaster.jsx`, sola lettura).
 Principio: il Master non scrive mai nella scheda di un giocatore. Manda un'azione (`azioni`) e l'app del giocatore la applica alla propria scheda, "prenotandola" prima (`rispondiAzione`) così non si applica due volte.
@@ -152,4 +152,6 @@ Decisione del Master sulla fase 3: NIENTE combattimento sul tavolo (PV e azioni 
 - Danni delle armi equipaggiate con i bonus (`dannoArma`, `testoDanno`, `DanniArmi.jsx`): nella Scheda e nello scontro del Tavolo. Es. "5 +3 fisici +2 magici = 10". Armi "Fisico o Magico": mostra i due casi.
 - Bottino del Master: Aureos a tutti i giocatori scelti, ogni materiale a un giocatore solo (azione `bottino` con `soloAureos` + azioni `oggetto`).
 - Forma dell'Equilibrio: solo con Bilancia ≥ 1 il danno (dopo l'Armor) si può togliere a Corpo o Mente a scelta; altrimenti fisico = Corpo e magico = Mente. I danni puri si scelgono sempre.
-- Da chiarire con il Master: oggetti studiati visibili a tutti (condivisi), danni ai mostri nello scontro, Capelli d'Argento dell'Elfo.
+- Studio condiviso (`supabase/tavolo8.sql`, `src/lib/studi.js`): quando un giocatore studia un oggetto/arma (1 Sybil) o un mostro, lo vedono tutti i giocatori (tabella `studi_condivisi`; il Master può svuotarla). In modalità locale è solo per il giocatore.
+- I mostri restano su carta (niente PV né danni ai mostri sul tavolo).
+- Materiali che si convertono in Aureos (es. Capelli d'Argento dell'Elfo = 150 Aureos): un avviso lo dice nella tab Ricevi, nell'avviso del dono del Master e nella schermata del bottone del Master. Il Master vede "diventa N Aureos" accanto all'oggetto.

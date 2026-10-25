@@ -3,6 +3,7 @@ import { supabase, modalitaOnline } from './lib/supabase.js'
 import { caricaScheda, salvaScheda, eliminaScheda } from './lib/store.js'
 import { derive, nuovaScheda } from './lib/rules.js'
 import { useTavolo } from './lib/tavolo.js'
+import { useStudi } from './lib/studi.js'
 import Tavolo from './components/Tavolo.jsx'
 import Master from './components/Master.jsx'
 import RichiesteMaster from './components/RichiesteMaster.jsx'
@@ -133,6 +134,7 @@ export default function App() {
 
   const d = useMemo(() => (c ? derive(c) : null), [c])
   const tv = useTavolo(userId, c, d)
+  const studi = useStudi(userId)
 
   if (session === undefined) return <div className="centro">Caricamento…</div>
   if (modalitaOnline && recupero && session) return <NuovaPassword onFatto={() => setRecupero(false)} />
@@ -181,9 +183,9 @@ export default function App() {
       <main>
         {tab === 'scheda' && <Sheet c={c} d={d} up={up} onElimina={elimina} tv={tv} />}
         {tab === 'zodiaco' && <Zodiac c={c} d={d} up={up} />}
-        {tab === 'negozio' && <Shop c={c} d={d} up={up} />}
+        {tab === 'negozio' && <Shop c={c} d={d} up={up} studi={studi} />}
         {tab === 'inventario' && <Inventory c={c} d={d} up={up} />}
-        {tab === 'bestiario' && <Bestiary c={c} d={d} up={up} />}
+        {tab === 'bestiario' && <Bestiary c={c} d={d} up={up} studi={studi} />}
         {tab === 'craft' && <Craft c={c} d={d} up={up} />}
         {tab === 'ricevi' && <Receive c={c} d={d} up={up} />}
         {tab === 'tavolo' && <Tavolo c={c} d={d} userId={userId} tv={tv} />}

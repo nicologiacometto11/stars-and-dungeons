@@ -71,7 +71,7 @@ function Bottino({ tv }) {
           </div>
           {m.drop.map((nome) => (
             <div key={nome} className="bottino-voce">
-              <span>{nome}</span>
+              <span>{nome}{ITEMS_BY_ID[slug(nome)]?.aureosAlRicevimento && <small className="muted"> · diventa {ITEMS_BY_ID[slug(nome)].aureosAlRicevimento} Aureos</small>}</span>
               <select value={oggetti[nome] || ''} onChange={(e) => setOggetti({ ...oggetti, [nome]: e.target.value })}>
                 <option value="">Assegna a…</option>
                 {tv.giocatori.map((g) => <option key={g.user_id} value={g.user_id}>{g.nome || '?'}</option>)}

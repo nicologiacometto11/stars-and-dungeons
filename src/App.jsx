@@ -135,6 +135,10 @@ export default function App() {
   const d = useMemo(() => (c ? derive(c) : null), [c])
   const tv = useTavolo(userId, c, d)
   const studi = useStudi(userId)
+  // ogni volta che si apre Negozio, Bestiario o Tavolo si rileggono gli studi e gli incontri degli altri
+  useEffect(() => {
+    if (['negozio', 'bestiario', 'tavolo', 'inventario'].includes(tab)) studi.ricarica()
+  }, [tab]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (session === undefined) return <div className="centro">Caricamento…</div>
   if (modalitaOnline && recupero && session) return <NuovaPassword onFatto={() => setRecupero(false)} />

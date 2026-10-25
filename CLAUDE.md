@@ -155,3 +155,4 @@ Decisione del Master sulla fase 3: NIENTE combattimento sul tavolo (PV e azioni 
 - Studio condiviso (`supabase/tavolo8.sql`, `src/lib/studi.js`): quando un giocatore studia un oggetto/arma (1 Sybil) o un mostro, lo vedono tutti i giocatori (tabella `studi_condivisi`; il Master può svuotarla). In modalità locale è solo per il giocatore.
 - I mostri restano su carta (niente PV né danni ai mostri sul tavolo).
 - Materiali che si convertono in Aureos (es. Capelli d'Argento dell'Elfo = 150 Aureos): un avviso lo dice nella tab Ricevi, nell'avviso del dono del Master e nella schermata del bottone del Master. Il Master vede "diventa N Aureos" accanto all'oggetto.
+- Bestiario: per ogni ambiente si vede solo la mappa (ingrandibile). Le altre immagini dei luoghi restano in `src/data/ambienti.json` e `public/images/ambienti/` per la futura sezione "Missione" (da definire con il Master).

@@ -223,6 +223,8 @@ for (const [n, props] of casi) {
   } catch (e) { fail++; console.log('✗ schermata', n, '→', e.message) }
 }
 const tz = testo(renderToString(React.createElement((await load('/src/components/Zodiac.jsx')).default, { c: (() => { const z = r.nuovaScheda('Z'); z.rango = 4; z.segni.ariete = 1; return z })(), d: r.derive({ ...r.nuovaScheda('Z'), rango: 4, segni: { ...r.nuovaScheda('Z').segni, ariete: 1 } }), up })))
+const tb = renderToString(React.createElement((await load('/src/components/Bestiary.jsx')).default, { c: big, d: db, up }))
+ok(/class="mappa"/.test(tb) && !/class="luoghi"/.test(tb), 'Bestiario: solo la mappa, senza le altre immagini dei luoghi')
 ok(/Muro di Cristallo/.test(tz) && !/Vello d.Oro/.test(tz) && !/prossima soglia/.test(tz) && !/Ofiuco/i.test(tz), 'Zodiaco: nascoste le abilità non sbloccate e nessun indizio su Ofiuco')
 const tvM = testo(renderToString(React.createElement((await load('/src/components/Master.jsx')).default, { tv: { ...tvB, master: true } })))
 const tvG = testo(renderToString(React.createElement((await load('/src/components/Tavolo.jsx')).default, { c: big, userId: 'a', tv: { ...tvB, membro: true } })))

@@ -8,29 +8,22 @@ import { STUDI_VUOTI } from '../lib/studi.js'
 const BASE = import.meta.env.BASE_URL
 const img = (p) => `${BASE}${p}`
 
+// Nel Bestiario si vede solo la mappa dell'ambiente (toccandola si ingrandisce).
+// Le altre immagini dei luoghi (src/data/ambienti.json) sono tenute per la futura sezione "Missione".
 function Luoghi({ ambiente }) {
   const dati = AMBIENTI_IMG[slug(ambiente)]
-  const [aperta, setAperta] = useState(null)
-  if (!dati) return null
+  const [grande, setGrande] = useState(false)
+  if (!dati?.mappa) return null
   return (
     <section className="card">
       <h2>{ambiente}</h2>
-      {dati.mappa && (
-        <a href={img(dati.mappa)} target="_blank" rel="noreferrer">
-          <img className="mappa" src={img(dati.mappa)} alt={`Mappa ${ambiente}`} loading="lazy" />
-        </a>
-      )}
-      <div className="luoghi">
-        {dati.luoghi.map((l) => (
-          <button key={l.file} className="luogo" onClick={() => setAperta(l)}>
-            <img src={img(l.file)} alt={l.titolo} loading="lazy" />
-          </button>
-        ))}
-      </div>
-      {aperta && (
-        <div className="lightbox" onClick={() => setAperta(null)}>
-          <img src={img(aperta.file)} alt={aperta.titolo} />
-          <span>{aperta.titolo}</span>
+      <button type="button" className="mappa-btn" onClick={() => setGrande(true)} aria-label={`Ingrandisci la mappa di ${ambiente}`}>
+        <img className="mappa" src={img(dati.mappa)} alt={`Mappa ${ambiente}`} loading="lazy" />
+      </button>
+      {grande && (
+        <div className="lightbox" onClick={() => setGrande(false)}>
+          <img src={img(dati.mappa)} alt={`Mappa ${ambiente}`} />
+          <span>Mappa · {ambiente}</span>
         </div>
       )}
     </section>

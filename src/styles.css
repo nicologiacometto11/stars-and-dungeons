@@ -338,3 +338,6 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 .bottino-voce select { width: auto; flex: 1; min-width: 140px; }
 
 .avviso-conv { border: 1px solid rgba(230, 194, 116, .4); background: rgba(230, 194, 116, .1); }
+
+.mappa-btn { display: block; width: 100%; padding: 0; border: 0; background: none; }
+.mappa-btn .mappa { margin: 0; }

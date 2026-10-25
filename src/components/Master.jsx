@@ -207,6 +207,14 @@ export default function Master({ tv, studi }) {
         />
       </section>
 
+      <section className="card">
+        <h2>Ripartire da zero</h2>
+        <p className="muted">Azzera per tutti i giocatori i mostri incontrati e gli studi (statistiche dei mostri, effetti di armi e oggetti). Le schede non vengono toccate: per far ripartire un giocatore, usa "Elimina personaggio" nella sua Scheda.</p>
+        <button className="ghost pericolo" onClick={() => confirm('Azzerare il Bestiario e tutti gli studi per TUTTI i giocatori?') && confirm('Sei sicuro? Non si può annullare.') && studi?.rimuoviTutto(['incontrato', 'mostro', 'oggetto'])}>
+          Azzera Bestiario e studi di tutti…
+        </button>
+      </section>
+
       <Bottino tv={tv} />
       <Storico eventi={tv.eventi} onPulisci={tv.pulisciStorico} />
     </div>

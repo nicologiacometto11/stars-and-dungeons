@@ -10,7 +10,7 @@ export default function MostriInCampo({ mostri, c, studi }) {
     <div className="mostri-campo">
       {lista.map((m) => {
         const mo = MOSTRI_BY_ID[m.id]
-        const noto = !!c?.bestiario?.scoperti?.[m.id] || !!studi?.incontrati?.has(m.id)
+        const noto = studi?.attivo ? !!studi.incontrati?.has(m.id) : !!c?.bestiario?.scoperti?.[m.id]
         return (
           <figure key={m.id} className="mostro-campo">
             <img src={img(m.id)} alt={noto ? mo.nome : 'Mostro sconosciuto'} loading="lazy" onError={(e) => { e.currentTarget.style.visibility = 'hidden' }} />

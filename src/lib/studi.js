@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase } from './supabase.js'
 
 // Valore di partenza (modalità locale o prima del caricamento)
-export const STUDI_VUOTI = { oggetti: new Set(), mostri: new Set(), incontrati: new Set(), errore: '', condividi() {}, rimuovi() {}, ricarica() {} }
+export const STUDI_VUOTI = { attivo: false, oggetti: new Set(), mostri: new Set(), incontrati: new Set(), errore: '', condividi() {}, rimuovi() {}, ricarica() {} }
 
 export function useStudi(userId) {
   const [lista, setLista] = useState([])
@@ -44,6 +44,18 @@ export function useStudi(userId) {
     [attivo, userId],
   )
 
+  // il Master azzera tutto (es. per ricominciare una campagna)
+  const rimuoviTutto = useCallback(
+    async (tipi) => {
+      if (!attivo) return
+      setLista((l) => l.filter((x) => !tipi.includes(x.tipo)))
+      const { error } = await supabase.from('studi_condivisi').delete().in('tipo', tipi)
+      if (error) console.error(error)
+      await carica()
+    },
+    [attivo, carica],
+  )
+
   // solo il Master può togliere uno studio o un incontro condiviso (per tutti)
   const rimuovi = useCallback(
     async (tipo, id) => {
@@ -58,14 +70,16 @@ export function useStudi(userId) {
 
   return useMemo(
     () => ({
+      attivo,
       oggetti: new Set(lista.filter((x) => x.tipo === 'oggetto').map((x) => x.id)),
       mostri: new Set(lista.filter((x) => x.tipo === 'mostro').map((x) => x.id)),
       incontrati: new Set(lista.filter((x) => x.tipo === 'incontrato').map((x) => x.id)),
       errore,
       condividi,
       rimuovi,
+      rimuoviTutto,
       ricarica: carica,
     }),
-    [lista, errore, condividi, rimuovi, carica],
+    [attivo, lista, errore, condividi, rimuovi, rimuoviTutto, carica],
   )
 }

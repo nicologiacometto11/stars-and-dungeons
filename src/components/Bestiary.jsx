@@ -125,6 +125,8 @@ export default function Bestiary({ c, d, up, studi = STUDI_VUOTI, master = false
         )}
       </section>
 
+      {studi.errore && <div className="msg" role="alert">⚠️ Gli altri giocatori non vedono quello che segni: {studi.errore}. Fai uno screenshot e mandalo a chi gestisce l'app.</div>}
+
       {vista === 'mostri' && <Luoghi ambiente={amb} />}
 
       <div className="mostri">

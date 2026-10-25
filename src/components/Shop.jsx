@@ -46,6 +46,8 @@ export default function Shop({ c, d, up, studi = STUDI_VUOTI }) {
         </div>
       </section>
 
+      {studi.errore && <div className="msg" role="alert">⚠️ Gli altri giocatori non vedono quello che studi: {studi.errore}. Fai uno screenshot e mandalo a chi gestisce l'app.</div>}
+
       {lista.map((it) => (
         <ItemCard
           key={it.id} it={it} c={c} d={d} qta={qtaIn(c, it.id)}

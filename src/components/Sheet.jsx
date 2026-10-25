@@ -150,7 +150,7 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
     <div className="stack">
       <section className="card">
         <div className="riga spazio">
-          <div className="riga" style={{ flex: 1, minWidth: 0, flexWrap: 'nowrap' }}>
+          <div className="riga nome-riga">
             <Avatar c={c} up={up} />
             <input className="nome" value={c.nome} onChange={(e) => up((s) => ({ ...s, nome: e.target.value }))} />
           </div>

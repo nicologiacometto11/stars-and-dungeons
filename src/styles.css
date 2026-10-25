@@ -341,3 +341,8 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 
 .mappa-btn { display: block; width: 100%; padding: 0; border: 0; background: none; }
 .mappa-btn .mappa { margin: 0; }
+
+/* intestazione della Scheda: il nome non si schiaccia mai, il Rango va a capo se manca spazio */
+.nome-riga { flex: 1 1 100%; flex-wrap: nowrap; min-width: 0; }
+.nome-riga input.nome { min-width: 0; width: 100%; }
+@media (min-width: 560px) { .nome-riga { flex: 1 1 260px; } }

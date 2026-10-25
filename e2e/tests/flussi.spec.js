@@ -228,3 +228,15 @@ test('Danni delle armi equipaggiate con i bonus', async ({ page }) => {
   await expect(page.locator('.danni-armi')).toContainText('Spada di Guerra e Sangue')
   await expect(page.locator('.danni-armi')).toContainText('9')
 })
+
+test('Il nome del personaggio resta ben visibile in cima alla Scheda (telefono piccolo e normale)', async ({ page }) => {
+  for (const larghezza of [320, 390, 760]) {
+    await page.setViewportSize({ width: larghezza, height: 800 })
+    await nuovo(page, 'Sir Giacolot')
+    const campo = page.locator('input.nome')
+    await expect(campo).toHaveValue('Sir Giacolot')
+    const w = await campo.evaluate((e) => e.getBoundingClientRect().width)
+    expect(w, `larghezza del campo nome a ${larghezza}px`).toBeGreaterThan(140)
+    await page.evaluate(() => localStorage.clear())
+  }
+})

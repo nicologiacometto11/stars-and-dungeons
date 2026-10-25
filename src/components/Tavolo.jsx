@@ -5,7 +5,7 @@ import MostriInCampo from './MostriInCampo.jsx'
 import DanniArmi from './DanniArmi.jsx'
 
 // Vista del giocatore: entra con il codice, poi vede i compagni, il Round e il turno
-export default function Tavolo({ c, d, userId, tv }) {
+export default function Tavolo({ c, d, userId, tv, studi }) {
   const [codice, setCodice] = useState('')
   const [msg, setMsg] = useState('')
   const [busy, setBusy] = useState(false)
@@ -52,7 +52,7 @@ export default function Tavolo({ c, d, userId, tv }) {
               <strong className="round-n">{t.round}</strong>
             </div>
             <p className="turno-di">{tocca ? '⚔️ Tocca a te!' : `Turno di ${inTurno?.nome || '…'}`}</p>
-            <MostriInCampo mostri={t.mostri} c={c} />
+            <MostriInCampo mostri={t.mostri} c={c} studi={studi} />
             <ol className="ordine">
               {t.ordine.map((o, i) => (
                 <li key={o.tipo + o.id} className={i === t.turno ? 'on' : ''}>{o.nome}</li>

@@ -1,7 +1,7 @@
 -- Studio condiviso: quando un giocatore studia un oggetto, un'arma o un mostro, lo vedono tutti i giocatori.
 -- Esegui dopo tavolo7.sql; si può rilanciare senza errori.
 create table if not exists public.studi_condivisi (
-  tipo text not null check (tipo in ('oggetto', 'mostro')),
+  tipo text not null check (tipo in ('oggetto', 'mostro', 'incontrato')),
   id text not null check (char_length(id) between 1 and 80),
   user_id uuid not null default auth.uid() references auth.users (id) on delete cascade, -- chi lo ha studiato
   created_at timestamptz not null default now(),

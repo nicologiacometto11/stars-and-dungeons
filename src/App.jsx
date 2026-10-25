@@ -185,11 +185,11 @@ export default function App() {
         {tab === 'zodiaco' && <Zodiac c={c} d={d} up={up} />}
         {tab === 'negozio' && <Shop c={c} d={d} up={up} studi={studi} />}
         {tab === 'inventario' && <Inventory c={c} d={d} up={up} />}
-        {tab === 'bestiario' && <Bestiary c={c} d={d} up={up} studi={studi} />}
+        {tab === 'bestiario' && <Bestiary c={c} d={d} up={up} studi={studi} master={tv.master} />}
         {tab === 'craft' && <Craft c={c} d={d} up={up} />}
         {tab === 'ricevi' && <Receive c={c} d={d} up={up} />}
-        {tab === 'tavolo' && <Tavolo c={c} d={d} userId={userId} tv={tv} />}
-        {tab === 'master' && tv.master && <Master tv={tv} />}
+        {tab === 'tavolo' && <Tavolo c={c} d={d} userId={userId} tv={tv} studi={studi} />}
+        {tab === 'master' && tv.master && <Master tv={tv} studi={studi} />}
       </main>
     </div>
   )

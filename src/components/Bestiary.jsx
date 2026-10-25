@@ -30,20 +30,26 @@ function Luoghi({ ambiente }) {
   )
 }
 
-export default function Bestiary({ c, d, up, studi = STUDI_VUOTI }) {
+export default function Bestiary({ c, d, up, studi = STUDI_VUOTI, master = false }) {
   const [amb, setAmb] = useState(AMBIENTI[0])
   const [grado, setGrado] = useState('tutti')
   const [vista, setVista] = useState('mostri')
 
   const lista = MOSTRI.filter((m) => m.ambiente === amb && (grado === 'tutti' || m.grado === grado))
   const speciali = MOSTRI.filter((m) => !AMBIENTI.includes(m.ambiente))
-  const trovati = Object.keys(c.bestiario.scoperti).length
+  // incontrato: lo ha segnato il giocatore, oppure è in comune (segnato da un altro giocatore o messo in campo dal Master)
+  const incontrato = (id) => !!c.bestiario.scoperti[id] || studi.incontrati?.has(id)
+  const trovati = MOSTRI.filter((m) => incontrato(m.id)).length
 
-  const scopri = (m) =>
+  const scopri = (m) => {
     up((s) => conLog({ ...s, bestiario: { ...s.bestiario, scoperti: { ...s.bestiario.scoperti, [m.id]: true } } }, `Scoperto nel Bestiario: ${m.nome}`))
+    studi.condividi('incontrato', m.id) // da ora lo vedono come incontrato anche gli altri giocatori
+  }
 
-  const nascondi = (m) =>
+  const nascondi = (m) => {
+    if (master) studi.rimuovi('incontrato', m.id)
     up((s) => conLog({ ...s, bestiario: { ...s.bestiario, scoperti: Object.fromEntries(Object.entries(s.bestiario.scoperti).filter(([k]) => k !== m.id)) } }, `Nascosto nel Bestiario: ${m.nome}`))
+  }
 
   const rivela = (m) => {
     const costo = SYBIL_COSTO
@@ -58,7 +64,10 @@ export default function Bestiary({ c, d, up, studi = STUDI_VUOTI }) {
   }
 
   const Card = ({ m }) => {
-    const scoperto = !!c.bestiario.scoperti[m.id]
+    const scoperto = incontrato(m.id)
+    const mio = !!c.bestiario.scoperti[m.id]
+    const inComune = studi.incontrati?.has(m.id)
+    const puoNascondere = master ? mio || inComune : mio && !inComune
     const rivelato = scoperto && (!!c.bestiario.rivelati[m.id] || studi.mostri.has(m.id))
     const costo = SYBIL_COSTO
     const primo = m.abilita.split('. ')[0]
@@ -73,7 +82,7 @@ export default function Bestiary({ c, d, up, studi = STUDI_VUOTI }) {
             <span className="tag">Grado {m.grado}</span>
           </div>
           {!scoperto && <button onClick={() => scopri(m)}>Segna come incontrato</button>}
-          {scoperto && <button className="ghost nascondi" onClick={() => nascondi(m)}>Nascondi di nuovo</button>}
+          {puoNascondere && <button className="ghost nascondi" onClick={() => nascondi(m)}>{master && inComune ? 'Nascondi a tutti' : 'Nascondi di nuovo'}</button>}
           {scoperto && !rivelato && !m.illeggibile && (
             <button className="primary" disabled={d.sybilAttuale < costo} onClick={() => rivela(m)}>
               {d.sybilAttuale < costo ? `Servono ${costo} Sybil` : `Paga ${costo} Sybil per studiarlo`}

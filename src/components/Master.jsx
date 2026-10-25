@@ -88,7 +88,7 @@ function Bottino({ tv }) {
   )
 }
 
-export default function Master({ tv }) {
+export default function Master({ tv, studi }) {
   const [copiato, setCopiato] = useState(false)
   const [aperto, setAperto] = useState(null)
   const [scheda, setScheda] = useState(null)
@@ -106,6 +106,7 @@ export default function Master({ tv }) {
     const trovato = mostriCampo.find((x) => x.id === id)
     const resto = mostriCampo.filter((x) => x.id !== id)
     const qta = Math.max(0, (trovato?.qta || 0) + delta)
+    if (delta > 0) studi?.condividi('incontrato', id) // i giocatori lo vedono come incontrato nel Bestiario
     tv.aggiornaTavolo({ mostri: qta > 0 ? [...resto, { id, qta }].sort((a, b) => a.id.localeCompare(b.id)) : resto })
   }
   const avanti = () => tv.aggiornaTavolo(prossimoTurno(t))

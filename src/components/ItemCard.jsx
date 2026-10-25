@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { verificaReq } from '../lib/rules.js'
+import { SLOT_NOME } from '../data/items.js'
 import IMMAGINI from '../data/immagini-oggetti.json' // elenco degli id che hanno un'immagine in public/images/oggetti/
 
 const TIER_CLASS = { C: 't-c', B: 't-b', A: 't-a', S: 't-s', SS: 't-s', Zodiaco: 't-z', Speciale: 't-z', Chiave: 't-k' }
@@ -24,6 +25,7 @@ export default function ItemCard({ it, c, d, qta, children, compact, noto = true
         <strong>{it.nome}</strong>
         <span className="tag">{it.tier}</span>
         {qta > 1 && <span className="tag qta">×{qta}</span>}
+        {it.slot && <span className="tag">{SLOT_NOME[it.slot]}</span>}
         {it.consumabile && <span className="tag">consumabile</span>}
       </div>
       {it.cat === 'arma' && (

@@ -2,7 +2,7 @@
 // viene calcolato qui a partire dalla scheda salvata, così non si può mai disallineare.
 
 import { SEGNI, SEGNI_BY_ID, CATEGORIE, SOGLIE } from '../data/zodiac.js'
-import { ITEMS, ITEMS_BY_ID, RINOMINATI, ID_VECCHI, PERGAMENE_ESTRATTE } from '../data/items.js'
+import { ITEMS, ITEMS_BY_ID, RINOMINATI, ID_VECCHI, PERGAMENE_ESTRATTE, SLOT_NOME, LIMITE_SLOT } from '../data/items.js'
 import { MOSTRI_BY_ID } from '../data/monsters.js'
 import { slug, ARMI_CRAFT_A, ARMI_CRAFT_S } from '../data/craft.js'
 
@@ -22,7 +22,7 @@ export function nuovaScheda(nome = '') {
     corpo: null, // null = al massimo
     mente: null,
     usati: { fato: 0, sybil: 0, cura: 0 }, // punti spesi (il valore attuale = massimo - usati; per la Cura può essere negativo: il giocatore la modifica liberamente)
-    extra: { corpoMax: 0, menteMax: 0, armor: 0, fato: 0, sybil: 0, cura: 0 }, // correzioni manuali
+    extra: { corpoMax: 0, menteMax: 0, armor: 0, armorFisica: 0, armorMagica: 0, fato: 0, sybil: 0, cura: 0 }, // correzioni manuali (Armor Fisica/Magica a scelta)
     armorSplit: null, // quanta Armor base è Fisica (null = tutta Fisica)
     aureos: 0,
     xp: 0, // punti esperienza: 3 XP per salire di Rango
@@ -118,8 +118,8 @@ export function derive(c) {
     corpoMax: 3 * tot.resistenza + mod.corpoMax + (ex.corpoMax || 0),
     menteMax: 3 * tot.saggezza + mod.menteMax + (ex.menteMax || 0),
     armorBase: tot.resistenza + mod.armor + (ex.armor || 0),
-    armorItemF: mod.armorFisica,
-    armorItemM: mod.armorMagica,
+    armorItemF: mod.armorFisica + (ex.armorFisica || 0),
+    armorItemM: mod.armorMagica + (ex.armorMagica || 0),
     fato: tot.fortuna + mod.fato + (ex.fato || 0),
     sybil: tot.carisma + mod.sybil + (ex.sybil || 0),
     cura: tot.saggezza + mod.cura + (ex.cura || 0),
@@ -141,8 +141,8 @@ export function derive(c) {
   d.ofiuco = ofiuco
 
   const split = c.armorSplit == null ? d.armorBase : Math.min(c.armorSplit, d.armorBase)
-  d.armorFisica = split + d.armorItemF
-  d.armorMagica = d.armorBase - split + d.armorItemM
+  d.armorFisica = Math.max(0, split + d.armorItemF)
+  d.armorMagica = Math.max(0, d.armorBase - split + d.armorItemM)
   d.armorSplitEff = split
 
   d.fatoAttuale = Math.max(0, d.fato - (c.usati?.fato || 0))
@@ -287,8 +287,7 @@ export function abilitaScheda(c) {
     } else if (inv.eq && (it.cat === 'arma' || it.cat === 'oggetto')) {
       const testo = it.abilita || it.desc || ''
       const costi = parseCosti(testo)
-      if (it.cat === 'oggetto' && !costi.length && !/puoi|ogni volta|evoca|immune|rifletti|ignora/i.test(testo)) continue
-      lista.push({ key: `i:${it.id}`, nome: it.nome, fonte: it.cat === 'arma' ? 'Arma equipaggiata' : 'Oggetto equipaggiato', tipo: 'oggetto', testo, costi })
+      lista.push({ key: `i:${it.id}`, nome: it.nome, fonte: it.cat === 'arma' ? 'Arma equipaggiata' : `${SLOT_NOME[it.slot] || 'Oggetto'} equipaggiato`, tipo: 'oggetto', testo, costi })
     }
   }
   for (const a of c.abilita || []) {
@@ -351,16 +350,18 @@ export function riceviOggetto(s, it, qta = 1, caso = Math.random) {
 export const haAnelloOro = (c) => c.inventario.some((i) => i.id === slug("Anello d'Oro") && i.eq)
 
 // Mostro sconfitto: Aureos (raddoppiati con l'Anello d'Oro equipaggiato) e materiali del bottino.
-export function applicaBottino(s, m) {
+export function applicaBottino(s, m, { drop = true } = {}) {
   let x = s
   if (m.aureos) {
     const doppio = haAnelloOro(s)
     const au = m.aureos * (doppio ? 2 : 1)
     x = conLog({ ...x, aureos: x.aureos + au }, `Sconfitto ${m.nome}: +${au} Aureos${doppio ? " (Anello d'Oro)" : ''}`)
   } else x = conLog(x, `Sconfitto ${m.nome}`)
-  for (const n of m.drop) {
-    const it = ITEMS_BY_ID[slug(n)]
-    if (it) x = riceviOggetto(x, it)
+  if (drop) {
+    for (const n of m.drop) {
+      const it = ITEMS_BY_ID[slug(n)]
+      if (it) x = riceviOggetto(x, it)
+    }
   }
   return x
 }
@@ -417,6 +418,52 @@ export function serveBackup(c, adesso = Date.now()) {
   const giorni = Math.floor((adesso - ultimo) / giorno)
   const rimandato = c.backupRimandato ? Date.parse(c.backupRimandato) > adesso : false
   return { serve: giorni >= GIORNI_BACKUP && !rimandato, giorni, mai: !c.ultimoBackup }
+}
+
+// Armor Fisica o Magica a scelta (oltre a quella degli oggetti)
+export function conArmor(c, chiave, delta) {
+  return { ...c, extra: { ...c.extra, [chiave]: (c.extra?.[chiave] || 0) + delta } }
+}
+
+// Correzione: si può scendere di Rango solo se c'è un punto Rango non assegnato (altrimenti prima si toglie dallo Zodiaco)
+export function togliRango(c) {
+  if (c.rango <= 1 || puntiLiberi(c) <= 0) return c
+  return conLog({ ...c, rango: c.rango - 1 }, `Rango ${c.rango - 1} (correzione)`)
+}
+
+// ---- equipaggiamento: limiti per Anello/Amuleto/Item aggiuntivo e mani delle armi
+export function controllaEquip(c, it) {
+  const eq = c.inventario.filter((r) => r.eq).map((r) => ITEMS_BY_ID[r.id]).filter(Boolean)
+  if (it.cat === 'oggetto' && it.slot) {
+    if (eq.filter((x) => x.slot === it.slot).length >= LIMITE_SLOT[it.slot]) {
+      const nome = SLOT_NOME[it.slot]
+      return { ok: false, forzabile: false, motivo: `Hai già equipaggiato ${it.slot === 'agg' ? "l'Item aggiuntivo" : 'un ' + nome}: toglilo prima. Puoi tenere 1 Anello, 1 Amuleto e 1 Item aggiuntivo.` }
+    }
+  }
+  if (it.cat === 'arma' && it.mani) {
+    const armi = eq.filter((x) => x.cat === 'arma' && x.mani)
+    const conflitto = (it.mani === 2 && armi.length > 0) || (it.mani === 1 && armi.some((x) => x.mani === 2))
+    if (conflitto) return { ok: false, forzabile: true, motivo: 'Un\'arma a due mani non si equipaggia insieme a un\'arma a una mano (salvo abilità speciali).' }
+  }
+  return { ok: true }
+}
+
+// ---- danno delle armi con i bonus
+export function dannoArma(it, d) {
+  if (it.danni == null) return null
+  const t = (it.tipo || '').toLowerCase()
+  const f = t.includes('fisico'), m = t.includes('magico')
+  const alternativa = f && m && t.includes(' o ')
+  const parti = []
+  if (f) parti.push({ n: d.dmgFisici, tipo: 'fisici' })
+  if (m) parti.push({ n: d.dmgMagici, tipo: 'magici' })
+  const totale = it.danni + (alternativa ? 0 : parti.reduce((a, p) => a + p.n, 0))
+  return { base: it.danni, parti, alternativa, totale }
+}
+export function testoDanno(g) {
+  if (g.alternativa) return `${g.base} (+${g.parti[0].n} se fisico, +${g.parti[1].n} se magico)`
+  const bonus = g.parti.map((p) => ` +${p.n} ${p.tipo}`).join('')
+  return bonus ? `${g.base}${bonus} = ${g.totale}` : `${g.base}`
 }
 
 // Sale di un Rango spendendo 3 XP (il Rango non scende mai)

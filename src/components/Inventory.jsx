@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ITEMS_BY_ID } from '../data/items.js'
 import { SEGNI } from '../data/zodiac.js'
-import { conLog, conRimozione, conXp, riceviOggetto, scovaMateriale, verificaReq } from '../lib/rules.js'
+import { conLog, conRimozione, conXp, controllaEquip, riceviOggetto, scovaMateriale, verificaReq } from '../lib/rules.js'
 import ItemCard from './ItemCard.jsx'
 
 const SEZIONI = [
@@ -21,6 +21,13 @@ export default function Inventory({ c, d, up }) {
     if (!r.eq && r.it.req && !verificaReq(r.it.req, c, d)) {
       alert(`Non soddisfi i requisiti di ${r.it.nome}: ${r.it.reqTxt}`)
       return
+    }
+    if (!r.eq) {
+      const ctl = controllaEquip(c, r.it)
+      if (!ctl.ok) {
+        if (!ctl.forzabile) return alert(ctl.motivo)
+        if (!confirm(`${ctl.motivo}\n\nEquipaggiare comunque? Fallo solo se una tua abilità speciale lo permette.`)) return
+      }
     }
     up((s) => ({ ...s, inventario: s.inventario.map((x) => (x.id === r.id ? { ...x, eq: !x.eq } : x)) }))
   }

@@ -164,3 +164,66 @@ test('XP: il Cosmo Liquido dà 2 XP e con 3 XP si sale di Rango', async ({ page 
   await expect(page.getByText('1 XP', { exact: true })).toBeVisible()
   await expect(page.getByText(/Hai 2 punti da assegnare/)).toBeVisible()
 })
+
+// Riceve oggetti dalla tab Ricevi (per i test di equipaggiamento)
+async function ricevi(page, nome) {
+  await tab(page, 'Ricevi')
+  await page.getByPlaceholder('Cerca…').fill(nome)
+  await page.locator('.item').filter({ has: page.getByText(nome, { exact: true }) }).getByRole('button', { name: 'Ricevi' }).click()
+}
+
+test('Equipaggiamento: 1 Anello, 1 Amuleto, 1 Item agg; due mani + una mano dà errore', async ({ page }) => {
+  const avvisi = []
+  await nuovo(page)
+  page.on('dialog', (d) => avvisi.push(d.message()))
+  await ricevi(page, 'Anello di Piume')
+  await ricevi(page, 'Anello di Guardia')
+  await ricevi(page, 'Luna Nera')
+  await tab(page, 'Inventario')
+  const equip = (nome) => page.locator('.item', { hasText: nome }).first().getByRole('button', { name: /Equipaggia|Equipaggiato/ })
+  await equip('Anello di Piume').click()
+  await expect(equip('Anello di Piume')).toHaveText(/Equipaggiato/)
+  await equip('Anello di Guardia').click()           // secondo anello: bloccato
+  await expect(equip('Anello di Guardia')).toHaveText(/^Equipaggia$/)
+  expect(avvisi.some((m) => /1 Anello/.test(m))).toBeTruthy()
+  await equip('Luna Nera').click()                    // anello + amuleto: va bene
+  await expect(equip('Luna Nera')).toHaveText(/Equipaggiato/)
+})
+
+test('Armor a scelta, Rango che scende e Bestiario: nascondere di nuovo', async ({ page }) => {
+  await nuovo(page)
+  await page.getByRole('button', { name: 'Più Armor Fisica' }).click()
+  await page.getByRole('button', { name: 'Più Armor Magica' }).click()
+  await page.getByRole('button', { name: 'Più Armor Magica' }).click()
+  await expect(page.locator('.stat', { has: page.locator('.stat-n', { hasText: /^Fisica$/ }) }).locator('strong')).toHaveText('1')
+  await expect(page.locator('.stat', { has: page.locator('.stat-n', { hasText: /^Magica$/ }) }).locator('strong')).toHaveText('2')
+  // Rango: a 1 non scende
+  await expect(page.getByRole('button', { name: /Togli un Rango/ })).toBeDisabled()
+  // Bestiario: scopro e nascondo
+  await tab(page, 'Bestiario')
+  await page.locator('.mostro', { hasText: '???' }).first().getByRole('button', { name: 'Segna come incontrato' }).click()
+  await page.getByRole('button', { name: 'Nascondi di nuovo' }).first().click()
+  await expect(page.getByRole('button', { name: 'Nascondi di nuovo' })).toHaveCount(0)
+})
+
+test('Negozio per categorie: Anelli, Amuleti, Item agg, Consumabili', async ({ page }) => {
+  await nuovo(page)
+  await tab(page, 'Negozio')
+  await page.getByRole('button', { name: 'Anelli', exact: true }).click()
+  const nomi = await page.locator('.item .item-head strong').allTextContents()
+  expect(nomi.length).toBeGreaterThan(3)
+  expect(nomi.every((n) => /^Anello/.test(n))).toBeTruthy()
+  await page.getByRole('button', { name: 'Consumabili', exact: true }).click()
+  await expect(page.locator('.item', { hasText: 'Tonico' }).first()).toBeVisible()
+  await expect(page.locator('.item', { hasText: /^Anello di Piume/ })).toHaveCount(0)
+})
+
+test('Danni delle armi equipaggiate con i bonus', async ({ page }) => {
+  await nuovo(page)
+  await ricevi(page, 'Spada di Guerra e Sangue')
+  await tab(page, 'Inventario')
+  await page.locator('.item', { hasText: 'Spada di Guerra e Sangue' }).first().getByRole('button', { name: 'Equipaggia' }).click()
+  await tab(page, 'Scheda')
+  await expect(page.locator('.danni-armi')).toContainText('Spada di Guerra e Sangue')
+  await expect(page.locator('.danni-armi')).toContainText('9')
+})

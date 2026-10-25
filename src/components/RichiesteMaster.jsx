@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ITEMS_BY_ID } from '../data/items.js'
-import { RANGO_MAX, conXp, estraiPergamena, applicaBottino, bottinoDi, conCura, conDanno, conLog, conPuntiCura, conSybil, dannoNetto, riceviOggetto, riservaDanno } from '../lib/rules.js'
+import { RANGO_MAX, costoLibero, conXp, estraiPergamena, applicaBottino, bottinoDi, conCura, conDanno, conLog, conPuntiCura, conSybil, dannoNetto, riceviOggetto, riservaDanno } from '../lib/rules.js'
 
 // I danni e gli Aureos tolti chiedono conferma; i doni si applicano da soli
 const RISORSE = ['aureos', 'sybil', 'puntiCura', 'xp']
@@ -51,8 +51,8 @@ function applicaDono(a, c, d, up) {
   if (tipo === 'bottino') {
     const m = bottinoDi(dati.mostro)
     if (!m) return null
-    up((s) => applicaBottino(s, m))
-    return `Bottino di ${m.nome}`
+    up((s) => applicaBottino(s, m, { drop: !dati.soloAureos }))
+    return dati.soloAureos ? `Aureos di ${m.nome}` : `Bottino di ${m.nome}`
   }
   return null
 }
@@ -62,6 +62,8 @@ function Danno({ a, c, d, tv, up }) {
   const netto = dannoNetto(d, tipo, n)
   const [finale, setFinale] = useState(netto)
   const [ris, setRis] = useState(riservaDanno(tipo))
+  // con la Forma dell'Equilibrio (Bilancia) si può scegliere Corpo o Mente; i danni puri si scelgono sempre
+  const sceltaLibera = tipo === 'puro' || costoLibero(c)
   const armor = tipo === 'fisico' ? d.armorFisica : tipo === 'magico' ? d.armorMagica : 0
   const [busy, setBusy] = useState(false)
 
@@ -94,9 +96,9 @@ function Danno({ a, c, d, tv, up }) {
         </label>
         <label className="campo" style={{ margin: 0 }}>
           Da togliere a
-          <select value={ris} onChange={(e) => setRis(e.target.value)}>
-            <option value="corpo">Corpo</option>
-            <option value="mente">Mente</option>
+          <select value={ris} onChange={(e) => setRis(e.target.value)} disabled={!sceltaLibera}>
+            {(sceltaLibera || ris === 'corpo') && <option value="corpo">Corpo</option>}
+            {(sceltaLibera || ris === 'mente') && <option value="mente">Mente</option>}
           </select>
         </label>
       </div>

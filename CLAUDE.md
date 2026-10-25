@@ -142,3 +142,14 @@ Decisione del Master sulla fase 3: NIENTE combattimento sul tavolo (PV e azioni 
 - `npm run verifica` prima di ogni push.
 - `.github/workflows/attivita-mensile.yml`: il 1° di ogni mese un commit automatico (`.github/ultimo-controllo.txt`) tiene attivo il repository, così GitHub non disattiva i workflow programmati. Quel commit non fa ripartire il deploy. In Fork compare come "1 commit indietro": basta un Pull.
 - Test nel browser vero (Playwright, in modalità locale, senza toccare Supabase): `cd e2e && npm install && npx playwright install chromium` la prima volta, poi `cd e2e && npx playwright test`. Coprono creazione, assegnazione punti, Aureos/Fato/Sybil/Cura, massimi, Zodiaco nascosto, Negozio (studio, acquisto, equipaggiamento), Craft, Pergamena, foto, eliminazione. Non coprono Tavolo e Master (richiedono Supabase).
+
+## Richieste del Master dopo la prima partita (applicate)
+
+- Equipaggiamento: al massimo 1 Anello, 1 Amuleto e 1 Item aggiuntivo (`slot` degli oggetti in `items.js`, `controllaEquip`); i consumabili non si equipaggiano. Armi: due mani + una mano dà errore (si può forzare per abilità speciali). Le armi SS contano come a due mani.
+- Negozio diviso in Armi, Anelli, Amuleti, Item agg, Consumabili. Gli oggetti equipaggiati compaiono tutti nelle Abilità, anche senza costo.
+- Armor Fisica e Magica modificabili a mano (`extra.armorFisica`, `extra.armorMagica`, `conArmor`), oltre agli oggetti. Rango: si può scendere (`togliRango`) solo se c'è un punto Rango non assegnato.
+- Bestiario: "Nascondi di nuovo" toglie un mostro dagli incontrati.
+- Danni delle armi equipaggiate con i bonus (`dannoArma`, `testoDanno`, `DanniArmi.jsx`): nella Scheda e nello scontro del Tavolo. Es. "5 +3 fisici +2 magici = 10". Armi "Fisico o Magico": mostra i due casi.
+- Bottino del Master: Aureos a tutti i giocatori scelti, ogni materiale a un giocatore solo (azione `bottino` con `soloAureos` + azioni `oggetto`).
+- Forma dell'Equilibrio: solo con Bilancia ≥ 1 il danno (dopo l'Armor) si può togliere a Corpo o Mente a scelta; altrimenti fisico = Corpo e magico = Mente. I danni puri si scelgono sempre.
+- Da chiarire con il Master: oggetti studiati visibili a tutti (condivisi), danni ai mostri nello scontro, Capelli d'Argento dell'Elfo.

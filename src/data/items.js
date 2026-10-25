@@ -285,7 +285,23 @@ export const RINOMINATI = {
 }
 export const ID_VECCHI = Object.fromEntries(Object.entries(RINOMINATI).map(([o, n]) => [slug(o), slug(n)]))
 
-export const ITEMS = TUTTI.map((i) => ({ ...i, id: slug(i.nome) }))
+// Dove si indossa un oggetto: 1 Anello, 1 Amuleto e 1 Oggetto aggiuntivo al massimo. Le armi SS contano come a due mani.
+export const SLOT_NOME = { anello: 'Anello', amuleto: 'Amuleto', agg: 'Item aggiuntivo' }
+export const LIMITE_SLOT = { anello: 1, amuleto: 1, agg: 1 }
+const slotDi = (i) => {
+  if (i.cat !== 'oggetto' || i.consumabile) return undefined
+  if (/^Anello/i.test(i.nome)) return 'anello'
+  if (/^Amuleto/i.test(i.nome) || /\(Amuleto\)/i.test(i.desc || '')) return 'amuleto'
+  return 'agg'
+}
+
+export const ITEMS = TUTTI.map((i) => {
+  const o = { ...i, id: slug(i.nome) }
+  const slot = slotDi(i)
+  if (slot) o.slot = slot
+  if (i.cat === 'arma' && i.tier === 'SS') o.mani = 2
+  return o
+})
 export const ITEMS_BY_ID = Object.fromEntries(ITEMS.map((i) => [i.id, i]))
 export const itemByName = (nome) => ITEMS_BY_ID[slug(nome)]
 export const SHOP_ITEMS = ITEMS.filter((i) => i.shop)

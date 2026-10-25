@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { CATEGORIE } from '../data/zodiac.js'
-import { RANGO_MAX, XP_PER_RANGO, saliRango, segniUsati, conLog, conMax, normalizza, serveBackup } from '../lib/rules.js'
+import { RANGO_MAX, XP_PER_RANGO, conArmor, saliRango, segniUsati, conLog, conMax, normalizza, serveBackup, togliRango } from '../lib/rules.js'
 import { esportaJSON } from '../lib/store.js'
 import Abilities from './Abilities.jsx'
 import AssegnaPunto from './AssegnaPunto.jsx'
+import DanniArmi from './DanniArmi.jsx'
 import { ridimensiona } from '../lib/immagine.js'
 
 function Riserva({ nome, valore, max, onChange, onRipristina, onMaxMeno, onMaxPiu }) {
@@ -163,6 +164,11 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
               </button>
             </div>
             <small>{c.rango}/{RANGO_MAX} · gli XP li dà il Master</small>
+            <button
+              className="ghost rango-meno" disabled={c.rango <= 1 || liberi <= 0}
+              title={liberi <= 0 ? 'Prima togli un punto dallo Zodiaco (modalità correzione)' : ''}
+              onClick={() => confirm('Scendere di un Rango? Serve solo per correggere un errore.') && up((x) => togliRango(x))}
+            >− Togli un Rango</button>
           </div>
         </div>
         <p className={liberi > 0 ? 'avviso-int' : 'muted'}>
@@ -205,17 +211,27 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
 
       <Abilities c={c} d={d} up={up} tv={tv} />
 
+      <DanniArmi c={c} d={d} />
+
       <section className="card">
         <h2>Armor</h2>
         <div className="griglia">
-          <div className="stat"><span className="stat-n">Fisica</span><strong>{d.armorFisica}</strong></div>
-          <div className="stat"><span className="stat-n">Magica</span><strong>{d.armorMagica}</strong></div>
+          {[['armorFisica', 'Fisica', d.armorFisica], ['armorMagica', 'Magica', d.armorMagica]].map(([k, nome, v]) => (
+            <div className="stat" key={k}>
+              <span className="stat-n">{nome}</span>
+              <div className="riga">
+                <button onClick={() => up((x) => conArmor(x, k, -1))} disabled={v <= 0} aria-label={`Meno Armor ${nome}`}>−</button>
+                <strong>{v}</strong>
+                <button onClick={() => up((x) => conArmor(x, k, 1))} aria-label={`Più Armor ${nome}`}>+</button>
+              </div>
+            </div>
+          ))}
         </div>
         <label className="campo">
           Armor di base da assegnare alla parte Fisica ({d.armorSplitEff} di {d.armorBase})
           <input type="range" min="0" max={d.armorBase} value={d.armorSplitEff} onChange={(e) => up((s) => ({ ...s, armorSplit: Number(e.target.value) }))} />
         </label>
-        <small className="muted">Gli oggetti equipaggiati aggiungono Armor Fisica o Magica in automatico.</small>
+        <small className="muted">Puoi cambiare a mano l'Armor Fisica e quella Magica con − e +; gli oggetti equipaggiati aggiungono la loro in automatico.</small>
       </section>
 
       <section className="card">

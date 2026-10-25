@@ -2,9 +2,10 @@ import { useState } from 'react'
 import Compagni from './Compagni.jsx'
 import Storico from './Storico.jsx'
 import MostriInCampo from './MostriInCampo.jsx'
+import DanniArmi from './DanniArmi.jsx'
 
 // Vista del giocatore: entra con il codice, poi vede i compagni, il Round e il turno
-export default function Tavolo({ c, userId, tv }) {
+export default function Tavolo({ c, d, userId, tv }) {
   const [codice, setCodice] = useState('')
   const [msg, setMsg] = useState('')
   const [busy, setBusy] = useState(false)
@@ -62,6 +63,8 @@ export default function Tavolo({ c, userId, tv }) {
           <p className="muted">Nessuno scontro in corso. Aspetta che il Master lo inizi.</p>
         )}
       </section>
+
+      {t?.scontro && d && <DanniArmi c={c} d={d} titolo="Il tuo attacco" />}
 
       <section className="card">
         <h2>Compagni</h2>

@@ -35,6 +35,43 @@ ok(con2.corpoMax === sen.corpoMax + 2, 'Cinque Essenze: il segno raggiunge la so
 ok(r.puntiLiberi(es) === 2 && es.rango === 3, 'Cinque Essenze: Rango e punti da assegnare invariati')
 ok(r.effSegno(es, 'ariete') === 3 && r.abilitaSbloccate(es, 'ariete').length === 2, 'Cinque Essenze: il segno sale a 3 e sblocca le sue abilità (1 e 2)')
 
+// ---- equipaggiamento: 1 Anello, 1 Amuleto, 1 Item agg; mani delle armi
+const slotDi = (nome) => ITEMS.find((i) => i.nome === nome)?.slot
+ok(slotDi('Anello di Piume') === 'anello' && slotDi('Luna Nera') === 'amuleto' && slotDi('Armatura Mentale') === 'agg' && slotDi('Tonico') === undefined && slotDi('Anello della Stella Cadente') === undefined, 'slot degli oggetti (anello, amuleto, item agg, consumabili senza slot)')
+ok(ITEMS.filter((i) => i.cat === 'oggetto' && !i.consumabile).every((i) => ['anello', 'amuleto', 'agg'].includes(i.slot)), 'ogni oggetto non consumabile ha uno slot')
+ok(ITEMS.filter((i) => i.tier === 'SS').every((i) => i.mani === 2), 'le armi SS contano come a due mani')
+const eqCon = (nomi) => nomi.reduce((x, n) => con(x, n, true), r.nuovaScheda('E'))
+const prova = (nomi, nuovoNome) => r.controllaEquip(eqCon(nomi), ITEMS.find((i) => i.nome === nuovoNome))
+ok(!prova(['Anello di Piume'], 'Anello di Guardia').ok && !prova(['Anello di Piume'], 'Anello di Guardia').forzabile, 'un secondo Anello viene bloccato')
+ok(prova(['Anello di Piume'], 'Luna Nera').ok && prova(['Anello di Piume', 'Luna Nera'], 'Armatura Mentale').ok, 'Anello + Amuleto + Item agg insieme vanno bene')
+ok(!prova(['Luna Nera'], 'Amuleto Selvaggio').ok && !prova(['Armatura Mentale'], 'Sciarpa dei Tarocchi').ok, 'un secondo Amuleto o Item agg viene bloccato')
+const dueMani = ITEMS.find((i) => i.cat === 'arma' && i.mani === 2 && i.tier === 'C').nome
+const unaMano = ITEMS.find((i) => i.cat === 'arma' && i.mani === 1 && i.tier === 'C').nome
+ok(!prova([unaMano], dueMani).ok && prova([unaMano], dueMani).forzabile && !prova([dueMani], unaMano).ok, 'due mani + una mano: errore (forzabile con abilità speciali)')
+ok(prova([unaMano], ITEMS.filter((i) => i.cat === 'arma' && i.mani === 1 && i.nome !== unaMano)[0].nome).ok, 'due armi a una mano vanno bene')
+ok(!prova([unaMano], 'Gallia Manifestazione di Guerra').ok, 'arma SS + arma a una mano: errore')
+
+// ---- danni delle armi con i bonus
+let dc = r.nuovaScheda('D'); dc.rango = 12; dc.segni.cancro = 3; dc.segni.vergine = 2 // Forza 3 (+3 fisici), Arcano 2 (+2 magici)
+const dd = r.derive(dc)
+const arma = (n) => ITEMS.find((i) => i.nome === n)
+ok(dd.dmgFisici === 3 && dd.dmgMagici === 2, 'bonus ai danni dalle Caratteristiche')
+const gF = r.dannoArma(arma('Agonia'), dd)
+ok(gF.totale === 5 + 3 && r.testoDanno(gF) === '5 +3 fisici = 8', 'arma fisica: base + danni fisici')
+ok(r.dannoArma(arma('Aegeon Fendi-Fulmini'), dd).totale === 15 + 2, 'arma magica: base + danni magici')
+const gM = r.dannoArma(arma('Titan Genesi del Dio Celeste'), dd)
+ok(gM.totale === 8 + 3 + 2 && /\+3 fisici \+2 magici/.test(r.testoDanno(gM)), 'arma fisica e magica: tutti e due i bonus (es. 8 +3 fisici +2 magici)')
+ok(r.dannoArma(arma('Hyperion Completo Annientamento'), dd).alternativa && /se fisico/.test(r.testoDanno(r.dannoArma(arma('Hyperion Completo Annientamento'), dd))), 'arma fisica o magica: i due casi')
+ok(r.dannoArma(arma('Omnipotent'), dd) === null, 'arma senza danni: niente totale')
+
+// ---- Armor a scelta, Rango che scende, Amuleto senza costo tra le abilità, bottino diviso
+let ar = r.nuovaScheda('A'); ar.rango = 3
+ok(r.derive(r.conArmor(ar, 'armorFisica', 2)).armorFisica === 2 && r.derive(r.conArmor(ar, 'armorMagica', 3)).armorMagica === 3 && r.derive(r.conArmor(ar, 'armorFisica', -9)).armorFisica === 0, 'Armor Fisica e Magica modificabili a scelta, mai sotto 0')
+ok(r.togliRango(ar).rango === 2 && r.togliRango(r.assegnaPunto(r.assegnaPunto(r.assegnaPunto(ar, 'ariete'), 'ariete'), 'ariete')).rango === 3 && r.togliRango({ ...ar, rango: 1 }).rango === 1, 'Rango scende solo con un punto libero e mai sotto 1')
+ok(r.abilitaScheda(con(r.nuovaScheda('S'), 'Amuleto del Sole Infranto')).some((x) => x.nome === 'Amuleto del Sole Infranto'), 'le abilità di un amuleto equipaggiato si vedono anche senza costo')
+const soloAu = r.applicaBottino(r.nuovaScheda('B'), r.bottinoDi('giudicatore'), { drop: false })
+ok(soloAu.aureos === 15 && soloAu.inventario.length === 0, 'bottino: solo Aureos (gli oggetti si assegnano a parte)')
+
 // ---- XP: 3 XP per salire di Rango, gli XP li dà il Master o il Cosmo Liquido
 let xpS = r.nuovaScheda('X'); xpS.xp = 2
 ok(r.saliRango(xpS) === xpS, 'XP: con 2 XP non si sale di Rango')

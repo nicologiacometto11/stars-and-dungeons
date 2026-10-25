@@ -12,7 +12,7 @@ export default function Shop({ c, d, up }) {
     const t = q.trim().toLowerCase()
     return SHOP_ITEMS.filter(
       (i) =>
-        (tipo === 'tutti' || i.cat === tipo) &&
+        (tipo === 'tutti' || (tipo === 'arma' ? i.cat === 'arma' : tipo === 'consumabile' ? i.cat === 'oggetto' && i.consumabile : i.slot === tipo)) &&
         (tier === 'tutti' || i.tier === tier) &&
         (!t || i.nome.toLowerCase().includes(t) || (itemNoto(c, i.id) && (i.abilita || i.desc || '').toLowerCase().includes(t))),
     ).sort((a, b) => a.prezzo - b.prezzo || a.nome.localeCompare(b.nome))
@@ -33,7 +33,7 @@ export default function Shop({ c, d, up }) {
         </div>
         <input placeholder="Cerca per nome…" value={q} onChange={(e) => setQ(e.target.value)} />
         <div className="filtri">
-          {[['tutti', 'Tutto'], ['arma', 'Armi'], ['oggetto', 'Oggetti']].map(([k, n]) => (
+          {[['tutti', 'Tutto'], ['arma', 'Armi'], ['anello', 'Anelli'], ['amuleto', 'Amuleti'], ['agg', 'Item agg'], ['consumabile', 'Consumabili']].map(([k, n]) => (
             <button key={k} className={tipo === k ? 'on' : ''} onClick={() => setTipo(k)}>{n}</button>
           ))}
           <span className="sep" />

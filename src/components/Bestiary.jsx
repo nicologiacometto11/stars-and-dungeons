@@ -48,6 +48,9 @@ export default function Bestiary({ c, d, up }) {
   const scopri = (m) =>
     up((s) => conLog({ ...s, bestiario: { ...s.bestiario, scoperti: { ...s.bestiario.scoperti, [m.id]: true } } }, `Scoperto nel Bestiario: ${m.nome}`))
 
+  const nascondi = (m) =>
+    up((s) => conLog({ ...s, bestiario: { ...s.bestiario, scoperti: Object.fromEntries(Object.entries(s.bestiario.scoperti).filter(([k]) => k !== m.id)) } }, `Nascosto nel Bestiario: ${m.nome}`))
+
   const rivela = (m) => {
     const costo = SYBIL_COSTO
     up((s) => {
@@ -61,7 +64,7 @@ export default function Bestiary({ c, d, up }) {
 
   const Card = ({ m }) => {
     const scoperto = !!c.bestiario.scoperti[m.id]
-    const rivelato = !!c.bestiario.rivelati[m.id]
+    const rivelato = scoperto && !!c.bestiario.rivelati[m.id]
     const costo = SYBIL_COSTO
     const primo = m.abilita.split('. ')[0]
     return (
@@ -75,6 +78,7 @@ export default function Bestiary({ c, d, up }) {
             <span className="tag">Grado {m.grado}</span>
           </div>
           {!scoperto && <button onClick={() => scopri(m)}>Segna come incontrato</button>}
+          {scoperto && <button className="ghost nascondi" onClick={() => nascondi(m)}>Nascondi di nuovo</button>}
           {scoperto && !rivelato && !m.illeggibile && (
             <button className="primary" disabled={d.sybilAttuale < costo} onClick={() => rivela(m)}>
               {d.sybilAttuale < costo ? `Servono ${costo} Sybil` : `Paga ${costo} Sybil per studiarlo`}

@@ -186,7 +186,7 @@ export default function App() {
         {tab === 'bestiario' && <Bestiary c={c} d={d} up={up} />}
         {tab === 'craft' && <Craft c={c} d={d} up={up} />}
         {tab === 'ricevi' && <Receive c={c} d={d} up={up} />}
-        {tab === 'tavolo' && <Tavolo c={c} userId={userId} tv={tv} />}
+        {tab === 'tavolo' && <Tavolo c={c} d={d} userId={userId} tv={tv} />}
         {tab === 'master' && tv.master && <Master tv={tv} />}
       </main>
     </div>

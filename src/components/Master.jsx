@@ -4,6 +4,8 @@ import MasterAzioni from './MasterAzioni.jsx'
 import SchedaMaster from './SchedaMaster.jsx'
 import Storico from './Storico.jsx'
 import { MOSTRI, MOSTRI_BY_ID } from '../data/monsters.js'
+import { ITEMS_BY_ID } from '../data/items.js'
+import { slug } from '../data/craft.js'
 import { ordineIniziale, prossimoTurno } from '../lib/tavolo.js'
 
 // Vista del Master: codice, scontro (Round e turni) e giocatori al tavolo
@@ -23,15 +25,27 @@ function descriviAzione(a) {
 function Bottino({ tv }) {
   const [mostro, setMostro] = useState('')
   const [esclusi, setEsclusi] = useState({})
+  const [oggetti, setOggetti] = useState({}) // nome materiale -> id del giocatore che lo riceve
   const [msg, setMsg] = useState('')
   const m = MOSTRI.find((x) => x.id === mostro)
   const scelti = tv.giocatori.filter((g) => !esclusi[g.user_id])
   const distribuisci = async () => {
     try {
-      for (const g of scelti) await tv.inviaAzione(g.user_id, 'bottino', { mostro: m.id })
-      await tv.registraEvento(`Bottino di ${m.nome} a ${scelti.map((g) => g.nome || '?').join(', ')}`)
+      // gli Aureos vanno a tutti i giocatori scelti, ogni oggetto solo a chi lo riceve
+      if (m.aureos) for (const g of scelti) await tv.inviaAzione(g.user_id, 'bottino', { mostro: m.id, soloAureos: true })
+      const assegnati = []
+      for (const nome of m.drop) {
+        const chi = tv.giocatori.find((g) => g.user_id === oggetti[nome])
+        const it = ITEMS_BY_ID[slug(nome)]
+        if (chi && it) {
+          await tv.inviaAzione(chi.user_id, 'oggetto', { id: it.id, qta: 1 })
+          assegnati.push(`${nome} → ${chi.nome || '?'}`)
+        }
+      }
+      await tv.registraEvento(`Bottino di ${m.nome}: ${m.aureos ? `${m.aureos} Aureos a ${scelti.map((g) => g.nome || '?').join(', ')}` : 'nessun Aureos'}${assegnati.length ? `; ${assegnati.join(', ')}` : ''}`)
       setMsg('Distribuito ✓')
       setMostro('')
+      setOggetti({})
     } catch (e) {
       console.error(e)
       setMsg('Non riesco a inviare. Riprova.')
@@ -40,14 +54,14 @@ function Bottino({ tv }) {
   return (
     <section className="card">
       <h2>Bottino di un mostro</h2>
-      <p className="muted">Aureos e materiali arrivano da soli a chi scegli (con l'Anello d'Oro gli Aureos raddoppiano).</p>
-      <select value={mostro} onChange={(e) => { setMostro(e.target.value); setMsg('') }}>
+      <p className="muted">Gli Aureos vanno a tutti quelli che spunti (con l'Anello d'Oro raddoppiano). Ogni oggetto lo assegni a un giocatore solo.</p>
+      <select value={mostro} onChange={(e) => { setMostro(e.target.value); setOggetti({}); setMsg('') }}>
         <option value="">Scegli il mostro sconfitto…</option>
         {MOSTRI.map((x) => <option key={x.id} value={x.id}>{x.nome} (Grado {x.grado})</option>)}
       </select>
       {m && (
         <>
-          <p>{m.aureos ? `${m.aureos} Aureos` : 'Nessun Aureos'}{m.drop.length > 0 && ` · ${m.drop.join(', ')}`}</p>
+          <p>{m.aureos ? `${m.aureos} Aureos a tutti, spunta chi li riceve:` : 'Nessun Aureos.'}</p>
           <div className="filtri">
             {tv.giocatori.map((g) => (
               <label key={g.user_id} className="check">
@@ -55,10 +69,19 @@ function Bottino({ tv }) {
               </label>
             ))}
           </div>
+          {m.drop.map((nome) => (
+            <div key={nome} className="bottino-voce">
+              <span>{nome}</span>
+              <select value={oggetti[nome] || ''} onChange={(e) => setOggetti({ ...oggetti, [nome]: e.target.value })}>
+                <option value="">Assegna a…</option>
+                {tv.giocatori.map((g) => <option key={g.user_id} value={g.user_id}>{g.nome || '?'}</option>)}
+              </select>
+            </div>
+          ))}
         </>
       )}
       <div className="riga">
-        <button className="primary" disabled={!m || !scelti.length} onClick={distribuisci}>Distribuisci a {scelti.length}</button>
+        <button className="primary" disabled={!m || !tv.giocatori.length} onClick={distribuisci}>Distribuisci</button>
         {msg && <small className="muted">{msg}</small>}
       </div>
     </section>

@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import AssegnaPunto from './AssegnaPunto.jsx'
 import Costellazione from './Costellazione.jsx'
+import IconaElemento from './IconaElemento.jsx'
+import { metallo } from '../lib/ui.js'
 import { SEGNI, SEGNI_BY_ID, OFIUCO, CATEGORIE } from '../data/zodiac.js'
 import { ITEMS } from '../data/items.js'
 import {
   abilitaSbloccate, effSegno, segniUsati, scelteBonus, prossimaSoglia, armiZodiacoDisponibili, armiElementoDisponibili,
-  qtaIn, conAggiunta, conLog,
+  qtaIn, conAggiunta, conLog, RANGO_MAX,
 } from '../lib/rules.js'
 
 const COLORE = { fuoco: '#ff7a45', terra: '#9ccc65', aria: '#7fd1ff', acqua: '#7c93ff' }
@@ -13,43 +15,16 @@ const ELEM_NOME = { fuoco: 'Fuoco', terra: 'Terra', aria: 'Aria', acqua: 'Acqua'
 const SCELTA_NOME = { fato: 'Fato', sybil: 'Sybil', armor: 'Armor' }
 const BONUS_NOME = { corpoMax: 'Corpo MAX', menteMax: 'Mente MAX', armor: 'Armor', fato: 'Fato', sybil: 'Sybil', cura: 'Cura' }
 
-function Ruota({ c, sel, onSel }) {
-  const R = 150
-  const r0 = 52
-  const pol = (rad, ang) => [160 + rad * Math.cos(ang), 160 + rad * Math.sin(ang)]
-  return (
-    <svg viewBox="0 0 320 320" className="ruota" role="img" aria-label="Ruota dello Zodiaco">
-      {SEGNI.map((s, i) => {
-        const a0 = (i * 30 - 90) * (Math.PI / 180)
-        const a1 = ((i + 1) * 30 - 90) * (Math.PI / 180)
-        const am = (a0 + a1) / 2
-        const pt = effSegno(c, s.id)
-        const [x0, y0] = pol(R, a0), [x1, y1] = pol(R, a1), [x2, y2] = pol(r0, a1), [x3, y3] = pol(r0, a0)
-        const [tx, ty] = pol((R + r0) / 2 + 6, am)
-        return (
-          <g key={s.id} onClick={() => onSel(s.id)} style={{ cursor: 'pointer' }}>
-            <path
-              d={`M${x0},${y0} A${R},${R} 0 0 1 ${x1},${y1} L${x2},${y2} A${r0},${r0} 0 0 0 ${x3},${y3} Z`}
-              fill={COLORE[s.elemento]}
-              fillOpacity={0.12 + Math.min(pt, 10) * 0.08}
-              stroke={sel === s.id ? '#fff' : 'rgba(255,255,255,.25)'}
-              strokeWidth={sel === s.id ? 2.5 : 1}
-            />
-            <text x={tx} y={ty - 4} textAnchor="middle" fontSize="9" fill="#fff">{s.nome}</text>
-            <text x={tx} y={ty + 11} textAnchor="middle" fontSize="13" fontWeight="700" fill="#fff">{pt}</text>
-          </g>
-        )
-      })}
-      <circle cx="160" cy="160" r="46" fill="#0b0d1a" stroke="rgba(255,255,255,.2)" />
-      <text x="160" y="157" textAnchor="middle" fontSize="10" fill="#aab">RANGO</text>
-      <text x="160" y="178" textAnchor="middle" fontSize="20" fontWeight="700" fill="#fff">{c.rango}</text>
-    </svg>
-  )
-}
 
 export default function Zodiac({ c, d, up }) {
   const [sel, setSel] = useState('ariete')
   const [correzione, setCorrezione] = useState(false)
+  const dettaglio = useRef(null)
+  // scelto un segno, si scende alla sua scheda con le abilità
+  const scegli = (id) => {
+    setSel(id)
+    setTimeout(() => dettaglio.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60)
+  }
   const s = SEGNI_BY_ID[sel]
   const pt = c.segni[sel]
   const eff = effSegno(c, sel)
@@ -74,27 +49,46 @@ export default function Zodiac({ c, d, up }) {
     <div className="stack">
       <AssegnaPunto c={c} up={up} />
 
-      <section className="card">
-        <Ruota c={c} sel={sel} onSel={setSel} />
-        <div className="legenda">
-          {Object.entries(COLORE).map(([e, col]) => (
-            <span key={e}><i style={{ background: col }} />{ELEM_NOME[e]}</span>
-          ))}
+      <section className={`card carta ${metallo(c.rango)} zod-testa`}>
+        <div className="zod-rango">
+          <small>RANGO</small>
+          <strong>{c.rango}</strong>
+          <span className="muted">/ {RANGO_MAX}</span>
         </div>
-        <p className={liberi > 0 ? 'avviso-int' : 'muted'}>
-          {liberi > 0 ? `Punti da assegnare: ${liberi}` : 'Nessun punto da assegnare. Sale di Rango per averne altri.'}
-        </p>
+        <div className="zod-punti">
+          <div className="pips" role="img" aria-label={`Rango ${c.rango} su ${RANGO_MAX}`}>
+            {Array.from({ length: RANGO_MAX }, (_, i) => <i key={i} className={i < c.rango ? 'pip on' : 'pip'} />)}
+          </div>
+          <small className="muted">Punti assegnati {segniUsati(c)} su {c.rango}</small>
+          <p className={liberi > 0 ? 'avviso-int' : 'muted'}>
+            {liberi > 0 ? `Punti da assegnare: ${liberi}` : 'Nessun punto da assegnare. Sale di Rango per averne altri.'}
+          </p>
+        </div>
       </section>
 
       <section className="card cielo">
-        <h2>Il tuo cielo</h2>
-        <div className="cielo-grid">
-          {SEGNI.map((sg) => (
-            <button key={sg.id} className={`cielo-cella ${sel === sg.id ? 'on' : ''}`} onClick={() => setSel(sg.id)} aria-label={`${sg.nome}, ${effSegno(c, sg.id)} punti`}>
-              <Costellazione id={sg.id} punti={effSegno(c, sg.id)} abilita={abilitaSbloccate(c, sg.id).length} mini />
-              <small>{sg.nome}{effSegno(c, sg.id) > 0 && <b> · {effSegno(c, sg.id)}</b>}</small>
-            </button>
+        <h2>Le costellazioni</h2>
+        <div className="legenda">
+          {Object.entries(COLORE).map(([e, col]) => (
+            <span key={e} style={{ color: col }}><i className="legenda-icona"><IconaElemento elemento={e} /></i> {ELEM_NOME[e]}</span>
           ))}
+        </div>
+        <div className="cielo-grid">
+          {SEGNI.map((sg) => {
+            const pt = effSegno(c, sg.id)
+            return (
+              <button
+                key={sg.id} className={`cielo-cella ${sel === sg.id ? 'on' : ''}`} style={{ '--el': COLORE[sg.elemento] }}
+                onClick={() => scegli(sg.id)} aria-label={`${sg.nome}, ${pt} punti`}
+              >
+                <span className="segno-icona" title={ELEM_NOME[sg.elemento]}><IconaElemento elemento={sg.elemento} /></span>
+                <span className="segno-livello"><small>LIV</small><b>{pt}</b></span>
+                <Costellazione id={sg.id} punti={pt} abilita={abilitaSbloccate(c, sg.id).length} mini />
+                <strong className="segno-nome">{sg.nome}</strong>
+                <span className="segno-pips" aria-hidden="true">{Array.from({ length: 10 }, (_, i) => <i key={i} className={i < Math.min(pt, 10) ? 'on' : ''} />)}</span>
+              </button>
+            )
+          })}
         </div>
       </section>
 
@@ -107,7 +101,7 @@ export default function Zodiac({ c, d, up }) {
         </section>
       )}
 
-      <section className="card">
+      <section className="card" ref={dettaglio} style={{ scrollMarginTop: 12 }}>
         <div className="cost-grande"><Costellazione id={sel} punti={eff} abilita={abilitaSbloccate(c, sel).length} /></div>
         <div className="riga spazio">
           <div>
@@ -168,7 +162,7 @@ export default function Zodiac({ c, d, up }) {
 
       {dispo.length > 0 && (
         <section className="card">
-          <h2>Armi sbloccate dalla Ruota</h2>
+          <h2>Armi sbloccate dallo Zodiaco</h2>
           {dispo.map((it) => {
             const ha = qtaIn(c, it.id) > 0
             return (
@@ -179,7 +173,7 @@ export default function Zodiac({ c, d, up }) {
                 </div>
                 <button
                   disabled={ha}
-                  onClick={() => up((x) => conLog(conAggiunta(x, it.id), `Ottenuta ${it.nome} dalla Ruota`))}
+                  onClick={() => up((x) => conLog(conAggiunta(x, it.id), `Ottenuta ${it.nome} dallo Zodiaco`))}
                 >
                   {ha ? 'Già in inventario' : 'Ottieni'}
                 </button>

@@ -504,7 +504,6 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 .cielo-cella .cost { max-width: 64px; }
 .cielo-cella small { font-size: .66rem; color: var(--muted); text-align: center; line-height: 1.2; }
 .cielo-cella small b { color: var(--oro); font-weight: 600; }
-@media (max-width: 380px) { .cielo-grid { grid-template-columns: repeat(3, 1fr); } }
 
 /* ---- Rivelazione di Ofiuco ---- */
 .ofiuco-rivela { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 24px; text-align: center; cursor: pointer;
@@ -525,3 +524,28 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
   .stella.on, .cost.completa .cost-linea { animation: none; }
   .stella { transition: none; }
 }
+
+/* ---- Zodiaco senza ruota: intestazione con il Rango e riquadri dei segni con elemento e livello ---- */
+.zod-testa { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; }
+.zod-rango { display: flex; flex-direction: column; align-items: center; padding: 6px 16px 6px 6px; border-right: 1px solid color-mix(in srgb, var(--m1) 35%, transparent); }
+.zod-rango small { letter-spacing: .14em; color: var(--muted); font-size: .68rem; }
+.zod-rango strong { font-family: var(--serif); font-size: 2.8rem; line-height: 1; background: linear-gradient(180deg, var(--m2), var(--m1)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.zod-punti { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.zod-punti p { margin: 0; }
+.legenda { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; margin: 0 0 12px; }
+.legenda span { display: inline-flex; align-items: center; gap: 5px; font-size: .8rem; }
+.legenda-icona { width: 16px; height: 16px; display: inline-block; }
+.cielo-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.cielo-cella { position: relative; padding: 8px 4px 8px; gap: 4px; border-color: color-mix(in srgb, var(--el) 35%, transparent); background: linear-gradient(180deg, color-mix(in srgb, var(--el) 9%, transparent), rgba(8, 10, 24, .55)); }
+.cielo-cella.on { border-color: var(--el); box-shadow: 0 0 0 1px var(--el), 0 0 16px color-mix(in srgb, var(--el) 40%, transparent); background: linear-gradient(180deg, color-mix(in srgb, var(--el) 16%, transparent), rgba(8, 10, 24, .55)); }
+.cielo-cella .cost { max-width: 84px; }
+.segno-icona { position: absolute; top: 6px; left: 7px; width: 20px; height: 20px; color: var(--el); filter: drop-shadow(0 0 4px color-mix(in srgb, var(--el) 60%, transparent)); }
+.segno-livello { position: absolute; top: 5px; right: 6px; display: flex; flex-direction: column; align-items: center; line-height: 1; min-width: 24px; padding: 3px 4px 4px; border-radius: 9px; background: rgba(8, 10, 24, .7); border: 1px solid color-mix(in srgb, var(--el) 55%, transparent); }
+.segno-livello small { font-size: .5rem; letter-spacing: .12em; color: var(--muted); }
+.segno-livello b { font-family: var(--serif); font-size: 1rem; color: var(--el); font-variant-numeric: tabular-nums; }
+.cielo-cella .segno-nome { font-size: .78rem; font-family: var(--serif); letter-spacing: .05em; margin-top: 2px; }
+.segno-pips { display: flex; gap: 2px; }
+.segno-pips i { width: 5px; height: 5px; border-radius: 50%; background: rgba(255, 255, 255, .14); }
+.segno-pips i.on { background: var(--el); box-shadow: 0 0 4px var(--el); }
+.cielo-cella small { color: inherit; }
+@media (max-width: 340px) { .cielo-grid { grid-template-columns: repeat(2, 1fr); } }

@@ -21,16 +21,17 @@ export default function Inventory({ c, d, up }) {
   const equipaggia = (r) => {
     if (!r.eq && r.it.req && !verificaReq(r.it.req, c, d)) {
       alert(`Non soddisfi i requisiti di ${r.it.nome}: ${r.it.reqTxt}`)
-      return
+      return false
     }
     if (!r.eq) {
       const ctl = controllaEquip(c, r.it)
       if (!ctl.ok) {
-        if (!ctl.forzabile) return alert(ctl.motivo)
-        if (!confirm(`${ctl.motivo}\n\nEquipaggiare comunque? Fallo solo se una tua abilità speciale lo permette.`)) return
+        if (!ctl.forzabile) { alert(ctl.motivo); return false }
+        if (!confirm(`${ctl.motivo}\n\nEquipaggiare comunque? Fallo solo se una tua abilità speciale lo permette.`)) return false
       }
     }
     up((s) => ({ ...s, inventario: s.inventario.map((x) => (x.id === r.id ? { ...x, eq: !x.eq } : x)) }))
+    return true
   }
 
   const usa = (r) => {
@@ -88,7 +89,7 @@ export default function Inventory({ c, d, up }) {
         </section>
       )}
 
-      <Sagoma c={c} onToggle={equipaggia} />
+      <Sagoma c={c} d={d} onToggle={equipaggia} />
 
       {SEZIONI.map(([cat, titolo]) => {
         const lista = righe.filter((r) => r.it.cat === cat)

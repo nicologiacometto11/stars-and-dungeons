@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ITEMS_BY_ID, SLOT_NOME } from '../data/items.js'
 import IMMAGINI from '../data/immagini-oggetti.json'
-import { equipaggiato } from '../lib/rules.js'
+import { dannoArma, equipaggiato, testoDanno, verificaReq } from '../lib/rules.js'
 import { metallo } from '../lib/ui.js'
 
 const ICONA = { anello: '💍', amuleto: '📿', agg: '🛡️', mano: '🗡️' }
@@ -45,14 +45,53 @@ function Slot({ id, etichetta, icona, oggetti = [], vuotoNota, onApri, doppio })
   )
 }
 
+const ORDINE_GRADO = { SS: 0, S: 1, A: 2, B: 3, C: 4 }
+
+// Scheda di un oggetto o di un'arma dentro il foglio: immagine, grado, effetto, danni, requisiti
+function Candidato({ it, c, d, azione, etichetta, primario }) {
+  const [esteso, setEsteso] = useState(false)
+  const testo = it.abilita || it.desc || ''
+  const soddisfatto = it.req ? verificaReq(it.req, c, d) : true
+  const g = it.cat === 'arma' && d ? dannoArma(it, d) : null
+  return (
+    <li className={`cand ${TIER_CLASSE[it.tier] || ''} ${soddisfatto ? '' : 'bloccato'}`}>
+      <div className="cand-img">
+        {IMMAGINI.includes(it.id) ? <img src={img(it.id)} alt="" loading="lazy" /> : <span>{ICONA[it.slot || 'mano']}</span>}
+      </div>
+      <div className="cand-info">
+        <div className="cand-testa">
+          <strong>{it.nome}</strong>
+          <span className="tag">{it.tier}</span>
+        </div>
+        <div className="cand-meta">
+          {it.slot && <span>{SLOT_NOME[it.slot]}</span>}
+          {it.mani && <span>{it.mani === 2 ? 'Due mani' : 'Una mano'}</span>}
+          {g && <span className="oro">{testoDanno(g)}</span>}
+        </div>
+        {testo && (
+          <button type="button" className={`cand-testo ${esteso ? 'aperto' : ''}`} onClick={() => setEsteso(!esteso)} aria-expanded={esteso}>
+            {testo}
+          </button>
+        )}
+        {it.reqTxt && <small className={`req ${soddisfatto ? 'ok' : 'no'}`}>Requisiti: {it.reqTxt} {soddisfatto ? '✓' : '✗'}</small>}
+      </div>
+      <button className={`cand-btn ${primario ? 'primary' : ''}`} disabled={!soddisfatto} onClick={azione}>
+        {soddisfatto ? etichetta : 'Requisiti mancanti'}
+      </button>
+    </li>
+  )
+}
+
 // Equipaggiamento sulla sagoma: Amuleto, Item aggiuntivo, Anello e le armi nelle mani
-export default function Sagoma({ c, onToggle }) {
+export default function Sagoma({ c, d, onToggle }) {
   const [aperto, setAperto] = useState(null) // id dello slot aperto
   const eq = equipaggiato(c)
   const righe = c.inventario.map((r) => ({ ...r, it: ITEMS_BY_ID[r.id] })).filter((r) => r.it)
 
   const candidati = (slot) =>
-    righe.filter((r) => !r.eq && (slot === 'mano' ? r.it.cat === 'arma' && r.it.mani : r.it.cat === 'oggetto' && r.it.slot === slot))
+    righe
+      .filter((r) => !r.eq && (slot === 'mano' ? r.it.cat === 'arma' && r.it.mani : r.it.cat === 'oggetto' && r.it.slot === slot))
+      .sort((a, b) => (ORDINE_GRADO[a.it.tier] ?? 9) - (ORDINE_GRADO[b.it.tier] ?? 9) || a.it.nome.localeCompare(b.it.nome))
 
   const contenuto = {
     amuleto: eq.amuleto, agg: eq.agg, anello: eq.anello,
@@ -61,10 +100,13 @@ export default function Sagoma({ c, onToggle }) {
   }
   const slotDi = (id) => (id === 'destra' || id === 'sinistra' ? 'mano' : id)
   const titolo = { amuleto: 'Amuleto', agg: 'Item aggiuntivo', anello: 'Anello', destra: 'Mano destra', sinistra: 'Mano sinistra' }
+  const icona = { amuleto: ICONA.amuleto, agg: ICONA.agg, anello: ICONA.anello, destra: ICONA.mano, sinistra: ICONA.mano }
 
   const chiudi = () => setAperto(null)
   const lista = aperto ? contenuto[aperto] : []
   const dettaglio = lista[0]
+  const scelta = aperto && !dettaglio ? candidati(slotDi(aperto)) : []
+  const eseguiToggle = (r) => { if (onToggle(r) !== false) chiudi() }
 
   return (
     <section className={`card sagoma ${metallo(c.rango)} carta`}>
@@ -74,42 +116,39 @@ export default function Sagoma({ c, onToggle }) {
         <div className="figura-box"><Figura /></div>
         <Slot id="anello" etichetta="Anello" icona={ICONA.anello} oggetti={eq.anello} onApri={setAperto} />
         <Slot id="agg" etichetta="Item agg." icona={ICONA.agg} oggetti={eq.agg} onApri={setAperto} />
-        <Slot id="sinistra" etichetta="Mano sinistra" icona={ICONA.mano} oggetti={contenuto.sinistra} vuotoNota={eq.dueMani ? '' : ''} onApri={setAperto} doppio={!!eq.dueMani} />
+        <Slot id="sinistra" etichetta="Mano sinistra" icona={ICONA.mano} oggetti={contenuto.sinistra} onApri={setAperto} doppio={!!eq.dueMani} />
         <Slot id="destra" etichetta="Mano destra" icona={ICONA.mano} oggetti={contenuto.destra} onApri={setAperto} doppio={!!eq.dueMani} />
       </div>
       {eq.dueMani && <p className="muted sagoma-nota">⚔️ {eq.dueMani.nome} occupa entrambe le mani.</p>}
       {eq.senzaMani.length > 0 && <p className="muted sagoma-nota">Anche equipaggiate: {eq.senzaMani.map((a) => a.nome).join(', ')}.</p>}
 
       {aperto && createPortal(
-        <div className="lightbox sagoma-modale" onClick={chiudi}>
-          <div className="card sagoma-foglio" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={titolo[aperto]}>
-            <div className="riga spazio">
-              <strong>{titolo[aperto]}</strong>
-              <button className="ghost" onClick={chiudi} aria-label="Chiudi">×</button>
+        <div className="foglio-sfondo" onClick={chiudi}>
+          <div className="foglio" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={titolo[aperto]}>
+            <div className="foglio-maniglia" aria-hidden="true" />
+            <div className="foglio-testa">
+              <span className="foglio-icona" aria-hidden="true">{icona[aperto]}</span>
+              <div>
+                <h3>{titolo[aperto]}</h3>
+                <small className="muted">{dettaglio ? 'Equipaggiato ora' : scelta.length ? `${scelta.length} ${scelta.length === 1 ? 'disponibile' : 'disponibili'} nel tuo inventario` : 'Niente da mettere qui'}</small>
+              </div>
+              <button className="ghost foglio-x" onClick={chiudi} aria-label="Chiudi">×</button>
             </div>
+
             {dettaglio ? (
-              <>
-                {IMMAGINI.includes(dettaglio.id) && <img className="sagoma-img" src={img(dettaglio.id)} alt={dettaglio.nome} />}
-                <h3 className="sagoma-nome">{dettaglio.nome}</h3>
-                <p className="muted">{dettaglio.slot ? SLOT_NOME[dettaglio.slot] : dettaglio.tipo} · Grado {dettaglio.tier}</p>
-                <p>{dettaglio.abilita || dettaglio.desc}</p>
-                <button className="primary" onClick={() => { onToggle(righe.find((r) => r.id === dettaglio.id)); chiudi() }}>Togli</button>
-              </>
+              <ul className="cand-lista">
+                <Candidato it={dettaglio} c={c} d={d} etichetta="Togli" azione={() => eseguiToggle(righe.find((r) => r.id === dettaglio.id))} primario />
+              </ul>
+            ) : scelta.length === 0 ? (
+              <div className="foglio-vuoto">
+                <span aria-hidden="true">{icona[aperto]}</span>
+                <p>{slotDi(aperto) === 'mano' ? 'Non hai armi nell\'inventario.' : `Non hai nessun ${SLOT_NOME[slotDi(aperto)].toLowerCase()} nell'inventario.`}</p>
+                <small className="muted">Li trovi nel Negozio, oppure te li dà il Master.</small>
+              </div>
             ) : (
-              <>
-                {candidati(slotDi(aperto)).length === 0 ? (
-                  <p className="muted">Non hai niente da mettere qui. {slotDi(aperto) === 'mano' ? 'Nessuna arma' : `Nessun ${SLOT_NOME[slotDi(aperto)]?.toLowerCase()}`} nell'inventario.</p>
-                ) : (
-                  <ul className="sagoma-lista">
-                    {candidati(slotDi(aperto)).map((r) => (
-                      <li key={r.id}>
-                        <span>{r.it.nome} <small className="muted">· {r.it.tier}</small></span>
-                        <button onClick={() => { onToggle(r); chiudi() }}>Equipaggia</button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </>
+              <ul className="cand-lista">
+                {scelta.map((r) => <Candidato key={r.id} it={r.it} c={c} d={d} etichetta="Equipaggia" azione={() => eseguiToggle(r)} primario />)}
+              </ul>
             )}
           </div>
         </div>,

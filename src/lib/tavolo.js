@@ -80,6 +80,13 @@ export function useTavolo(userId, c, d) {
     carica().catch((e) => { console.error(e); setPronto(true) })
   }, [carica])
 
+  // controllo leggero delle richieste del Master: una sola domanda, per non dipendere dal tempo reale
+  const caricaAzioni = useCallback(async () => {
+    if (!attivo) return
+    const { data } = await supabase.from('azioni').select('*').eq('user_id', userId).eq('stato', 'attesa').order('created_at')
+    if (data) setAzioni((prima) => (prima.map((a) => a.id).join() === data.map((a) => a.id).join() ? prima : data))
+  }, [attivo, userId])
+
   // tempo reale: a ogni cambiamento al tavolo ricarico tutto (sono poche righe)
   useEffect(() => {
     if (!attivo || !(master || membro)) return
@@ -92,11 +99,16 @@ export function useTavolo(userId, c, d) {
       .subscribe()
     const torna = () => document.visibilityState === 'visible' && carica()
     document.addEventListener('visibilitychange', torna)
+    // piano B se il tempo reale non arriva (telefono in standby, rete che cambia): richieste ogni 5 secondi, tutto il tavolo ogni 20
+    const veloce = setInterval(() => document.visibilityState === 'visible' && membro && caricaAzioni(), 5000)
+    const lento = setInterval(torna, 20000)
     return () => {
+      clearInterval(veloce)
+      clearInterval(lento)
       document.removeEventListener('visibilitychange', torna)
       supabase.removeChannel(canale)
     }
-  }, [attivo, master, membro, carica])
+  }, [attivo, master, membro, carica, caricaAzioni])
 
   // pubblico i miei numeri quando cambiano (solo se sono al tavolo)
   const ultimo = useRef('')

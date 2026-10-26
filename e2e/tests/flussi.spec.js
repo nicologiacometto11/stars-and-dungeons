@@ -271,3 +271,28 @@ test('Riserve: il liquido sale in modo fluido (non a scatto) e il numero scorre'
   expect(durante, 'ma non è ancora arrivato').toBeGreaterThan(pieno + 2)
   expect(pieno).toBeLessThan(vuoto - 40)
 })
+
+test('Riserve: da 0 a 1 e da 1 a 0 senza scatti (il liquido parte subito, la sfera si accende piano)', async ({ page }) => {
+  await nuovo(page)
+  for (let i = 0; i < 12; i++) await page.getByRole('button', { name: 'Aumenta il massimo di Corpo' }).click()
+  const orb = page.locator('.orb-corpo')
+  const campione = () => orb.evaluate((o) => ({
+    y: new DOMMatrix(getComputedStyle(o.querySelector('.liquido')).transform).m42,
+    op: Number(getComputedStyle(o.querySelector('.orb')).opacity),
+  }))
+  for (let i = 0; i < 3; i++) await orb.getByRole('button', { name: '−5' }).click()
+  await page.waitForTimeout(2200)
+  const vuota = await campione()
+  await orb.getByRole('button', { name: '+1' }).click()
+  await page.waitForTimeout(150)
+  const salendo = await campione()
+  expect(salendo.y, 'il liquido è già partito dopo 0,15 s').toBeLessThan(vuota.y - 1)
+  expect(salendo.op, 'la sfera non si accende di colpo').toBeLessThan(0.99)
+  await page.waitForTimeout(1600)
+  const piena = await campione()
+  await orb.getByRole('button', { name: '−1' }).click()
+  await page.waitForTimeout(150)
+  const scendendo = await campione()
+  expect(scendendo.y, 'scende subito').toBeGreaterThan(piena.y + 0.5)
+  expect(scendendo.op, 'la sfera si spegne piano').toBeGreaterThan(0.76)
+})

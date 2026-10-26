@@ -20,7 +20,8 @@ function useScorrevole(valore) {
     let id
     const passo = (t) => {
       const k = Math.min(1, (t - t0) / 1000)
-      setMostrato(Math.round(da + (valore - da) * (1 - Math.pow(1 - k, 3))))
+      const verso = valore > da ? 1 : -1
+      setMostrato(da + verso * Math.ceil(Math.abs(valore - da) * (1 - Math.pow(1 - k, 3)) - 1e-9))
       if (k < 1) id = requestAnimationFrame(passo)
     }
     id = requestAnimationFrame(passo)

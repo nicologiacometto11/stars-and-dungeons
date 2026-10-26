@@ -289,7 +289,7 @@ export function abilitaScheda(c) {
   const ofiuco = ofiucoAttivo(c)
   if (ofiuco) {
     // Le tecniche della Ruota non sono più disponibili: al loro posto ci sono le 4 di Ofiuco
-    const NOMI = ['Colpo di Ofiuco', 'Energia distruttiva', 'Asclepio', 'Sabik']
+    const NOMI = ['Colpo di Ofiuco', 'Zanna del serpente', 'Asclepio', 'Sabik']
     OFIUCO.abilita.forEach((testo, i) => {
       const sabik = i === 3
       lista.push({ key: `ofiuco:${i}`, nome: NOMI[i], fonte: 'Ofiuco', tipo: 'zodiaco', testo: sabik ? `${testo} Scegli qui sotto quale.` : testo, costi: sabik ? [] : parseCosti(testo), ...(sabik ? { sabik: abilitaSabik() } : {}) })

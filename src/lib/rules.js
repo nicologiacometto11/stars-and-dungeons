@@ -31,6 +31,7 @@ export function nuovaScheda(nome = '') {
     noti: {}, // oggetti e armi di cui il giocatore conosce gli effetti (studiati, comprati, ricevuti, forgiati)
     ricette: [], // ricette di craft scoperte (nome dell'arma)
     immagine: null, // foto del personaggio (data URL ridotta)
+    sabikUsi: 0, // quante volte hai invocato Sabik in questa Sessione (max 2)
     ofiucoRivelato: false, // la rivelazione animata di Ofiuco si vede una volta sola
     creata: new Date().toISOString(), // per il promemoria del backup
     ultimoBackup: null, // ultima esportazione della scheda (JSON)
@@ -272,8 +273,22 @@ export function costiPagabili(costi, libero) {
 
 // Tutte le abilità che il giocatore può usare ora: Ruota sbloccata, oggetti/armi equipaggiati,
 // abilità uniche, perenni (armi S) e quelle scritte da lui.
+export const SABIK_USI = 2
+
+// Sabik (Ofiuco): una qualunque delle 12 abilità di Grado 8, 2 volte per Sessione
+export function abilitaSabik() {
+  return SEGNI.map((s) => ({ segno: s.nome, ...s.abilita.find((a) => a.soglia === 8) }))
+}
+
+export function conSabik(c, delta) {
+  return { ...c, sabikUsi: Math.min(SABIK_USI, Math.max(0, (c.sabikUsi || 0) + delta)) }
+}
+
 export function abilitaScheda(c) {
   const lista = []
+  if (ofiucoAttivo(c)) {
+    lista.push({ key: 'ofiuco:sabik', nome: 'Sabik', fonte: 'Ofiuco', tipo: 'zodiaco', testo: 'Invochi Sabik e il suo terribile potere: manifesti il potere di una qualunque costellazione di Grado 8 (2 volte per Sessione). Scegli qui sotto quale.', costi: [], sabik: abilitaSabik() })
+  }
   for (const s of SEGNI) {
     for (const a of abilitaSbloccate(c, s.id)) {
       if (a.tipo === 'segno') continue
@@ -513,6 +528,7 @@ export function normalizza(raw) {
   c.xp = Math.max(0, Number(raw?.xp) || 0)
   c.immagine = raw?.immagine || null
   c.ofiucoRivelato = !!raw?.ofiucoRivelato
+  c.sabikUsi = Math.min(SABIK_USI, Math.max(0, Number(raw?.sabikUsi) || 0))
   c.creata = raw?.creata || new Date().toISOString()
   // oggetti e armi rinominati: l'id (e il nome della ricetta) cambia, la scheda resta valida
   const nuovoId = (id) => ID_VECCHI[id] || id

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { abilitaScheda, conLog, costoLibero, costiPagabili } from '../lib/rules.js'
+import { SABIK_USI, abilitaScheda, conLog, conSabik, costoLibero, costiPagabili, parseCosti } from '../lib/rules.js'
 
 const NOME_RIS = { mente: 'Mente', corpo: 'Corpo' }
 
@@ -75,6 +75,36 @@ export default function Abilities({ c, d, up, tv }) {
               <span className="tag">{a.fonte}</span>
             </div>
             {a.testo && <p>{a.testo}</p>}
+            {a.sabik && (
+              <div className="sabik">
+                <div className="riga spazio">
+                  <small className="costo">Invocazioni rimaste: {SABIK_USI - (c.sabikUsi || 0)} su {SABIK_USI}</small>
+                  <button className="ghost" disabled={!c.sabikUsi} onClick={() => up((s) => conLog(conSabik(s, -SABIK_USI), 'Sabik: nuova Sessione, invocazioni recuperate'))}>Nuova Sessione</button>
+                </div>
+                {a.sabik.map((x) => (
+                  <details key={x.segno} className="ab-note">
+                    <summary><strong>{x.nome}</strong> · {x.segno}</summary>
+                    <p>{x.desc}</p>
+                    {x.costo && <small className="costo">Costo: {x.costo}</small>}
+                    <div className="riga ab-costi">
+                      {costiPagabili(parseCosti(x.costo || '', true), libero).map((k) => (
+                        <button key={k.ris + k.n} disabled={attuale[k.ris] < k.n} onClick={() => paga({ nome: x.nome }, k)} title="Toglie il costo dalla riserva">
+                          Usa −{k.n} {NOME_RIS[k.ris]}
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      className="primary"
+                      disabled={(c.sabikUsi || 0) >= SABIK_USI}
+                      onClick={() => {
+                        if (tv?.membro) tv.registraEvento(`${c.nome} invoca Sabik: ${x.nome}`)
+                        up((s) => conLog(conSabik(s, 1), `Sabik: ${x.nome} (${x.segno})`))
+                      }}
+                    >Segna invocazione</button>
+                  </details>
+                ))}
+              </div>
+            )}
             {(a.costi.length > 0 || a.costoTxt) && (
               <div className="riga ab-costi">
                 {costiPagabili(a.costi, libero).map((k) => (

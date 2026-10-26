@@ -16,7 +16,7 @@
   --serif: 'Cinzel', 'Georgia', serif;
 }
 * { box-sizing: border-box; }
-html { background: radial-gradient(900px 480px at 85% -8%, rgba(120, 96, 220, .22) 0%, transparent 65%), var(--bg); background-attachment: fixed; }
+html { background: radial-gradient(900px 480px at 85% -8%, rgba(var(--amb, 120, 96, 220), .22) 0%, transparent 65%), var(--bg); background-attachment: fixed; }
 html, body { margin: 0; color: var(--txt); }
 body {
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -606,3 +606,17 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 .pagina { transform-origin: left center; animation: sfoglia .55s cubic-bezier(.3, .7, .3, 1); }
 @keyframes sfoglia { from { opacity: 0; transform: perspective(900px) rotateY(-14deg) translateX(-10px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .nebbia i, .pagina { animation: none; } .mostro-img img, .nebbia { transition: none; } }
+
+/* ---- Colori per ambiente (Bestiario): l'app prende i colori del luogo scelto ---- */
+html[data-ambiente] { --accent-bg: rgba(var(--amb), .16); }
+html[data-ambiente='isole-ghiacciate'] { --amb: 110, 190, 255; --accent: #9fd4ff; }
+html[data-ambiente='antica-fucina'] { --amb: 240, 90, 60; --accent: #ff9a7a; }
+html[data-ambiente='foresta-fungina'] { --amb: 90, 200, 120; --accent: #9be6a9; }
+html[data-ambiente='citta-dei-morti'] { --amb: 150, 110, 210; --accent: #c4a8f0; }
+html[data-ambiente='valle-decadente'] { --amb: 210, 150, 80; --accent: #e8bd85; }
+html[data-ambiente='altopiani-cristallini'] { --amb: 80, 215, 205; --accent: #8fe8de; }
+html[data-ambiente] .mostro { border-color: rgba(var(--amb), .28); }
+html[data-ambiente] .mostro-info strong { color: var(--accent); }
+html[data-ambiente] .filtri button.on { border-color: rgba(var(--amb), .6); color: var(--accent); background: var(--accent-bg); }
+html[data-ambiente] { background: radial-gradient(900px 480px at 85% -8%, rgba(var(--amb), .34) 0%, transparent 65%), radial-gradient(700px 420px at 0% 105%, rgba(var(--amb), .18) 0%, transparent 70%), var(--bg); background-attachment: fixed; }
+html[data-ambiente] .card > h2, html[data-ambiente] .card .riga > h2 { color: var(--accent); }

@@ -412,3 +412,17 @@ test('Bestiario: il mostro non incontrato è nella nebbia, che si dirada quando 
   await page.getByRole('button', { name: 'Boss e Missioni' }).click()
   await expect(page.locator('.mostri.pagina')).toHaveCount(1)
 })
+
+test('Bestiario: l\'app prende i colori dell\'ambiente e li lascia uscendo', async ({ page }) => {
+  await nuovo(page)
+  await tab(page, 'Bestiario')
+  const html = page.locator('html')
+  await expect(html).toHaveAttribute('data-ambiente', 'citta-dei-morti')
+  await page.getByRole('button', { name: 'Antica Fucina' }).click()
+  await expect(html).toHaveAttribute('data-ambiente', 'antica-fucina')
+  await page.getByRole('button', { name: 'Boss e Missioni' }).click()
+  await expect(html).not.toHaveAttribute('data-ambiente', /.*/)
+  await page.getByRole('button', { name: 'Isole Ghiacciate' }).click()
+  await tab(page, 'Scheda')
+  await expect(html).not.toHaveAttribute('data-ambiente', /.*/)
+})

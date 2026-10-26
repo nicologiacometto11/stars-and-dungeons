@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { MOSTRI, AMBIENTI, GRADI, SYBIL_COSTO } from '../data/monsters.js'
 import { slug } from '../data/craft.js'
 import { conLog } from '../lib/rules.js'
@@ -71,6 +71,14 @@ export default function Bestiary({ c, d, up, studi = STUDI_VUOTI, master = false
   const [amb, setAmb] = useState(AMBIENTI[0])
   const [grado, setGrado] = useState('tutti')
   const [vista, setVista] = useState('mostri')
+
+  // l'app prende i colori dell'ambiente scelto, finché si resta nel Bestiario
+  useEffect(() => {
+    const r = document.documentElement
+    if (vista === 'mostri') r.dataset.ambiente = slug(amb)
+    else delete r.dataset.ambiente
+    return () => { delete r.dataset.ambiente }
+  }, [amb, vista])
 
   const lista = MOSTRI.filter((m) => m.ambiente === amb && (grado === 'tutti' || m.grado === grado))
   const speciali = MOSTRI.filter((m) => !AMBIENTI.includes(m.ambiente))

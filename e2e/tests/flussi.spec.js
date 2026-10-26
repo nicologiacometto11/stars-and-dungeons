@@ -67,8 +67,11 @@ test('Negozio: effetti nascosti, si studiano con 1 Sybil, comprando si vedono; e
   await page.getByPlaceholder('Cerca per nome…').fill('Amuleto di Cristallo')
   const carta = page.locator('.item', { hasText: 'Amuleto di Cristallo' }).first()
   await expect(carta.getByText(/sconosciuto/)).toBeVisible()
+  await expect(carta).toHaveClass(/misteriosa/)
   await expect(carta.getByText(/Armor Magica \+3/)).toHaveCount(0)
   await carta.getByRole('button', { name: /Studia/ }).click()
+  await expect(carta).toHaveClass(/gira/)
+  await expect(carta).not.toHaveClass(/misteriosa/)
   await expect(carta.getByText(/Armor Magica \+3/)).toBeVisible()
   // il Sybil è stato speso
   await tab(page, 'Scheda')

@@ -566,3 +566,28 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 .ofiuco-spente { font-style: italic; margin: 8px 0 0; }
 .cielo-grid.spento .cielo-cella { opacity: .55; filter: saturate(.35); }
 .cielo-grid.spento .cielo-cella.on { opacity: .8; }
+
+/* ---- Carte collezionabili: armi e oggetti ---- */
+.carta-ogg { --g: 143, 179, 255; position: relative; overflow: hidden; isolation: isolate;
+  border-color: rgba(var(--g), .35); border-left-width: 1px;
+  background: linear-gradient(160deg, rgba(var(--g), .10), transparent 45%), var(--card);
+  box-shadow: 0 0 0 1px rgba(var(--g), .08) inset, 0 6px 22px -10px rgba(var(--g), .55); }
+.carta-ogg.t-c { --g: 143, 179, 255; }
+.carta-ogg.t-b { --g: 110, 231, 168; }
+.carta-ogg.t-a { --g: 194, 143, 255; }
+.carta-ogg.t-s, .carta-ogg.t-z { --g: 230, 194, 116; }
+.carta-ogg.t-k { --g: 141, 144, 168; }
+.carta-ogg.t-s, .carta-ogg.t-z { box-shadow: 0 0 0 1px rgba(var(--g), .18) inset, 0 8px 28px -8px rgba(var(--g), .7); }
+/* riflesso che segue l'inclinazione */
+.carta-ogg::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .5;
+  background: linear-gradient(115deg, transparent calc(30% + var(--tx, 0) * 28%), rgba(var(--g), .22) calc(45% + var(--tx, 0) * 28%), rgba(255, 255, 255, .12) calc(50% + var(--tx, 0) * 28%), rgba(var(--g), .22) calc(55% + var(--tx, 0) * 28%), transparent calc(70% + var(--tx, 0) * 28%));
+  background-position: 0 calc(var(--ty, 0) * 12px); transition: opacity .3s; }
+.carta-ogg.t-s::before, .carta-ogg.t-z::before { opacity: .85; }
+/* carta ancora misteriosa: dorso */
+.carta-ogg.misteriosa { background: repeating-linear-gradient(45deg, rgba(var(--g), .05) 0 6px, transparent 6px 12px), var(--card); }
+.dorso { flex-direction: column; align-items: center; text-align: center; border-style: solid; border-color: rgba(var(--g), .3); background: rgba(10, 11, 20, .5); }
+.dorso-segno { font-size: 1.8rem; line-height: 1; color: rgb(var(--g)); text-shadow: 0 0 14px rgba(var(--g), .7); }
+/* giro quando viene rivelata */
+.carta-ogg.gira { animation: gira-carta .8s cubic-bezier(.3, .7, .3, 1); }
+@keyframes gira-carta { 0% { transform: perspective(700px) rotateY(90deg); opacity: .4; } 100% { transform: perspective(700px) rotateY(0); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .carta-ogg::before { display: none; } .carta-ogg.gira { animation: none; } }

@@ -16,7 +16,7 @@ export default function ItemCard({ it, c, d, qta, children, compact, noto = true
     // la carta si gira quando passa da misteriosa a rivelata
     if (noto && !eraNoto.current) {
       setGira(true)
-      const t = setTimeout(() => setGira(false), 900)
+      const t = setTimeout(() => setGira(false), 1400)
       eraNoto.current = noto
       return () => clearTimeout(t)
     }

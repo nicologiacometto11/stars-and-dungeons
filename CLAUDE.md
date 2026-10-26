@@ -164,3 +164,4 @@ Decisione del Master sulla fase 3: NIENTE combattimento sul tavolo (PV e azioni 
 - Costellazioni con il disegno originale dietro (idea del Master): forme e stelle ricavate dall'illustrazione di riferimento che ha mandato (dati in `src/data/costellazioni.js`, sfondi puliti in `public/images/costellazioni/<segno>.webp`). Più punti = disegno più visibile e più stelle accese; con 0 punti è quasi invisibile. Ofiuco ha il suo disegno nella rivelazione animata. Attenzione: l'illustrazione di partenza è di terzi; se serve pubblicare l'app in modo definitivo, verificare la licenza o sostituire i disegni.
 
 - Zodiaco con Ofiuco sbloccato: le dodici costellazioni si spengono (`spenta` in `Costellazione.jsx`, griglia `.spento`) e sopra compare Ofiuco in blu (`tema="blu"`).
+- Con Ofiuco attivo le tecniche della Ruota spariscono dalle Abilità e restano le 4 di Ofiuco (`abilitaScheda`); restano i bonus del Segno e le armi dello Zodiaco.

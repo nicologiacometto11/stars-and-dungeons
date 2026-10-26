@@ -377,6 +377,8 @@ test('Sabik: con Ofiuco si sceglie una delle 12 abilità di Grado 8, 2 volte a S
   await page.waitForTimeout(1000)
   await page.evaluate(() => { const k = 'stars-and-dungeons:scheda'; const s = JSON.parse(localStorage.getItem(k)); s.rango = 12; s.ofiucoRivelato = true; for (const id of Object.keys(s.segni)) s.segni[id] = 1; localStorage.setItem(k, JSON.stringify(s)) })
   await page.reload()
+  await expect(page.locator('.ab-lista li')).toHaveCount(4)
+  await expect(page.locator('.ab-lista')).toContainText('Asclepio')
   const sabik = page.locator('.sabik')
   await expect(sabik.locator('details')).toHaveCount(12)
   await expect(sabik).toContainText('Excalibur')

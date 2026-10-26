@@ -1,7 +1,7 @@
 // Regole di gioco: tutto ciò che è "derivato" (Corpo MAX, Mente MAX, Armor, bonus, soglie, Ofiuco...)
 // viene calcolato qui a partire dalla scheda salvata, così non si può mai disallineare.
 
-import { SEGNI, SEGNI_BY_ID, CATEGORIE, SOGLIE } from '../data/zodiac.js'
+import { SEGNI, SEGNI_BY_ID, CATEGORIE, SOGLIE, OFIUCO } from '../data/zodiac.js'
 import { ITEMS, ITEMS_BY_ID, RINOMINATI, ID_VECCHI, PERGAMENE_ESTRATTE, SLOT_NOME, LIMITE_SLOT } from '../data/items.js'
 import { MOSTRI_BY_ID } from '../data/monsters.js'
 import { slug, ARMI_CRAFT_A, ARMI_CRAFT_S } from '../data/craft.js'
@@ -286,10 +286,16 @@ export function conSabik(c, delta) {
 
 export function abilitaScheda(c) {
   const lista = []
-  if (ofiucoAttivo(c)) {
-    lista.push({ key: 'ofiuco:sabik', nome: 'Sabik', fonte: 'Ofiuco', tipo: 'zodiaco', testo: 'Invochi Sabik e il suo terribile potere: manifesti il potere di una qualunque costellazione di Grado 8 (2 volte per Sessione). Scegli qui sotto quale.', costi: [], sabik: abilitaSabik() })
+  const ofiuco = ofiucoAttivo(c)
+  if (ofiuco) {
+    // Le tecniche della Ruota non sono più disponibili: al loro posto ci sono le 4 di Ofiuco
+    const NOMI = ['Colpo di Ofiuco', 'Energia distruttiva', 'Asclepio', 'Sabik']
+    OFIUCO.abilita.forEach((testo, i) => {
+      const sabik = i === 3
+      lista.push({ key: `ofiuco:${i}`, nome: NOMI[i], fonte: 'Ofiuco', tipo: 'zodiaco', testo: sabik ? `${testo} Scegli qui sotto quale.` : testo, costi: sabik ? [] : parseCosti(testo), ...(sabik ? { sabik: abilitaSabik() } : {}) })
+    })
   }
-  for (const s of SEGNI) {
+  for (const s of ofiuco ? [] : SEGNI) {
     for (const a of abilitaSbloccate(c, s.id)) {
       if (a.tipo === 'segno') continue
       lista.push({ key: `z:${s.id}:${a.soglia}`, nome: a.nome, fonte: `Zodiaco · ${s.nome}`, tipo: 'zodiaco', testo: a.desc, costoTxt: a.costo, costi: parseCosti(a.costo || '', true) })

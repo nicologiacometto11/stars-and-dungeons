@@ -30,6 +30,43 @@ function Luoghi({ ambiente }) {
   )
 }
 
+function MostroCard({ m, scoperto, rivelatoDato, puoNascondere, studi, d, scopri, nascondi, rivela }) {
+  const rivelato = scoperto && rivelatoDato
+  const costo = SYBIL_COSTO
+  const primo = m.abilita.split('. ')[0]
+  return (
+    <div className={`mostro ${scoperto ? '' : 'ignoto'}`}>
+      <div className="mostro-img">
+        <img src={img(`images/monsters/${m.id}.webp`)} alt={scoperto ? m.nome : 'Creatura sconosciuta'} loading="lazy" />
+        <div className="nebbia" aria-hidden="true"><i /><i /><i /></div>
+      </div>
+      <div className="mostro-info">
+        <div className="riga spazio">
+          <strong>{scoperto ? m.nome : '???'}</strong>
+          <span className="tag">Grado {m.grado}</span>
+        </div>
+        {!scoperto && <button onClick={() => scopri(m)}>Segna come incontrato</button>}
+        {scoperto && puoNascondere && <button className="ghost nascondi" onClick={() => nascondi(m)}>{studi.attivo ? 'Nascondi a tutti' : 'Nascondi di nuovo'}</button>}
+        {scoperto && !rivelato && !m.illeggibile && (
+          <button className="primary" disabled={d.sybilAttuale < costo} onClick={() => rivela(m)}>
+            {d.sybilAttuale < costo ? `Servono ${costo} Sybil` : `Paga ${costo} Sybil per studiarlo`}
+          </button>
+        )}
+        {scoperto && m.illeggibile && <small className="muted">Illeggibile: nessun dato</small>}
+        {rivelato && (
+          <ul className="dati">
+            {m.pv && <li><b>PV</b> {m.pv}</li>}
+            {m.d && <li><b>Per colpirlo</b> {m.d}+ sul dado</li>}
+            <li><b>Attacco</b> {primo}</li>
+            {m.aureos != null && <li><b>Aureos</b> {m.aureos}</li>}
+            {m.drop.length > 0 && <li><b>Bottino</b> {m.drop.join(', ')}</li>}
+          </ul>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function Bestiary({ c, d, up, studi = STUDI_VUOTI, master = false }) {
   const [amb, setAmb] = useState(AMBIENTI[0])
   const [grado, setGrado] = useState('tutti')
@@ -64,45 +101,6 @@ export default function Bestiary({ c, d, up, studi = STUDI_VUOTI, master = false
     if (d.sybilAttuale >= costo) studi.condividi('mostro', m.id) // da ora lo vedono anche gli altri giocatori
   }
 
-  const Card = ({ m }) => {
-    const scoperto = incontrato(m.id)
-    // chi può nascondere: il Master per tutti (online), il giocatore solo in modalità locale
-    const puoNascondere = studi.attivo ? master : true
-    const rivelato = scoperto && (studi.attivo ? studi.mostri.has(m.id) : !!c.bestiario.rivelati[m.id])
-    const costo = SYBIL_COSTO
-    const primo = m.abilita.split('. ')[0]
-    return (
-      <div className={`mostro ${scoperto ? '' : 'ignoto'}`}>
-        <div className="mostro-img">
-          <img src={img(`images/monsters/${m.id}.webp`)} alt={scoperto ? m.nome : 'Creatura sconosciuta'} loading="lazy" />
-        </div>
-        <div className="mostro-info">
-          <div className="riga spazio">
-            <strong>{scoperto ? m.nome : '???'}</strong>
-            <span className="tag">Grado {m.grado}</span>
-          </div>
-          {!scoperto && <button onClick={() => scopri(m)}>Segna come incontrato</button>}
-          {scoperto && puoNascondere && <button className="ghost nascondi" onClick={() => nascondi(m)}>{studi.attivo ? 'Nascondi a tutti' : 'Nascondi di nuovo'}</button>}
-          {scoperto && !rivelato && !m.illeggibile && (
-            <button className="primary" disabled={d.sybilAttuale < costo} onClick={() => rivela(m)}>
-              {d.sybilAttuale < costo ? `Servono ${costo} Sybil` : `Paga ${costo} Sybil per studiarlo`}
-            </button>
-          )}
-          {scoperto && m.illeggibile && <small className="muted">Illeggibile: nessun dato</small>}
-          {rivelato && (
-            <ul className="dati">
-              {m.pv && <li><b>PV</b> {m.pv}</li>}
-              {m.d && <li><b>Per colpirlo</b> {m.d}+ sul dado</li>}
-              <li><b>Attacco</b> {primo}</li>
-              {m.aureos != null && <li><b>Aureos</b> {m.aureos}</li>}
-              {m.drop.length > 0 && <li><b>Bottino</b> {m.drop.join(', ')}</li>}
-            </ul>
-          )}
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="stack">
       <section className="card">
@@ -129,8 +127,16 @@ export default function Bestiary({ c, d, up, studi = STUDI_VUOTI, master = false
 
       {vista === 'mostri' && <Luoghi ambiente={amb} />}
 
-      <div className="mostri">
-        {(vista === 'mostri' ? lista : speciali).map((m) => <Card key={m.id} m={m} />)}
+      <div className="mostri pagina" key={`${vista}|${amb}|${grado}`}>
+        {(vista === 'mostri' ? lista : speciali).map((m) => (
+          <MostroCard
+            key={m.id} m={m} studi={studi} d={d}
+            scoperto={incontrato(m.id)}
+            rivelatoDato={studi.attivo ? studi.mostri.has(m.id) : !!c.bestiario.rivelati[m.id]}
+            puoNascondere={studi.attivo ? master : true} // il Master per tutti (online), il giocatore solo in locale
+            scopri={scopri} nascondi={nascondi} rivela={rivela}
+          />
+        ))}
       </div>
     </div>
   )

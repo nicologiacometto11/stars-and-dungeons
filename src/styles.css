@@ -149,7 +149,8 @@ input[type=range] { accent-color: var(--oro); }
 .mostro { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; display: flex; flex-direction: column; }
 .mostro-img { aspect-ratio: 4 / 3; background: #000; overflow: hidden; }
 .mostro-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.mostro.ignoto .mostro-img img { filter: brightness(0) contrast(1.2); opacity: .55; }
+.mostro-img img { transition: filter 1.8s ease, opacity 1.8s ease, transform 2.2s ease; }
+.mostro.ignoto .mostro-img img { filter: brightness(0) blur(3px); opacity: .6; transform: scale(1.06); }
 .mostro-info { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px; }
 .dati { list-style: none; padding: 0; margin: 0; font-size: .85rem; display: flex; flex-direction: column; gap: 2px; }
 .dati b { color: var(--muted); font-weight: 500; margin-right: 6px; }
@@ -591,3 +592,17 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 .carta-ogg.gira { animation: gira-carta 1.3s cubic-bezier(.3, .7, .3, 1); }
 @keyframes gira-carta { 0% { transform: perspective(700px) rotateY(90deg); opacity: .4; } 100% { transform: perspective(700px) rotateY(0); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .carta-ogg::before { display: none; } .carta-ogg.gira { animation: none; } }
+
+/* ---- Mostri nella nebbia ---- */
+.nebbia { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; opacity: 0; transition: opacity 1.8s ease; }
+.mostro.ignoto .nebbia { opacity: 1; }
+.nebbia i { position: absolute; width: 140%; height: 70%; border-radius: 50%; background: radial-gradient(closest-side, rgba(190, 200, 235, .42), rgba(190, 200, 235, .12) 60%, transparent); filter: blur(10px); animation: nebbia-scorre 14s ease-in-out infinite alternate; }
+.nebbia i:nth-child(1) { top: -15%; left: -30%; }
+.nebbia i:nth-child(2) { top: 35%; left: -5%; animation-duration: 18s; animation-direction: alternate-reverse; background: radial-gradient(closest-side, rgba(170, 180, 220, .38), transparent); }
+.nebbia i:nth-child(3) { top: 10%; left: -50%; animation-duration: 22s; opacity: .8; }
+@keyframes nebbia-scorre { from { transform: translateX(-8%) scale(1); } to { transform: translateX(14%) scale(1.15); } }
+.mostro.ignoto .mostro-img { background: #0d1020; }
+/* cambio pagina del grimorio */
+.pagina { transform-origin: left center; animation: sfoglia .55s cubic-bezier(.3, .7, .3, 1); }
+@keyframes sfoglia { from { opacity: 0; transform: perspective(900px) rotateY(-14deg) translateX(-10px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .nebbia i, .pagina { animation: none; } .mostro-img img, .nebbia { transition: none; } }

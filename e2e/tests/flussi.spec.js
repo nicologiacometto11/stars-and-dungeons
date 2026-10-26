@@ -395,3 +395,20 @@ test('Sabik: con Ofiuco si sceglie una delle 12 abilità di Grado 8, 2 volte a S
   await sabik.getByRole('button', { name: 'Nuova Sessione' }).click()
   await expect(sabik).toContainText('Invocazioni rimaste: 2 su 2')
 })
+
+test('Bestiario: il mostro non incontrato è nella nebbia, che si dirada quando lo segni', async ({ page }) => {
+  await nuovo(page)
+  await tab(page, 'Bestiario')
+  const m = page.locator('.mostri .mostro').first()
+  const el = await m.elementHandle()
+  await expect(m).toHaveClass(/ignoto/)
+  expect(await m.locator('.nebbia').evaluate((e) => getComputedStyle(e).opacity)).toBe('1')
+  await m.getByRole('button', { name: 'Segna come incontrato' }).click()
+  await expect(m).not.toHaveClass(/ignoto/)
+  // la stessa carta resta montata (l'animazione può partire) e la nebbia svanisce piano piano
+  await expect(m.locator('.nebbia')).toHaveCSS('opacity', '0', { timeout: 5000 })
+  expect(await el.evaluate((e) => e.isConnected)).toBe(true)
+  // cambio ambiente: la pagina si sfoglia
+  await page.getByRole('button', { name: 'Boss e Missioni' }).click()
+  await expect(page.locator('.mostri.pagina')).toHaveCount(1)
+})

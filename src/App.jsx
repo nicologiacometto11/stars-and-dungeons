@@ -7,6 +7,7 @@ import { useStudi } from './lib/studi.js'
 import Tavolo from './components/Tavolo.jsx'
 import Master from './components/Master.jsx'
 import RichiesteMaster from './components/RichiesteMaster.jsx'
+import OfiucoRivelazione from './components/OfiucoRivelazione.jsx'
 import InstallBanner from './components/InstallBanner.jsx'
 import Auth, { NuovaPassword } from './components/Auth.jsx'
 import Sheet from './components/Sheet.jsx'
@@ -169,6 +170,7 @@ export default function App() {
       </header>
 
       <InstallBanner />
+      <OfiucoRivelazione c={c} d={d} up={up} />
       {tv.membro && <RichiesteMaster tv={tv} c={c} d={d} up={up} />}
 
       {!modalitaOnline && (

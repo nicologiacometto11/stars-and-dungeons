@@ -31,6 +31,7 @@ export function nuovaScheda(nome = '') {
     noti: {}, // oggetti e armi di cui il giocatore conosce gli effetti (studiati, comprati, ricevuti, forgiati)
     ricette: [], // ricette di craft scoperte (nome dell'arma)
     immagine: null, // foto del personaggio (data URL ridotta)
+    ofiucoRivelato: false, // la rivelazione animata di Ofiuco si vede una volta sola
     creata: new Date().toISOString(), // per il promemoria del backup
     ultimoBackup: null, // ultima esportazione della scheda (JSON)
     backupRimandato: null, // il promemoria non compare prima di questa data
@@ -511,6 +512,7 @@ export function normalizza(raw) {
   c.bestiario = { scoperti: {}, rivelati: {}, ...(raw?.bestiario || {}) }
   c.xp = Math.max(0, Number(raw?.xp) || 0)
   c.immagine = raw?.immagine || null
+  c.ofiucoRivelato = !!raw?.ofiucoRivelato
   c.creata = raw?.creata || new Date().toISOString()
   // oggetti e armi rinominati: l'id (e il nome della ricetta) cambia, la scheda resta valida
   const nuovoId = (id) => ID_VECCHI[id] || id

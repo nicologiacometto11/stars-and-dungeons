@@ -90,6 +90,14 @@ ok(convE.length === 1 && convE[0].nome === "Capelli d'Argento" && convE[0].aureo
 ok(/Capelli d'Argento convertito in 150 Aureos/.test(r.testoConversioni(convE)), 'avviso della conversione')
 ok(r.applicaBottino(r.nuovaScheda('E'), elfo).aureos === elfo.aureos + 150, "Elfo: gli Aureos del mostro più i 150 dei Capelli d'Argento")
 
+// ---- costellazioni: dati validi e stelle che si accendono con i punti
+const { COSTELLAZIONI, OFIUCO_COSTELLAZIONE } = await load('/src/data/costellazioni.js')
+const { stelleAccese } = await load('/src/components/Costellazione.jsx')
+ok(SEGNI.every((sg) => COSTELLAZIONI[sg.id]), 'ogni segno ha la sua costellazione')
+const valida = (cs) => cs.stelle.every(([x, y]) => x >= 0 && x <= 100 && y >= 0 && y <= 100) && cs.linee.every(([a, b]) => a !== b && a < cs.stelle.length && b < cs.stelle.length)
+ok([...Object.values(COSTELLAZIONI), OFIUCO_COSTELLAZIONE].every(valida), 'costellazioni: stelle nel riquadro e linee che collegano stelle esistenti')
+ok(stelleAccese(8, 0) === 0 && stelleAccese(8, 1) === 1 && stelleAccese(8, 5) === 4 && stelleAccese(8, 10) === 8 && stelleAccese(4, 1) === 1 && stelleAccese(8, 99) === 8, 'stelle accese in base ai punti (da 0 a tutte con 10)')
+
 // ---- XP: 3 XP per salire di Rango, gli XP li dà il Master o il Cosmo Liquido
 let xpS = r.nuovaScheda('X'); xpS.xp = 2
 ok(r.saliRango(xpS) === xpS, 'XP: con 2 XP non si sale di Rango')

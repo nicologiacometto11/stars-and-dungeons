@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import AssegnaPunto from './AssegnaPunto.jsx'
+import Costellazione from './Costellazione.jsx'
 import { SEGNI, SEGNI_BY_ID, OFIUCO, CATEGORIE } from '../data/zodiac.js'
 import { ITEMS } from '../data/items.js'
 import {
-  effSegno, segniUsati, scelteBonus, prossimaSoglia, armiZodiacoDisponibili, armiElementoDisponibili,
+  abilitaSbloccate, effSegno, segniUsati, scelteBonus, prossimaSoglia, armiZodiacoDisponibili, armiElementoDisponibili,
   qtaIn, conAggiunta, conLog,
 } from '../lib/rules.js'
 
@@ -85,6 +86,18 @@ export default function Zodiac({ c, d, up }) {
         </p>
       </section>
 
+      <section className="card cielo">
+        <h2>Il tuo cielo</h2>
+        <div className="cielo-grid">
+          {SEGNI.map((sg) => (
+            <button key={sg.id} className={`cielo-cella ${sel === sg.id ? 'on' : ''}`} onClick={() => setSel(sg.id)} aria-label={`${sg.nome}, ${effSegno(c, sg.id)} punti`}>
+              <Costellazione id={sg.id} punti={effSegno(c, sg.id)} abilita={abilitaSbloccate(c, sg.id).length} mini />
+              <small>{sg.nome}{effSegno(c, sg.id) > 0 && <b> · {effSegno(c, sg.id)}</b>}</small>
+            </button>
+          ))}
+        </div>
+      </section>
+
       {/* Ofiuco è segreto: compare solo quando il giocatore lo ha già sbloccato */}
       {d.ofiuco && (
         <section className="card ofiuco-box">
@@ -95,6 +108,7 @@ export default function Zodiac({ c, d, up }) {
       )}
 
       <section className="card">
+        <div className="cost-grande"><Costellazione id={sel} punti={eff} abilita={abilitaSbloccate(c, sel).length} /></div>
         <div className="riga spazio">
           <div>
             <h2 style={{ margin: 0 }}>{s.nome} <small className="muted">· {ELEM_NOME[s.elemento]} · {cat.nome}</small></h2>

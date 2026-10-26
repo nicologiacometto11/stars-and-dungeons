@@ -391,3 +391,31 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 .carta.oro::after { content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 38%; pointer-events: none;
   background: linear-gradient(100deg, transparent, rgba(255, 240, 189, .13), transparent); animation: riflesso 7s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .carta.oro::after { animation: none; display: none; } }
+
+/* ---- Riserve come sfere di liquido ---- */
+.riserve-orb { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 6px 0 14px; }
+.riserve-orb .riserva { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.orb-corpo { --l1: #ff6b73; --l2: #b3232f; --alone: rgba(255, 80, 90, .45); }
+.orb-mente { --l1: #6fb6ff; --l2: #2b57c2; --alone: rgba(90, 160, 255, .45); }
+.orb { position: relative; width: 116px; height: 116px; border-radius: 50%; overflow: hidden; display: grid; place-items: center;
+  background: radial-gradient(circle at 35% 28%, #1d2140, #0b0d1c 70%); border: 3px solid rgba(232, 220, 190, .28);
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, .7), 0 0 18px var(--alone); }
+.orb::after { content: ''; position: absolute; top: 9%; left: 14%; width: 34%; height: 22%; border-radius: 50%; transform: rotate(-28deg);
+  background: radial-gradient(ellipse, rgba(255, 255, 255, .5), transparent 70%); pointer-events: none; }
+.liquido { position: absolute; left: 0; right: 0; bottom: 0; transition: height .7s cubic-bezier(.3, .8, .3, 1);
+  background: linear-gradient(180deg, var(--l1), var(--l2)); }
+.liquido::before, .liquido::after { content: ''; position: absolute; left: -40%; width: 180%; height: 14px; top: -7px; border-radius: 50%; background: var(--l1); opacity: .9; animation: onda 4.5s ease-in-out infinite alternate; }
+.liquido::after { top: -4px; opacity: .5; animation-duration: 6.5s; animation-direction: alternate-reverse; }
+@keyframes onda { from { transform: translateX(-9%); } to { transform: translateX(9%); } }
+.orb-testo { position: relative; z-index: 2; font-size: .8rem; color: rgba(255, 255, 255, .85); text-shadow: 0 1px 4px #000; font-variant-numeric: tabular-nums; }
+.orb-testo b { font-family: var(--serif); font-size: 1.7rem; color: #fff; }
+.orb.bassa { animation: pulsa 1.8s ease-in-out infinite; }
+.orb.vuota { opacity: .75; }
+@keyframes pulsa { 0%, 100% { box-shadow: inset 0 0 18px rgba(0, 0, 0, .7), 0 0 10px var(--alone); } 50% { box-shadow: inset 0 0 18px rgba(0, 0, 0, .7), 0 0 26px var(--l1); } }
+.orb-nome { font-family: var(--serif); letter-spacing: .14em; text-transform: uppercase; font-size: .85rem; }
+.orb-btn { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; width: 100%; }
+.orb-btn button { padding: 6px 0; min-height: 0; font-size: .85rem; }
+.orb-ripristina { width: 100%; padding: 5px; min-height: 0; font-size: .8rem; }
+.riserve-orb .riserva-max { width: 100%; justify-content: space-between; margin-top: 0; }
+@media (prefers-reduced-motion: reduce) { .liquido::before, .liquido::after, .orb.bassa { animation: none; } .liquido { transition: none; } }
+.orb.vuota .liquido { display: none; }

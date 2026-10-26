@@ -7,24 +7,26 @@ import AssegnaPunto from './AssegnaPunto.jsx'
 import DanniArmi from './DanniArmi.jsx'
 import { ridimensiona } from '../lib/immagine.js'
 
+// Riserva come sfera di liquido: Corpo rosso, Mente blu. Il liquido sale e scende con i punti.
 function Riserva({ nome, valore, max, onChange, onRipristina, onMaxMeno, onMaxPiu }) {
   const pct = max > 0 ? Math.min(100, (valore / max) * 100) : 0
+  const stato = max > 0 && valore <= 0 ? 'vuota' : pct <= 25 ? 'bassa' : ''
   return (
-    <div className="riserva">
-      <div className="riserva-top">
-        <strong>{nome}</strong>
-        <span>{valore} / {max}</span>
+    <div className={`riserva orb-${nome.toLowerCase()}`}>
+      <div className={`orb ${stato}`} role="img" aria-label={`${nome}: ${valore} su ${max}`}>
+        <div className="liquido" style={{ height: `${pct}%` }} />
+        <span className="orb-testo"><b>{valore}</b> / {max}</span>
       </div>
-      <div className="barra"><div style={{ width: `${pct}%` }} /></div>
-      <div className="riga">
+      <strong className="orb-nome">{nome}</strong>
+      <div className="orb-btn">
         <button onClick={() => onChange(Math.max(0, valore - 5))}>−5</button>
         <button onClick={() => onChange(Math.max(0, valore - 1))}>−1</button>
         <button onClick={() => onChange(Math.min(max, valore + 1))}>+1</button>
         <button onClick={() => onChange(Math.min(max, valore + 5))}>+5</button>
-        <button className="ghost" onClick={onRipristina}>Ripristina</button>
       </div>
+      <button className="ghost orb-ripristina" onClick={onRipristina}>Ripristina</button>
       <div className="riga riserva-max">
-        <small className="muted">Massimo (punti bonus)</small>
+        <small className="muted">Massimo</small>
         <button onClick={onMaxMeno} disabled={max <= 0} aria-label={`Diminuisci il massimo di ${nome}`}>−</button>
         <button onClick={onMaxPiu} aria-label={`Aumenta il massimo di ${nome}`}>+</button>
       </div>
@@ -205,8 +207,10 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
 
       <section className="card">
         <h2>Riserve</h2>
+        <div className="riserve-orb">
         <Riserva nome="Corpo" valore={corpo} max={d.corpoMax} onChange={(v) => up((s) => ({ ...s, corpo: v }))} onRipristina={() => up((s) => ({ ...s, corpo: null }))} onMaxMeno={() => up((s) => conMax(s, 'corpoMax', -1))} onMaxPiu={() => up((s) => conMax(s, 'corpoMax', 1))} />
         <Riserva nome="Mente" valore={mente} max={d.menteMax} onChange={(v) => up((s) => ({ ...s, mente: v }))} onRipristina={() => up((s) => ({ ...s, mente: null }))} onMaxMeno={() => up((s) => conMax(s, 'menteMax', -1))} onMaxPiu={() => up((s) => conMax(s, 'menteMax', 1))} />
+        </div>
         <div className="griglia">
           <Contatore
             nome="Fato" valore={d.fatoAttuale} max={d.fato} libero nota={`base ${d.fato} · modificabile`}

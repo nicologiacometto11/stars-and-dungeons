@@ -66,6 +66,17 @@ export default function Zodiac({ c, d, up }) {
         </div>
       </section>
 
+      {/* Ofiuco è segreto: compare solo quando il giocatore lo ha già sbloccato. Le altre costellazioni si spengono. */}
+      {d.ofiuco && (
+        <section className="card ofiuco-box ofiuco-ciel">
+          <div className="ofiuco-eroe"><Costellazione id="ofiuco" punti={10} abilita={6} tema="blu" /></div>
+          <h2>☉ {OFIUCO.nome}</h2>
+          <p>{OFIUCO.effetto}</p>
+          <ul>{OFIUCO.abilita.map((a) => <li key={a}>{a}</li>)}</ul>
+          <p className="muted ofiuco-spente">Ofiuco ha spento le altre dodici costellazioni.</p>
+        </section>
+      )}
+
       <section className="card cielo">
         <h2>Le costellazioni</h2>
         <div className="legenda">
@@ -73,7 +84,7 @@ export default function Zodiac({ c, d, up }) {
             <span key={e} style={{ color: col }}><i className="legenda-icona"><IconaElemento elemento={e} /></i> {ELEM_NOME[e]}</span>
           ))}
         </div>
-        <div className="cielo-grid">
+        <div className={`cielo-grid ${d.ofiuco ? 'spento' : ''}`}>
           {SEGNI.map((sg) => {
             const pt = effSegno(c, sg.id)
             return (
@@ -83,7 +94,7 @@ export default function Zodiac({ c, d, up }) {
               >
                 <span className="segno-icona" title={ELEM_NOME[sg.elemento]}><IconaElemento elemento={sg.elemento} /></span>
                 <span className="segno-livello"><small>LIV</small><b>{pt}</b></span>
-                <Costellazione id={sg.id} punti={pt} abilita={abilitaSbloccate(c, sg.id).length} mini />
+                <Costellazione id={sg.id} punti={pt} abilita={abilitaSbloccate(c, sg.id).length} mini spenta={d.ofiuco} />
                 <strong className="segno-nome">{sg.nome}</strong>
               </button>
             )
@@ -91,17 +102,9 @@ export default function Zodiac({ c, d, up }) {
         </div>
       </section>
 
-      {/* Ofiuco è segreto: compare solo quando il giocatore lo ha già sbloccato */}
-      {d.ofiuco && (
-        <section className="card ofiuco-box">
-          <h2>☉ {OFIUCO.nome}</h2>
-          <p>{OFIUCO.effetto}</p>
-          <ul>{OFIUCO.abilita.map((a) => <li key={a}>{a}</li>)}</ul>
-        </section>
-      )}
 
       <section className="card" ref={dettaglio} style={{ scrollMarginTop: 12 }}>
-        <div className="cost-grande"><Costellazione id={sel} punti={eff} abilita={abilitaSbloccate(c, sel).length} /></div>
+        <div className="cost-grande"><Costellazione id={sel} punti={eff} abilita={abilitaSbloccate(c, sel).length} spenta={d.ofiuco} /></div>
         <div className="riga spazio">
           <div>
             <h2 style={{ margin: 0 }}>{s.nome} <small className="muted">· {ELEM_NOME[s.elemento]} · {cat.nome}</small></h2>

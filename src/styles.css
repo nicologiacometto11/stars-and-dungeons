@@ -550,3 +550,19 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 .cost-arte { transition: opacity 1.1s ease; }
 .ofiuco-arte { opacity: 0; animation: dissolvi 3s ease .6s forwards; }
 @media (prefers-reduced-motion: reduce) { .ofiuco-arte { animation: none; opacity: .95; } .cost-arte { transition: none; } }
+
+/* ---- Con Ofiuco le altre costellazioni si spengono e la sua brilla in blu ---- */
+.cost.blu .cost-linea { stroke: #8fc2ff; }
+.cost.blu .stella.on .stella-nucleo { fill: #eaf4ff; }
+.cost.blu .cost-fioca { stroke: #6f9be0; }
+.cost.blu.luce-6 .cost-luce, .cost.blu.completa .cost-luce { filter: drop-shadow(0 0 9px rgba(120, 180, 255, .95)); }
+.cost.blu.completa .cost-linea { stroke: #b9d9ff; }
+.cost.spenta .cost-luce, .cost.spenta { filter: none; }
+.cost.spenta .cost-fioca { opacity: .14; }
+.cost.spenta .stella-nucleo { fill: #4a4f78; opacity: .45; }
+.ofiuco-ciel { border-color: #5b95e8; background: linear-gradient(160deg, rgba(60, 100, 190, .22), var(--card) 70%); box-shadow: 0 0 26px rgba(90, 150, 255, .28); }
+.ofiuco-ciel h2 { color: #9ccaff; }
+.ofiuco-eroe { width: min(300px, 90%); margin: 0 auto 8px; }
+.ofiuco-spente { font-style: italic; margin: 8px 0 0; }
+.cielo-grid.spento .cielo-cella { opacity: .55; filter: saturate(.35); }
+.cielo-grid.spento .cielo-cella.on { opacity: .8; }

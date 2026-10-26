@@ -1,30 +1,32 @@
 import { useId } from 'react'
-import { COSTELLAZIONI } from '../data/costellazioni.js'
+import { COSTELLAZIONI, OFIUCO_COSTELLAZIONE } from '../data/costellazioni.js'
 
 // Quante stelle si accendono: una almeno con il primo punto, tutte con 10
 export const stelleAccese = (totale, punti) => (punti <= 0 ? 0 : Math.max(1, Math.round((totale * Math.min(punti, 10)) / 10)))
 
 // Costellazione di un segno: dietro c'è il disegno originale, che "viene fuori" man mano che il segno prende punti.
 // Più punti = più stelle accese; le abilità sbloccate la fanno brillare.
-export default function Costellazione({ id, punti, abilita = 0, mini = false }) {
+export default function Costellazione({ id, punti, abilita = 0, mini = false, spenta = false, tema = 'oro' }) {
   const uid = useId().replace(/:/g, '')
-  const cos = COSTELLAZIONI[id]
+  const cos = id === 'ofiuco' ? OFIUCO_COSTELLAZIONE : COSTELLAZIONI[id]
   if (!cos) return null
   const { w, h } = cos
-  const accese = stelleAccese(cos.stelle.length, punti)
-  const rivela = Math.min(Math.max(punti, 0), 10) / 10 // 0 = appena un'ombra, 1 = disegno intero
+  // spenta: con Ofiuco le altre costellazioni si spengono (restano solo il contorno e un'ombra del disegno)
+  const accese = spenta ? 0 : stelleAccese(cos.stelle.length, punti)
+  const rivela = spenta ? 0.03 : Math.min(Math.max(punti, 0), 10) / 10 // 0 = appena un'ombra, 1 = disegno intero
+  const blu = tema === 'blu'
   const k = w / 160 // scala dei tratti
   const luce = Math.min(abilita, 6)
   return (
     <svg
       viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="xMidYMid meet"
-      className={`cost luce-${luce} ${punti >= 10 ? 'completa' : ''} ${mini ? 'mini' : ''}`}
+      className={`cost luce-${luce} ${punti >= 10 && !spenta ? 'completa' : ''} ${mini ? 'mini' : ''} ${blu ? 'blu' : ''} ${spenta ? 'spenta' : ''}`}
       role="img" aria-label={`Costellazione: ${accese} ${accese === 1 ? 'stella accesa' : 'stelle accese'} su ${cos.stelle.length}`}
     >
       <defs>
         <radialGradient id={`alone-${uid}`}>
-          <stop offset="0" stopColor="#ffe9a8" stopOpacity=".8" />
-          <stop offset="1" stopColor="#ffe9a8" stopOpacity="0" />
+          <stop offset="0" stopColor={blu ? '#8fc2ff' : '#ffe9a8'} stopOpacity=".8" />
+          <stop offset="1" stopColor={blu ? '#8fc2ff' : '#ffe9a8'} stopOpacity="0" />
         </radialGradient>
         <radialGradient id={`sfuma-${uid}`} cx="50%" cy="50%" r="62%">
           <stop offset=".55" stopColor="#fff" />

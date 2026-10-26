@@ -101,6 +101,9 @@ function PromemoriaBackup({ c, up }) {
 }
 
 // Foto del personaggio: si sceglie dal telefono o dal computer e viene ridotta prima di salvarla
+// Metallo della cornice: bronzo ai primi Ranghi, argento a metà, oro in cima
+const metallo = (rango) => (rango >= 9 ? 'oro' : rango >= 5 ? 'argento' : 'bronzo')
+
 function Avatar({ c, up }) {
   const ref = useRef(null)
   const carica = async (e) => {
@@ -148,10 +151,19 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
 
   return (
     <div className="stack">
-      <section className="card">
+      <section className={`card carta ${metallo(c.rango)}`}>
+        <span className="angolo a1" aria-hidden="true">✦</span>
+        <span className="angolo a2" aria-hidden="true">✦</span>
+        <span className="angolo a3" aria-hidden="true">✦</span>
+        <span className="angolo a4" aria-hidden="true">✦</span>
         <div className="testa-top">
           <Avatar c={c} up={up} />
-          <input className="nome" spellCheck={false} autoCorrect="off" autoComplete="off" value={c.nome} onChange={(e) => up((s) => ({ ...s, nome: e.target.value }))} aria-label="Nome del personaggio" />
+          <div className="nome-blocco">
+            <input className="nome" spellCheck={false} autoCorrect="off" autoComplete="off" value={c.nome} onChange={(e) => up((s) => ({ ...s, nome: e.target.value }))} aria-label="Nome del personaggio" />
+            <div className="pips" role="img" aria-label={`Rango ${c.rango} su ${RANGO_MAX}`}>
+              {Array.from({ length: RANGO_MAX }, (_, i) => <i key={i} className={i < c.rango ? 'pip on' : 'pip'} />)}
+            </div>
+          </div>
         </div>
 
         <div className="testa-stat">

@@ -362,3 +362,32 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 .sali-rango { width: 100%; padding: 12px; font-size: .95rem; margin-bottom: 12px; }
 .testa-nota { align-items: center; margin-top: 8px; }
 .testa-nota .rango-meno { margin: 0; }
+
+/* ---- Scheda come carta da tarocco: la cornice cambia col Rango (bronzo, argento, oro) ---- */
+.carta { --m1: #b87333; --m2: #e7ad78; --m3: #7a4a1e; position: relative; border: 2px solid transparent;
+  background: linear-gradient(165deg, #1b1f38, #12152a) padding-box, linear-gradient(135deg, var(--m2), var(--m3) 45%, var(--m1) 70%, var(--m2)) border-box;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .5), 0 8px 28px rgba(0, 0, 0, .45), 0 0 26px color-mix(in srgb, var(--m1) 22%, transparent); padding-top: 22px; }
+.carta.argento { --m1: #aeb8c6; --m2: #f1f5fb; --m3: #6f7886; }
+.carta.oro { --m1: #e6c274; --m2: #fff0bd; --m3: #9c7524; }
+.carta::before { content: ''; position: absolute; inset: 5px; border: 1px solid color-mix(in srgb, var(--m1) 45%, transparent); border-radius: calc(var(--r) - 4px); pointer-events: none; }
+.carta > * { position: relative; }
+.angolo { position: absolute !important; font-size: .7rem; line-height: 1; color: var(--m2); text-shadow: 0 0 6px var(--m1); pointer-events: none; }
+.angolo.a1 { top: 9px; left: 11px; } .angolo.a2 { top: 9px; right: 11px; } .angolo.a3 { bottom: 9px; left: 11px; } .angolo.a4 { bottom: 9px; right: 11px; }
+.carta .avatar { width: 84px; height: 84px; border: 3px solid transparent; background: var(--bg2) padding-box, conic-gradient(from 200deg, var(--m2), var(--m3), var(--m1), var(--m2), var(--m3), var(--m2)) border-box;
+  box-shadow: 0 0 0 3px #12152a, 0 0 14px color-mix(in srgb, var(--m1) 55%, transparent); }
+.nome-blocco { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.carta input.nome { background: transparent; color: var(--m2); text-shadow: 0 0 10px color-mix(in srgb, var(--m1) 45%, transparent);
+  letter-spacing: .07em; text-transform: uppercase; font-size: 1.3rem; padding-left: 0; padding-right: 0; border-color: transparent; caret-color: var(--m2); }
+.carta input.nome:focus { border-color: transparent; padding-left: 0; outline: none; border-bottom: 1px solid var(--m1); border-radius: 0; }
+.pips { display: flex; gap: 4px; flex-wrap: wrap; }
+.pip { width: 9px; height: 9px; transform: rotate(45deg); border: 1px solid color-mix(in srgb, var(--m1) 60%, transparent); background: transparent; }
+.pip.on { background: linear-gradient(135deg, var(--m2), var(--m1)); border-color: var(--m2); box-shadow: 0 0 6px color-mix(in srgb, var(--m1) 70%, transparent); }
+.carta .rango, .carta .xp-box { border-color: color-mix(in srgb, var(--m1) 35%, transparent); background: rgba(8, 10, 24, .55); }
+.carta .rango-num strong { background: linear-gradient(180deg, var(--m2), var(--m1)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.carta .xp-barra div { background: linear-gradient(90deg, var(--m3), var(--m2)); }
+.carta .sali-rango:not(:disabled) { background: linear-gradient(180deg, var(--m2), var(--m1)); border-color: var(--m2); color: #1a1405; }
+@keyframes riflesso { 0% { transform: translateX(-130%) skewX(-18deg); } 55%, 100% { transform: translateX(260%) skewX(-18deg); } }
+.carta.oro { overflow: hidden; }
+.carta.oro::after { content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 38%; pointer-events: none;
+  background: linear-gradient(100deg, transparent, rgba(255, 240, 189, .13), transparent); animation: riflesso 7s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .carta.oro::after { animation: none; display: none; } }

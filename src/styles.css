@@ -131,7 +131,10 @@ input[type=range] { accent-color: var(--oro); }
 .item.t-s, .item.t-z { border-left-color: var(--oro); }
 .item.pronta { border-color: var(--ok); }
 .item-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.item-meta { display: flex; gap: 12px; color: var(--muted); font-size: .85rem; margin-top: 2px; }
+.item-meta { display: flex; flex-direction: column; gap: 6px; margin: 4px 0 2px; font-size: .85rem; }
+.item-danno { color: var(--oro); font-weight: 600; line-height: 1.35; }
+.item-etichette { display: flex; flex-wrap: wrap; gap: 6px; }
+.etichetta { white-space: nowrap; padding: 2px 9px; border-radius: 99px; border: 1px solid var(--line2); color: var(--muted); font-size: .75rem; }
 .item-desc { font-size: .9rem; color: #cfd3f5; }
 .item-act { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
 .req { font-size: .8rem; margin-top: 4px; }

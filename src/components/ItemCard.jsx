@@ -30,9 +30,11 @@ export default function ItemCard({ it, c, d, qta, children, compact, noto = true
       </div>
       {it.cat === 'arma' && (
         <div className="item-meta">
-          {it.danni != null && <span>{d && dannoArma(it, d) ? testoDanno(dannoArma(it, d)) : `${it.danni} Danni`}</span>}
-          {it.tipo && <span>{it.tipo}</span>}
-          {it.mani && <span>{it.mani === 2 ? 'Due mani' : 'Una mano'}</span>}
+          {it.danni != null && <div className="item-danno">{d && dannoArma(it, d) ? testoDanno(dannoArma(it, d)) : `${it.danni} Danni`}</div>}
+          <div className="item-etichette">
+            {it.tipo && it.tipo !== '—' && <span className="etichetta">{it.tipo}</span>}
+            {it.mani && <span className="etichetta">{it.mani === 2 ? 'Due mani' : 'Una mano'}</span>}
+          </div>
         </div>
       )}
       {it.reqTxt && (

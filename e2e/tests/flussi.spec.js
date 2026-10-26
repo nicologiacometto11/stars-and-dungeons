@@ -240,3 +240,16 @@ test('Il nome del personaggio resta ben visibile in cima alla Scheda (telefono p
     await page.evaluate(() => localStorage.clear())
   }
 })
+
+test('Nome del personaggio: nessuna correzione ortografica né sottolineatura rossa', async ({ page }) => {
+  page.on('dialog', (d) => d.accept())
+  await page.goto('/')
+  const creazione = page.getByPlaceholder('Nome del personaggio')
+  await expect(creazione).toHaveAttribute('spellcheck', 'false')
+  await expect(creazione).toHaveAttribute('autocorrect', 'off')
+  await creazione.fill('Xqzvt Jjkk')
+  await page.getByRole('button', { name: 'Crea scheda' }).click()
+  const nome = page.locator('input.nome')
+  await expect(nome).toHaveAttribute('spellcheck', 'false')
+  await expect(nome).toHaveAttribute('autocorrect', 'off')
+})

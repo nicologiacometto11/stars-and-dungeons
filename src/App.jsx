@@ -212,7 +212,7 @@ function Creazione({ onCrea }) {
       >
         <h1>Nuovo personaggio</h1>
         <p className="muted">Parti da Rango 1: i punti li assegni ai segni dello Zodiaco.</p>
-        <input autoFocus placeholder="Nome del personaggio" value={nome} onChange={(e) => setNome(e.target.value)} />
+        <input autoFocus spellCheck={false} autoCorrect="off" autoComplete="off" placeholder="Nome del personaggio" value={nome} onChange={(e) => setNome(e.target.value)} />
         <button className="primary" disabled={!nome.trim()}>Crea scheda</button>
       </form>
     </div>

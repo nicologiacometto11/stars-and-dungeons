@@ -56,7 +56,7 @@ function ZonaPericolo({ nome, onElimina }) {
       <p><b>Questa azione è definitiva</b>: la scheda, l'inventario e il bestiario di «{nome}» verranno cancellati e non si possono recuperare. Se vuoi un backup, esportala prima.</p>
       <label className="campo">
         Per confermare scrivi il nome del personaggio
-        <input value={testo} onChange={(e) => setTesto(e.target.value)} placeholder={nome} autoFocus />
+        <input value={testo} onChange={(e) => setTesto(e.target.value)} placeholder={nome} spellCheck={false} autoCorrect="off" autoComplete="off" autoFocus />
       </label>
       <div className="riga">
         <button className="pericolo" disabled={!ok} onClick={onElimina}>Elimina per sempre</button>
@@ -151,7 +151,7 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
       <section className="card">
         <div className="testa-top">
           <Avatar c={c} up={up} />
-          <input className="nome" value={c.nome} onChange={(e) => up((s) => ({ ...s, nome: e.target.value }))} aria-label="Nome del personaggio" />
+          <input className="nome" spellCheck={false} autoCorrect="off" autoComplete="off" value={c.nome} onChange={(e) => up((s) => ({ ...s, nome: e.target.value }))} aria-label="Nome del personaggio" />
         </div>
 
         <div className="testa-stat">

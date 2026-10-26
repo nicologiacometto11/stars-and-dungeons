@@ -409,6 +409,11 @@ const attuale = (c, d, ris) => {
   const max = ris === 'corpo' ? d.corpoMax : d.menteMax
   return { ora: Math.min(c[ris] ?? max, max), max }
 }
+// Com'è la riserva ora e com'è dopo il danno (per la finestra del Tavolo)
+export function anteprimaDanno(c, d, ris, n) {
+  const { ora, max } = attuale(c, d, ris)
+  return { ora, max, dopo: Math.max(0, ora - n) }
+}
 export function conDanno(c, d, ris, n) {
   const { ora } = attuale(c, d, ris)
   return { ...c, [ris]: Math.max(0, ora - n) }

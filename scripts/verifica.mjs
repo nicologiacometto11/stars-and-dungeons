@@ -118,6 +118,7 @@ let d = r.derive(c)
 ok(r.dannoNetto(d, 'fisico', 12) === Math.max(0, 12 - d.armorFisica), 'danno fisico sottrae Armor fisica')
 ok(r.dannoNetto(d, 'magico', 12) === Math.max(0, 12 - d.armorMagica), 'danno magico sottrae Armor magica')
 ok(r.dannoNetto(d, 'puro', 12) === 12 && r.dannoNetto(d, 'fisico', 0) === 0, 'puri ignorano Armor, mai negativo')
+{ const a = r.anteprimaDanno(c, d, 'corpo', 5); ok(a.dopo === Math.max(0, a.ora - 5) && a.max === d.corpoMax, 'anteprima del danno: prima, dopo e massimo') }
 ok(r.conDanno(c, d, 'corpo', 999).corpo === 0 && r.conCura(r.conDanno(c, d, 'corpo', 5), d, 'corpo', 999).corpo === d.corpoMax, 'danno e cura restano tra 0 e MAX')
 const b0 = r.applicaBottino(r.nuovaScheda('B'), r.bottinoDi('ashuz'))
 ok(b0.aureos === 2, 'bottino Ashuz')

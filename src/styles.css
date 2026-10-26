@@ -620,3 +620,32 @@ html[data-ambiente] .mostro-info strong { color: var(--accent); }
 html[data-ambiente] .filtri button.on { border-color: rgba(var(--amb), .6); color: var(--accent); background: var(--accent-bg); }
 html[data-ambiente] { background: radial-gradient(900px 480px at 85% -8%, rgba(var(--amb), .34) 0%, transparent 65%), radial-gradient(700px 420px at 0% 105%, rgba(var(--amb), .18) 0%, transparent 70%), var(--bg); background-attachment: fixed; }
 html[data-ambiente] .card > h2, html[data-ambiente] .card .riga > h2 { color: var(--accent); }
+
+/* ---- Finestra del danno dal Master ---- */
+.danno-velo { position: fixed; inset: 0; z-index: 90; display: flex; align-items: flex-end; justify-content: center; padding: 16px; background: rgba(5, 6, 14, .72); backdrop-filter: blur(3px); animation: velo-entra .25s ease; }
+.danno-fin { width: 100%; max-width: 440px; max-height: 92vh; overflow: auto; display: flex; flex-direction: column; gap: 14px; padding: 20px 18px 18px; border-radius: 18px; border: 1px solid rgba(240, 90, 90, .45); background: linear-gradient(180deg, rgba(240, 90, 90, .14), transparent 40%), var(--card); box-shadow: 0 0 40px -10px rgba(240, 90, 90, .6); animation: danno-sale .35s cubic-bezier(.2, .8, .3, 1.1); }
+.danno-titolo { margin: 0; font-family: var(--serif); letter-spacing: .04em; font-size: 1.05rem; text-align: center; color: #ffb3a8; }
+.danno-conto { display: flex; align-items: center; justify-content: center; gap: 14px; font-variant-numeric: tabular-nums; }
+.danno-num { font-size: 2.4rem; font-weight: 700; line-height: 1; display: flex; flex-direction: column; align-items: center; }
+.danno-num small { font-size: .65rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+.danno-num.armor { color: #8fb3ff; }
+.danno-num.risultato { color: #ff8a7a; text-shadow: 0 0 18px rgba(255, 90, 70, .6); }
+.danno-op { font-size: 1.6rem; color: var(--muted); }
+.danno-nota { margin: 0; text-align: center; font-size: .85rem; color: var(--muted); }
+.danno-ris { justify-content: center; }
+.danno-barra-box { display: flex; flex-direction: column; gap: 6px; }
+.danno-dopo s { color: var(--muted); }
+.danno-dopo b.zero { color: #ff8a7a; }
+.danno-barra { position: relative; height: 14px; border-radius: 99px; overflow: hidden; background: rgba(255, 255, 255, .08); }
+.danno-barra i { position: absolute; top: 0; bottom: 0; transition: width .5s ease, left .5s ease; }
+.danno-barra .resta { left: 0; background: linear-gradient(90deg, #5fd6a0, #8fe8c0); }
+.danno-barra .persa { background: repeating-linear-gradient(45deg, #ff6a5a 0 6px, #ff8a7a 6px 12px); animation: danno-pulsa 1.4s ease-in-out infinite; }
+.danno-allarme { margin: 0; font-size: .85rem; color: #ff8a7a; }
+.danno-corr { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.danno-corr span { text-align: center; font-size: .9rem; }
+.danno-corr strong { font-size: 1.2rem; }
+.danno-corr button { width: 44px; padding: 8px 0; font-size: 1.2rem; }
+@keyframes velo-entra { from { opacity: 0; } to { opacity: 1; } }
+@keyframes danno-sale { from { opacity: 0; transform: translateY(30px) scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes danno-pulsa { 50% { opacity: .65; } }
+@media (prefers-reduced-motion: reduce) { .danno-velo, .danno-fin, .danno-barra .persa { animation: none; } .danno-barra i { transition: none; } }

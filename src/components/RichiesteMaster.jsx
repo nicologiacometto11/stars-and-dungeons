@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { ITEMS_BY_ID } from '../data/items.js'
-import { RANGO_MAX, conversioniBottino, costoLibero, testoConversioni, conXp, estraiPergamena, applicaBottino, bottinoDi, conCura, conDanno, conLog, conPuntiCura, conSybil, dannoNetto, riceviOggetto, riservaDanno } from '../lib/rules.js'
+import { RANGO_MAX, anteprimaDanno, conversioniBottino, costoLibero, testoConversioni, conXp, estraiPergamena, applicaBottino, bottinoDi, conCura, conDanno, conLog, conPuntiCura, conSybil, dannoNetto, riceviOggetto, riservaDanno } from '../lib/rules.js'
 
 // I danni e gli Aureos tolti chiedono conferma; i doni si applicano da soli
 const RISORSE = ['aureos', 'sybil', 'puntiCura', 'xp']
@@ -59,7 +60,7 @@ function applicaDono(a, c, d, up) {
   return null
 }
 
-function Danno({ a, c, d, tv, up }) {
+function Danno({ a, c, d, tv, up, inCoda = 0 }) {
   const { tipo, n } = a.dati
   const netto = dannoNetto(d, tipo, n)
   const [finale, setFinale] = useState(netto)
@@ -68,6 +69,10 @@ function Danno({ a, c, d, tv, up }) {
   const sceltaLibera = tipo === 'puro' || costoLibero(c)
   const armor = tipo === 'fisico' ? d.armorFisica : tipo === 'magico' ? d.armorMagica : 0
   const [busy, setBusy] = useState(false)
+  const { ora, max, dopo } = anteprimaDanno(c, d, ris, finale)
+  const persi = ora - dopo
+  const perc = (x) => (max > 0 ? Math.max(0, Math.min(100, (x / max) * 100)) : 0)
+  const corretto = finale !== netto
 
   const applica = async () => {
     setBusy(true)
@@ -83,33 +88,64 @@ function Danno({ a, c, d, tv, up }) {
     setBusy(false)
   }
 
-  return (
-    <div className="richiesta danno">
-      <strong>⚔️ Il Master ti infligge {n} danni {TIPO_DANNO[tipo]}</strong>
-      {tipo !== 'puro' ? (
-        <small className="muted">Armor {tipo === 'fisico' ? 'fisica' : 'magica'} {armor}: subisci {netto}</small>
-      ) : (
-        <small className="muted">I danni puri ignorano l'Armor: scegli dove toglierli.</small>
-      )}
-      <div className="riga">
-        <label className="campo" style={{ margin: 0 }}>
-          Danno finale
-          <input type="number" min="0" value={finale} onChange={(e) => setFinale(Math.max(0, Number(e.target.value) || 0))} />
-        </label>
-        <label className="campo" style={{ margin: 0 }}>
-          Da togliere a
-          <select value={ris} onChange={(e) => setRis(e.target.value)} disabled={!sceltaLibera}>
-            {(sceltaLibera || ris === 'corpo') && <option value="corpo">Corpo</option>}
-            {(sceltaLibera || ris === 'mente') && <option value="mente">Mente</option>}
-          </select>
-        </label>
-      </div>
-      <div className="riga">
-        <button className="primary" disabled={busy} onClick={applica}>Applica −{finale} {NOME_RIS[ris]}</button>
-        <button className="ghost" disabled={busy} onClick={rifiuta}>Non applicare</button>
+  const finestra = (
+    <div className="danno-velo">
+      <div className="danno-fin" role="dialog" aria-modal="true" aria-label="Danno dal Master">
+        <p className="danno-titolo">⚔️ Il Master ti infligge danni {TIPO_DANNO[tipo]}</p>
+
+        <div className="danno-conto" aria-label="Calcolo del danno">
+          {tipo === 'puro' ? (
+            <>
+              <span className="danno-num">{n}</span>
+              <span className="danno-nota">puri: ignorano l'Armor</span>
+            </>
+          ) : (
+            <>
+              <span className="danno-num">{n}</span>
+              <span className="danno-op">−</span>
+              <span className="danno-num armor">{Math.min(armor, n)}<small>Armor</small></span>
+              <span className="danno-op">=</span>
+              <span className="danno-num risultato">{netto}</span>
+            </>
+          )}
+        </div>
+        {tipo !== 'puro' && armor > n && <p className="danno-nota">L'Armor ({armor}) copre tutto il danno.</p>}
+
+        {sceltaLibera ? (
+          <div className="filtri danno-ris" role="group" aria-label="Da togliere a">
+            {['corpo', 'mente'].map((r) => <button key={r} className={ris === r ? 'on' : ''} onClick={() => setRis(r)}>{NOME_RIS[r]}</button>)}
+          </div>
+        ) : (
+          <p className="danno-nota">Colpisce il {NOME_RIS[ris]}.</p>
+        )}
+
+        <div className="danno-barra-box">
+          <div className="riga spazio">
+            <strong>{NOME_RIS[ris]}</strong>
+            <span className="danno-dopo"><s>{ora}</s> → <b className={dopo === 0 ? 'zero' : ''}>{dopo}</b> / {max}</span>
+          </div>
+          <div className="danno-barra" role="img" aria-label={`${NOME_RIS[ris]} da ${ora} a ${dopo} su ${max}`}>
+            <i className="resta" style={{ width: `${perc(dopo)}%` }} />
+            <i className="persa" style={{ left: `${perc(dopo)}%`, width: `${perc(persi)}%` }} />
+          </div>
+          {dopo === 0 && ora > 0 && <p className="danno-allarme">Scenderesti a 0 {NOME_RIS[ris]}.</p>}
+        </div>
+
+        <div className="danno-corr">
+          <button aria-label="Meno danno" onClick={() => setFinale((x) => Math.max(0, x - 1))}>−</button>
+          <span>Danno finale <strong>{finale}</strong>{corretto && <small> (corretto, era {netto})</small>}</span>
+          <button aria-label="Più danno" onClick={() => setFinale((x) => x + 1)}>+</button>
+        </div>
+
+        <div className="riga">
+          <button className="primary" disabled={busy} onClick={applica}>Applica −{finale} {NOME_RIS[ris]}</button>
+          <button className="ghost" disabled={busy} onClick={rifiuta}>Non applicare</button>
+        </div>
+        {inCoda > 0 && <small className="muted">{inCoda === 1 ? 'Dopo questo hai un altro danno da confermare.' : `Dopo questo hai altri ${inCoda} danni da confermare.`}</small>}
       </div>
     </div>
   )
+  return typeof document === 'undefined' ? finestra : createPortal(finestra, document.body)
 }
 
 // Aureos, Sybil o punti Cura che il Master toglie: serve la conferma del giocatore
@@ -181,11 +217,13 @@ export default function RichiesteMaster({ tv, c, d, up }) {
   }, [tv.azioni]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const daConfermare = tv.azioni.filter(chiedeConferma)
+  const primoDanno = daConfermare.find((a) => a.tipo === 'danno')
   if (!daConfermare.length && !avvisi.length) return null
   return (
     <div className="richieste">
       {avvisi.map((v) => <div key={v.id} className="msg richiesta-avviso">🎁 {v.msg}</div>)}
-      {daConfermare.map((a) => (a.tipo === 'danno' ? <Danno key={a.id} a={a} c={c} d={d} tv={tv} up={up} /> : <Perdita key={a.id} a={a} c={c} d={d} tv={tv} up={up} />))}
+      {daConfermare.filter((a) => a.tipo !== 'danno').map((a) => <Perdita key={a.id} a={a} c={c} d={d} tv={tv} up={up} />)}
+      {primoDanno && <Danno key={primoDanno.id} a={primoDanno} c={c} d={d} tv={tv} up={up} inCoda={daConfermare.filter((a) => a.tipo === 'danno').length - 1} />}
     </div>
   )
 }

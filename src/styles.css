@@ -402,7 +402,7 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
   box-shadow: inset 0 0 18px rgba(0, 0, 0, .7), 0 0 18px var(--alone); }
 .orb::after { content: ''; position: absolute; top: 9%; left: 14%; width: 34%; height: 22%; border-radius: 50%; transform: rotate(-28deg);
   background: radial-gradient(ellipse, rgba(255, 255, 255, .5), transparent 70%); pointer-events: none; }
-.liquido { position: absolute; left: 0; right: 0; bottom: 0; transition: height .7s cubic-bezier(.3, .8, .3, 1);
+.liquido { position: absolute; left: 0; right: 0; top: 0; height: 100%; will-change: transform; transition: transform 1.5s cubic-bezier(.4, 0, .2, 1.07); background: linear-gradient(180deg, var(--l1), var(--l2) 45%, var(--l2)); }
   background: linear-gradient(180deg, var(--l1), var(--l2)); }
 .liquido::before, .liquido::after { content: ''; position: absolute; left: -40%; width: 180%; height: 14px; top: -7px; border-radius: 50%; background: var(--l1); opacity: .9; animation: onda 4.5s ease-in-out infinite alternate; }
 .liquido::after { top: -4px; opacity: .5; animation-duration: 6.5s; animation-direction: alternate-reverse; }
@@ -417,5 +417,8 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 .orb-btn button { padding: 6px 0; min-height: 0; font-size: .85rem; }
 .orb-ripristina { width: 100%; padding: 5px; min-height: 0; font-size: .8rem; }
 .riserve-orb .riserva-max { width: 100%; justify-content: space-between; margin-top: 0; }
-@media (prefers-reduced-motion: reduce) { .liquido::before, .liquido::after, .orb.bassa { animation: none; } .liquido { transition: none; } }
-.orb.vuota .liquido { display: none; }
+@media (prefers-reduced-motion: reduce) { .liquido::before, .liquido::after, .orb.bassa { animation: none !important; } .liquido { transition: none; } }
+
+.orb.agita .liquido::before { animation-duration: 1.3s; }
+.orb.agita .liquido::after { animation-duration: 1.9s; }
+.orb { transition: box-shadow .4s; }

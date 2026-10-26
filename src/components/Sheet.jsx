@@ -7,15 +7,47 @@ import AssegnaPunto from './AssegnaPunto.jsx'
 import DanniArmi from './DanniArmi.jsx'
 import { ridimensiona } from '../lib/immagine.js'
 
+// Il numero scorre dal vecchio al nuovo valore (senza animazioni se l'utente le ha ridotte)
+function useScorrevole(valore) {
+  const [mostrato, setMostrato] = useState(valore)
+  const prec = useRef(valore)
+  useEffect(() => {
+    const da = prec.current
+    prec.current = valore
+    if (da === valore) return
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { setMostrato(valore); return }
+    const t0 = performance.now()
+    let id
+    const passo = (t) => {
+      const k = Math.min(1, (t - t0) / 1000)
+      setMostrato(Math.round(da + (valore - da) * (1 - Math.pow(1 - k, 3))))
+      if (k < 1) id = requestAnimationFrame(passo)
+    }
+    id = requestAnimationFrame(passo)
+    return () => cancelAnimationFrame(id)
+  }, [valore])
+  return mostrato
+}
+
 // Riserva come sfera di liquido: Corpo rosso, Mente blu. Il liquido sale e scende con i punti.
 function Riserva({ nome, valore, max, onChange, onRipristina, onMaxMeno, onMaxPiu }) {
   const pct = max > 0 ? Math.min(100, (valore / max) * 100) : 0
   const stato = max > 0 && valore <= 0 ? 'vuota' : pct <= 25 ? 'bassa' : ''
+  const numero = useScorrevole(valore)
+  // per un momento l'onda si agita quando il livello cambia
+  const [agita, setAgita] = useState(false)
+  const primo = useRef(true)
+  useEffect(() => {
+    if (primo.current) { primo.current = false; return }
+    setAgita(true)
+    const t = setTimeout(() => setAgita(false), 1100)
+    return () => clearTimeout(t)
+  }, [valore, max])
   return (
     <div className={`riserva orb-${nome.toLowerCase()}`}>
-      <div className={`orb ${stato}`} role="img" aria-label={`${nome}: ${valore} su ${max}`}>
-        <div className="liquido" style={{ height: `${pct}%` }} />
-        <span className="orb-testo"><b>{valore}</b> / {max}</span>
+      <div className={`orb ${stato} ${agita ? 'agita' : ''}`} role="img" aria-label={`${nome}: ${valore} su ${max}`}>
+        <div className="liquido" style={{ transform: `translateY(calc(${100 - pct}% + ${pct === 0 ? 18 : 0}px))` }} />
+        <span className="orb-testo"><b>{numero}</b> / {max}</span>
       </div>
       <strong className="orb-nome">{nome}</strong>
       <div className="orb-btn">

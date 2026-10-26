@@ -253,3 +253,21 @@ test('Nome del personaggio: nessuna correzione ortografica né sottolineatura ro
   await expect(nome).toHaveAttribute('spellcheck', 'false')
   await expect(nome).toHaveAttribute('autocorrect', 'off')
 })
+
+test('Riserve: il liquido sale in modo fluido (non a scatto) e il numero scorre', async ({ page }) => {
+  await nuovo(page)
+  for (let i = 0; i < 3; i++) await page.getByRole('button', { name: 'Aumenta il massimo di Corpo' }).click()
+  await page.locator('.orb-corpo').getByRole('button', { name: 'Ripristina' }).click()
+  await page.locator('.orb-corpo').getByRole('button', { name: '−5' }).click() // svuota
+  await page.waitForTimeout(1300)
+  const y = () => page.locator('.orb-corpo .liquido').evaluate((e) => new DOMMatrix(getComputedStyle(e).transform).m42)
+  const vuoto = await y()
+  await page.locator('.orb-corpo').getByRole('button', { name: '+5' }).click()
+  await page.waitForTimeout(300)
+  const durante = await y()
+  await page.waitForTimeout(1500)
+  const pieno = await y()
+  expect(durante, 'dopo 0,2 secondi il liquido è già partito').toBeLessThan(vuoto)
+  expect(durante, 'ma non è ancora arrivato').toBeGreaterThan(pieno + 2)
+  expect(pieno).toBeLessThan(vuoto - 40)
+})

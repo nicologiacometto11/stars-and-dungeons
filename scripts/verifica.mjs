@@ -94,8 +94,10 @@ ok(r.applicaBottino(r.nuovaScheda('E'), elfo).aureos === elfo.aureos + 150, "Elf
 const { COSTELLAZIONI, OFIUCO_COSTELLAZIONE } = await load('/src/data/costellazioni.js')
 const { stelleAccese } = await load('/src/components/Costellazione.jsx')
 ok(SEGNI.every((sg) => COSTELLAZIONI[sg.id]), 'ogni segno ha la sua costellazione')
-const valida = (cs) => cs.stelle.every(([x, y]) => x >= 0 && x <= 100 && y >= 0 && y <= 100) && cs.linee.every(([a, b]) => a !== b && a < cs.stelle.length && b < cs.stelle.length)
+const valida = (cs) => cs.stelle.every(([x, y, r]) => x >= 0 && x <= cs.w && y >= 0 && y <= cs.h && r > 0) && cs.linee.every(([a, b]) => a !== b && a < cs.stelle.length && b < cs.stelle.length)
 ok([...Object.values(COSTELLAZIONI), OFIUCO_COSTELLAZIONE].every(valida), 'costellazioni: stelle nel riquadro e linee che collegano stelle esistenti')
+ok([...SEGNI.map((sg) => sg.id), 'ofiuco'].every((id) => fs.existsSync(R + `public/images/costellazioni/${id}.webp`)), 'costellazioni: ogni segno (e Ofiuco) ha il suo disegno di sfondo')
+ok(Object.values(COSTELLAZIONI).every((cs) => cs.linee.length >= 2 && cs.stelle.length >= 4), 'costellazioni: almeno 4 stelle e 2 linee ciascuna')
 ok(stelleAccese(8, 0) === 0 && stelleAccese(8, 1) === 1 && stelleAccese(8, 5) === 4 && stelleAccese(8, 10) === 8 && stelleAccese(4, 1) === 1 && stelleAccese(8, 99) === 8, 'stelle accese in base ai punti (da 0 a tutte con 10)')
 
 // ---- XP: 3 XP per salire di Rango, gli XP li dà il Master o il Cosmo Liquido

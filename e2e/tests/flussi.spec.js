@@ -316,7 +316,7 @@ test('Sagoma: si equipaggia e si toglie dagli slot, e il limite di un anello val
 test('Costellazioni: le stelle si accendono con i punti e il cielo di sfondo non blocca i tocchi', async ({ page }) => {
   await nuovo(page)
   await tab(page, 'Zodiaco')
-  const ariete = page.locator('.cielo-cella', { hasText: 'Ariete' }).locator('svg')
+  const ariete = page.locator('.cielo-cella', { hasText: 'Ariete' }).locator('svg.cost')
   await expect(ariete).toHaveAttribute('aria-label', /0 stelle accese su 4/)
   await page.getByRole('button', { name: /^Resistenza/ }).click()
   await page.getByRole('button', { name: /^Ariete Fuoco/ }).click()
@@ -339,4 +339,18 @@ test('Ofiuco: con un punto in ogni segno si rivela una sola volta', async ({ pag
   await page.reload()
   await page.waitForTimeout(800)
   await expect(page.getByRole('dialog', { name: 'Ofiuco si rivela' })).toHaveCount(0)
+})
+
+test('Zodiaco: niente ruota, ogni segno ha elemento e livello, il Rango è in cima', async ({ page }) => {
+  await nuovo(page)
+  await tab(page, 'Zodiaco')
+  await expect(page.locator('svg.ruota')).toHaveCount(0)
+  await expect(page.locator('.zod-testa')).toContainText('RANGO')
+  await expect(page.locator('.cielo-cella')).toHaveCount(12)
+  await expect(page.locator('.cielo-cella .segno-icona')).toHaveCount(12)
+  await page.getByRole('button', { name: /^Resistenza/ }).click()
+  await page.getByRole('button', { name: /^Ariete Fuoco/ }).click()
+  await expect(page.locator('.cielo-cella', { hasText: 'Ariete' }).locator('.segno-livello b')).toHaveText('1')
+  await page.getByRole('button', { name: /^Ariete, 1 punti/ }).click()
+  await expect(page.getByText('Muro di Cristallo')).toBeVisible()
 })

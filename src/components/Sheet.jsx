@@ -6,6 +6,7 @@ import Abilities from './Abilities.jsx'
 import AssegnaPunto from './AssegnaPunto.jsx'
 import DanniArmi from './DanniArmi.jsx'
 import { ridimensiona } from '../lib/immagine.js'
+import { metallo } from '../lib/ui.js'
 
 // Il numero scorre dal vecchio al nuovo valore (senza animazioni se l'utente le ha ridotte)
 function useScorrevole(valore) {
@@ -136,8 +137,6 @@ function PromemoriaBackup({ c, up }) {
 }
 
 // Foto del personaggio: si sceglie dal telefono o dal computer e viene ridotta prima di salvarla
-// Metallo della cornice: bronzo ai primi Ranghi, argento a metà, oro in cima
-const metallo = (rango) => (rango >= 9 ? 'oro' : rango >= 5 ? 'argento' : 'bronzo')
 
 function Avatar({ c, up }) {
   const ref = useRef(null)

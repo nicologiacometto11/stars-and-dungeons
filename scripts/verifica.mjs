@@ -51,6 +51,17 @@ ok(!prova([unaMano], dueMani).ok && prova([unaMano], dueMani).forzabile && !prov
 ok(prova([unaMano], ITEMS.filter((i) => i.cat === 'arma' && i.mani === 1 && i.nome !== unaMano)[0].nome).ok, 'due armi a una mano vanno bene')
 ok(!prova([unaMano], 'Gallia Manifestazione di Guerra').ok, 'arma SS + arma a una mano: errore')
 
+// ---- sagoma: cosa c'è in ogni slot
+const sg = r.equipaggiato(['Anello di Piume', 'Luna Nera', 'Armatura Mentale'].reduce((x, n) => con(x, n, true), r.nuovaScheda('G')))
+ok(sg.anello[0]?.nome === 'Anello di Piume' && sg.amuleto[0]?.nome === 'Luna Nera' && sg.agg[0]?.nome === 'Armatura Mentale', 'sagoma: anello, amuleto e item agg nei loro slot')
+const dueM = ITEMS.find((i) => i.cat === 'arma' && i.mani === 2 && i.tier === 'C').nome
+const sgD = r.equipaggiato(con(r.nuovaScheda('G'), dueM, true))
+ok(sgD.dueMani?.nome === dueM && !sgD.destra && !sgD.sinistra, 'sagoma: un\'arma a due mani occupa entrambe le mani')
+const unaM = ITEMS.filter((i) => i.cat === 'arma' && i.mani === 1 && i.tier === 'C').map((i) => i.nome)
+const sgU = r.equipaggiato([unaM[0], unaM[1]].reduce((x, n) => con(x, n, true), r.nuovaScheda('G')))
+ok(sgU.destra?.nome === unaM[0] && sgU.sinistra?.nome === unaM[1] && !sgU.dueMani, 'sagoma: due armi a una mano, una per mano')
+ok(r.equipaggiato(con(r.nuovaScheda('G'), 'Spezzatempo', true)).extraMani.length === 0, 'sagoma: le armi senza mani non occupano le mani')
+
 // ---- danni delle armi con i bonus
 let dc = r.nuovaScheda('D'); dc.rango = 12; dc.segni.cancro = 3; dc.segni.vergine = 2 // Forza 3 (+3 fisici), Arcano 2 (+2 magici)
 const dd = r.derive(dc)

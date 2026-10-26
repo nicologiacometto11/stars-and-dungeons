@@ -296,3 +296,19 @@ test('Riserve: da 0 a 1 e da 1 a 0 senza scatti (il liquido parte subito, la sfe
   expect(scendendo.y, 'scende subito').toBeGreaterThan(piena.y + 0.5)
   expect(scendendo.op, 'la sfera si spegne piano').toBeGreaterThan(0.76)
 })
+
+test('Sagoma: si equipaggia e si toglie dagli slot, e il limite di un anello vale anche qui', async ({ page }) => {
+  await nuovo(page)
+  await ricevi(page, 'Anello di Guardia')
+  await ricevi(page, 'Anello di Piume')
+  await tab(page, 'Inventario')
+  await expect(page.getByRole('button', { name: 'Anello: vuoto' })).toBeVisible()
+  await page.getByRole('button', { name: 'Anello: vuoto' }).click()
+  await page.getByRole('dialog').locator('li', { hasText: 'Anello di Guardia' }).getByRole('button', { name: 'Equipaggia' }).click()
+  await expect(page.getByRole('button', { name: 'Anello: Anello di Guardia' })).toBeVisible()
+  // l'altro anello non si può aggiungere: l'avviso è già coperto dai test dell'inventario; qui lo slot resta con il primo
+  await page.getByRole('button', { name: 'Anello: Anello di Guardia' }).click()
+  await expect(page.getByRole('dialog')).toContainText('Anello di Guardia')
+  await page.getByRole('dialog').getByRole('button', { name: 'Togli' }).click()
+  await expect(page.getByRole('button', { name: 'Anello: vuoto' })).toBeVisible()
+})

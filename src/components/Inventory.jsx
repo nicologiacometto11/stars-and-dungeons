@@ -3,6 +3,7 @@ import { ITEMS_BY_ID } from '../data/items.js'
 import { SEGNI } from '../data/zodiac.js'
 import { conLog, conRimozione, conXp, controllaEquip, riceviOggetto, scovaMateriale, verificaReq } from '../lib/rules.js'
 import ItemCard from './ItemCard.jsx'
+import Sagoma from './Sagoma.jsx'
 
 const SEZIONI = [
   ['arma', 'Armi'],
@@ -86,6 +87,8 @@ export default function Inventory({ c, d, up }) {
           <button className="ghost" onClick={() => setScegliSegno(false)}>Annulla</button>
         </section>
       )}
+
+      <Sagoma c={c} onToggle={equipaggia} />
 
       {SEZIONI.map(([cat, titolo]) => {
         const lista = righe.filter((r) => r.it.cat === cat)

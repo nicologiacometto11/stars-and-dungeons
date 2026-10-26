@@ -454,6 +454,23 @@ export function controllaEquip(c, it) {
   return { ok: true }
 }
 
+// Cosa è equipaggiato e dove: un oggetto per slot (anello, amuleto, item agg) e le armi nelle mani
+export function equipaggiato(c) {
+  const eq = c.inventario.filter((r) => r.eq).map((r) => ITEMS_BY_ID[r.id]).filter(Boolean)
+  const perSlot = (slot) => eq.filter((x) => x.cat === 'oggetto' && x.slot === slot)
+  const armi = eq.filter((x) => x.cat === 'arma')
+  const conMani = armi.filter((a) => a.mani)
+  const due = conMani.find((a) => a.mani === 2)
+  return {
+    anello: perSlot('anello'), amuleto: perSlot('amuleto'), agg: perSlot('agg'),
+    dueMani: due || null,
+    destra: due ? null : conMani[0] || null,
+    sinistra: due ? null : conMani[1] || null,
+    extraMani: due ? conMani.filter((a) => a !== due) : conMani.slice(2), // armi in più (solo se forzate)
+    senzaMani: armi.filter((a) => !a.mani), // armi speciali che non occupano le mani
+  }
+}
+
 // ---- danno delle armi con i bonus
 export function dannoArma(it, d) {
   if (it.danni == null) return null

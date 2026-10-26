@@ -670,3 +670,41 @@ html[data-ambiente] .card > h2, html[data-ambiente] .card .riga > h2 { color: va
 @keyframes rs-svanisce { to { opacity: 0; transform: scale(1.04); filter: brightness(2.2); } }
 @keyframes rs-nasce { 0% { opacity: 0; transform: scale(.96); filter: brightness(2.4); } 100% { opacity: 1; transform: none; filter: none; } }
 @media (prefers-reduced-motion: reduce) { .rs-velo, .rs-cornice, .rs-num, .rs-titolo, .rs-testo, .rs-pips .pip.nuovo { animation: none !important; opacity: 1; } .rs-cornice.vecchia { display: none; } .rs-pips .pip.nuovo { transform: rotate(45deg); background: var(--m1); } }
+
+/* ---- Vista Master e giocatori al tavolo: stessa famiglia della scheda ---- */
+.master-testa { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; flex-wrap: wrap; padding: 18px 16px; border-radius: var(--r); border: 1px solid var(--line2);
+  background: radial-gradient(420px 160px at 90% -20%, rgba(230, 194, 116, .22), transparent 70%), linear-gradient(165deg, #1b1f38, #12152a); box-shadow: 0 8px 28px rgba(0, 0, 0, .35); }
+.master-sopra { margin: 0; font-family: var(--serif); letter-spacing: .3em; text-transform: uppercase; font-size: .72rem; color: var(--oro); }
+.master-titolo { margin: 2px 0 4px; font-family: var(--serif); font-size: 1.7rem; letter-spacing: .04em; font-weight: 600; }
+.master-codice { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.master-codice button { padding: 4px 14px; min-height: 0; }
+.conteggio { display: inline-block; min-width: 1.6em; padding: 0 8px; margin-left: 6px; border-radius: 99px; background: rgba(230, 194, 116, .14); color: var(--oro); font-size: .8rem; text-align: center; letter-spacing: 0; }
+.master-bottoni { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.master-bottoni button { width: 100%; }
+.round-box { padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(230, 194, 116, .3); background: rgba(230, 194, 116, .07); width: fit-content; }
+.turno-di { font-family: var(--serif); letter-spacing: .04em; }
+.zona-pericolo { border-color: rgba(240, 90, 90, .25); }
+.zona-pericolo summary { cursor: pointer; color: #ff9a8f; font-family: var(--serif); letter-spacing: .12em; text-transform: uppercase; font-size: .85rem; }
+.zona-pericolo[open] summary { margin-bottom: 8px; }
+
+.compagno { --m1: #b87333; --m2: #e7ad78; --m3: #7a4a1e; gap: 10px; border: 1px solid color-mix(in srgb, var(--m1) 40%, transparent); background: linear-gradient(160deg, color-mix(in srgb, var(--m1) 9%, transparent), transparent 55%), var(--bg2); }
+.compagno.argento { --m1: #aeb8c6; --m2: #f1f5fb; --m3: #6f7886; }
+.compagno.oro { --m1: #e6c274; --m2: #fff0bd; --m3: #9c7524; }
+.compagno.di-turno { border-color: var(--m2); box-shadow: 0 0 0 1px color-mix(in srgb, var(--m2) 45%, transparent), 0 0 22px -4px color-mix(in srgb, var(--m1) 60%, transparent); }
+.compagno-testa { display: flex; align-items: center; gap: 12px; }
+.compagno-iniziale { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-family: var(--serif); font-size: 1.2rem; color: var(--m2);
+  border: 2px solid transparent; background: var(--bg) padding-box, conic-gradient(from 200deg, var(--m2), var(--m3), var(--m1), var(--m2)) border-box; }
+.compagno-nome { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.compagno-nome strong { font-family: var(--serif); letter-spacing: .05em; font-size: 1.05rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.compagno-turno { flex: none; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; padding: 3px 10px; border-radius: 99px; color: #1a1405; background: linear-gradient(180deg, var(--m2), var(--m1)); font-weight: 600; }
+.mini-barra .barra { height: 8px; margin: 4px 0 0; }
+.mini-barra.corpo .barra div { background: linear-gradient(90deg, #b3232f, #ff6b73); }
+.mini-barra.mente .barra div { background: linear-gradient(90deg, #2b57c2, #6fb6ff); }
+.mini-barra.bassa .barra div { animation: pulsa 1.8s ease-in-out infinite; }
+.mini-barra b { color: var(--txt); font-variant-numeric: tabular-nums; }
+.compagno-num { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.compagno-num span { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px; border-radius: 8px; background: rgba(255, 255, 255, .04); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.compagno-num b { font-size: 1.1rem; letter-spacing: 0; font-family: var(--serif); }
+.compagno-rimuovi { align-self: flex-end; padding: 2px 10px; min-height: 0; font-size: .75rem; opacity: .7; color: #ff9a8f; border-color: transparent; }
+@media (prefers-reduced-motion: reduce) { .mini-barra.bassa .barra div { animation: none; } }
+@media (max-width: 480px) { .master-codice { align-items: flex-start; width: 100%; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px; } .master-codice small { width: 100%; } }

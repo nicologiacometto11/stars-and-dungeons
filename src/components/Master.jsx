@@ -53,7 +53,7 @@ function Bottino({ tv }) {
   }
   return (
     <section className="card">
-      <h2>Bottino di un mostro</h2>
+      <h2>🎁 Bottino di un mostro</h2>
       <p className="muted">Gli Aureos vanno a tutti quelli che spunti (con l'Anello d'Oro raddoppiano). Ogni oggetto lo assegni a un giocatore solo.</p>
       <select value={mostro} onChange={(e) => { setMostro(e.target.value); setOggetti({}); setMsg('') }}>
         <option value="">Scegli il mostro sconfitto…</option>
@@ -123,18 +123,21 @@ export default function Master({ tv, studi }) {
 
   return (
     <div className="stack">
-      <section className="card">
-        <h2>Codice del tavolo</h2>
-        <p className="muted">I giocatori lo scrivono una volta sola nella tab Tavolo.</p>
-        <div className="riga">
+      <header className="master-testa">
+        <div>
+          <p className="master-sopra">Vista Master</p>
+          <h1 className="master-titolo">Il tavolo</h1>
+          <small className="muted">{tv.giocatori.length} {tv.giocatori.length === 1 ? 'giocatore' : 'giocatori'} · {t.scontro ? `scontro, Round ${t.round}` : 'nessuno scontro'}</small>
+        </div>
+        <div className="master-codice">
+          <small className="muted">Codice del tavolo</small>
           <strong className="codice-tavolo">{tv.codice || '…'}</strong>
           <button onClick={copia}>{copiato ? 'Copiato ✓' : 'Copia'}</button>
-          <button className="ghost" onClick={() => confirm('Creare un nuovo codice? Chi è già al tavolo resta dentro.') && tv.nuovoCodice()}>Nuovo codice</button>
         </div>
-      </section>
+      </header>
 
       <section className="card">
-        <h2>Scontro</h2>
+        <h2>⚔️ Scontro</h2>
         {t.scontro ? (
           <>
             <div className="round-box">
@@ -183,7 +186,7 @@ export default function Master({ tv, studi }) {
       </section>
 
       <section className="card">
-        <h2>Giocatori ({tv.giocatori.length})</h2>
+        <h2>🧙 Giocatori <span className="conteggio">{tv.giocatori.length}</span></h2>
         <Compagni
           giocatori={tv.giocatori}
           turnoId={inTurno?.id}
@@ -195,7 +198,7 @@ export default function Master({ tv, studi }) {
                   <button className="ghost" onClick={() => tv.annullaAzione(a.id)}>Annulla</button>
                 </div>
               ))}
-              <div className="riga">
+              <div className="master-bottoni">
                 <button onClick={() => setScheda(scheda === g.user_id ? null : g.user_id)}>{scheda === g.user_id ? 'Chiudi scheda' : 'Vedi scheda'}</button>
                 <button onClick={() => setAperto(aperto === g.user_id ? null : g.user_id)}>{aperto === g.user_id ? 'Chiudi azioni' : 'Azioni…'}</button>
               </div>
@@ -207,16 +210,20 @@ export default function Master({ tv, studi }) {
         />
       </section>
 
-      <section className="card">
-        <h2>Ripartire da zero</h2>
+      <Bottino tv={tv} />
+      <Storico eventi={tv.eventi} onPulisci={tv.pulisciStorico} />
+      <details className="card zona-pericolo">
+        <summary>Zona pericolosa</summary>
+        <h3 className="sotto">Ripartire da zero</h3>
         <p className="muted">Azzera per tutti i giocatori i mostri incontrati e gli studi (statistiche dei mostri, effetti di armi e oggetti). Le schede non vengono toccate: per far ripartire un giocatore, usa "Elimina personaggio" nella sua Scheda.</p>
         <button className="ghost pericolo" onClick={() => confirm('Azzerare il Bestiario e tutti gli studi per TUTTI i giocatori?') && confirm('Sei sicuro? Non si può annullare.') && studi?.rimuoviTutto(['incontrato', 'mostro', 'oggetto'])}>
           Azzera Bestiario e studi di tutti…
         </button>
-      </section>
+        <h3 className="sotto">Codice del tavolo</h3>
+        <p className="muted">Se il codice è finito in mani sbagliate, creane uno nuovo. Chi è già al tavolo resta dentro.</p>
+        <button className="ghost pericolo" onClick={() => confirm('Creare un nuovo codice? Chi è già al tavolo resta dentro.') && tv.nuovoCodice()}>Nuovo codice</button>
+      </details>
 
-      <Bottino tv={tv} />
-      <Storico eventi={tv.eventi} onPulisci={tv.pulisciStorico} />
     </div>
   )
 }

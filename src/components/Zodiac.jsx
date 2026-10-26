@@ -85,7 +85,6 @@ export default function Zodiac({ c, d, up }) {
                 <span className="segno-livello"><small>LIV</small><b>{pt}</b></span>
                 <Costellazione id={sg.id} punti={pt} abilita={abilitaSbloccate(c, sg.id).length} mini />
                 <strong className="segno-nome">{sg.nome}</strong>
-                <span className="segno-pips" aria-hidden="true">{Array.from({ length: 10 }, (_, i) => <i key={i} className={i < Math.min(pt, 10) ? 'on' : ''} />)}</span>
               </button>
             )
           })}

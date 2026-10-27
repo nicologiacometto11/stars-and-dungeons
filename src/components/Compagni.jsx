@@ -21,7 +21,11 @@ export default function Compagni({ giocatori, turnoId, io, onEspelli, extra }) {
         return (
           <div key={g.user_id} className={`compagno ${metallo(s.rango || 1)} ${turno ? 'di-turno' : ''}`}>
             <div className="compagno-testa">
-              <span className="compagno-iniziale" aria-hidden="true">{(g.nome || '?').trim().charAt(0).toUpperCase()}</span>
+              {s.foto ? (
+                <img className="compagno-foto" src={s.foto} alt={g.nome || ''} />
+              ) : (
+                <span className="compagno-iniziale" aria-hidden="true">{(g.nome || '?').trim().charAt(0).toUpperCase()}</span>
+              )}
               <div className="compagno-nome">
                 <strong>{g.nome || 'Senza nome'}{g.user_id === io && <small className="muted"> (tu)</small>}</strong>
                 <small className="muted">Rango {s.rango ?? '–'}</small>

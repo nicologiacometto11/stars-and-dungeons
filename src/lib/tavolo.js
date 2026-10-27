@@ -1,10 +1,12 @@
 // Tavolo condiviso: il Master e i giocatori vedono lo stesso scontro in tempo reale (Supabase Realtime).
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from './supabase.js'
+import { miniatura } from './immagine.js'
 
 // I numeri della scheda che il Master può vedere al tavolo
-export function statoPubblico(c, d) {
+export function statoPubblico(c, d, foto = null) {
   return {
+    ...(foto ? { foto } : {}),
     rango: c.rango,
     corpo: Math.min(c.corpo ?? d.corpoMax, d.corpoMax), corpoMax: d.corpoMax,
     mente: Math.min(c.mente ?? d.menteMax, d.menteMax), menteMax: d.menteMax,
@@ -110,11 +112,21 @@ export function useTavolo(userId, c, d) {
     }
   }, [attivo, master, membro, carica, caricaAzioni])
 
+  // la mia foto in miniatura, da mostrare agli altri al tavolo
+  const [foto, setFoto] = useState(null)
+  const immagine = c?.immagine
+  useEffect(() => {
+    let vivo = true
+    if (!immagine) setFoto(null)
+    else miniatura(immagine).then((m) => { if (vivo) setFoto(m) })
+    return () => { vivo = false }
+  }, [immagine])
+
   // pubblico i miei numeri quando cambiano (solo se sono al tavolo)
   const ultimo = useRef('')
   useEffect(() => {
     if (!attivo || !membro || !c || !d) return
-    const stato = statoPubblico(c, d)
+    const stato = statoPubblico(c, d, foto)
     const chiave = JSON.stringify([c.nome, stato])
     if (chiave === ultimo.current) return
     const t = setTimeout(async () => {
@@ -122,7 +134,7 @@ export function useTavolo(userId, c, d) {
       if (!error) ultimo.current = chiave
     }, 800)
     return () => clearTimeout(t)
-  }, [attivo, membro, c, d, userId])
+  }, [attivo, membro, c, d, userId, foto])
 
   const entra = useCallback(async (cod, nome) => {
     const { data, error } = await supabase.rpc('entra_tavolo', { codice_in: cod, nome_in: nome })

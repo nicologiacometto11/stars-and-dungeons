@@ -15,3 +15,19 @@ export function ridimensiona(file, lato = 256) {
     img.src = url
   })
 }
+
+// Versione minuscola della foto già salvata (per mostrarla agli altri giocatori al tavolo senza appesantire i dati)
+export function miniatura(dataUrl, lato = 64) {
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => {
+      const lMin = Math.min(img.width, img.height)
+      const canvas = document.createElement('canvas')
+      canvas.width = canvas.height = lato
+      canvas.getContext('2d').drawImage(img, (img.width - lMin) / 2, (img.height - lMin) / 2, lMin, lMin, 0, 0, lato, lato)
+      resolve(canvas.toDataURL('image/jpeg', 0.72))
+    }
+    img.onerror = () => resolve(null)
+    img.src = dataUrl
+  })
+}

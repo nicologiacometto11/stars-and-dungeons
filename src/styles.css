@@ -269,7 +269,14 @@ textarea { font: inherit; color: inherit; background: var(--bg2); border: 1px so
 .codice-tavolo { font-family: var(--serif); font-size: 1.6rem; letter-spacing: .15em; color: var(--oro); }
 .tabs.molte button { padding-left: 6px; padding-right: 6px; }
 @media (min-width: 641px) { .tabs.molte button { padding-left: 14px; padding-right: 14px; } }
-@media (max-width: 640px) { .tabs.molte button.on { padding: 0 10px; } .tabs.molte { padding: 5px 4px; } }
+@media (max-width: 640px) {
+  /* con 8-10 tab: icone di uguale larghezza, il nome solo sotto quella attiva, niente tab tagliate */
+  .tabs.molte { padding: 5px 4px; left: 8px; right: 8px; gap: 0; }
+  .tabs.molte button, .tabs.molte button.on { flex: 1 1 0; min-width: 0; padding: 0; height: 50px; flex-direction: column; gap: 2px; border-radius: 14px; }
+  .tabs.molte button.on { flex: 2.1 1 0; }
+  .tabs.molte .ico { font-size: 1.25rem; }
+  .tabs.molte button.on .nome-tab { display: block; font-size: .6rem; line-height: 1; letter-spacing: .02em; white-space: nowrap; }
+}
 
 /* ---- richieste del Master ---- */
 .richieste { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { REGALO_ATTIVO, REGALO_MESSAGGIO, REGALO_TITOLO } from '../data/regalo.js'
+import { REGALO_ANNI, REGALO_ATTIVO, REGALO_MESSAGGIO, REGALO_TITOLO } from '../data/regalo.js'
 
 const COLORI = ['#e6c274', '#fff0bd', '#b9a2ff', '#ff8aa8', '#7fd6a4', '#8fc2ff']
 
@@ -60,6 +60,7 @@ export default function Regalo() {
 
         <article className="reg-biglietto" aria-hidden={!aperto}>
           <p className="reg-sopra">✦ Per Ludo ✦</p>
+          <p className="reg-anni" aria-hidden="true"><span>{REGALO_ANNI}</span></p>
           <h2 className="reg-titolo">{REGALO_TITOLO}</h2>
           <p className="reg-testo">{REGALO_MESSAGGIO}</p>
           <span className="reg-sigillo" aria-hidden="true">✦</span>

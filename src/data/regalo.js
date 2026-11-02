@@ -5,3 +5,4 @@ export const REGALO_ATTIVO = true
 export const REGALO_TITOLO = 'Buon compleanno, Ludo!'
 export const REGALO_MESSAGGIO =
   'Tantissimi auguri Ludo da parte mia e di Gio, ormai sei arrivato alla tripla cifra tonda!! Ancora tantissimi auguri e ogni volta che ci giochi pensaci ;)'
+export const REGALO_ANNI = 30

@@ -739,7 +739,7 @@ html[data-ambiente] .card > h2, html[data-ambiente] .card .riga > h2 { color: va
 .reg-fiocco { position: absolute; left: 50%; bottom: 36px; width: 124px; margin-left: -62px; z-index: 2; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .5)); }
 
 /* il biglietto */
-.reg-biglietto { position: absolute; left: 50%; top: 50%; width: min(88vw, 330px); padding: 26px 22px 40px; border-radius: 6px; transform: translate(-50%, -50%) scale(.3); opacity: 0; pointer-events: none;
+.reg-biglietto { position: absolute; left: 50%; top: 50%; width: min(88vw, 330px); padding: 22px 22px 40px; border-radius: 6px; transform: translate(-50%, -50%) scale(.3); opacity: 0; pointer-events: none;
   color: #3a2a14; background: radial-gradient(120% 90% at 20% 0%, #fffaf0, #f3e6c4 60%, #e8d3a0); box-shadow: 0 24px 60px rgba(0, 0, 0, .65), 0 0 0 1px #c9a24a inset, 0 0 0 6px #f3e6c4 inset, 0 0 0 7px rgba(156, 117, 36, .6) inset; }
 .reg-sopra { margin: 0 0 6px; font-family: var(--serif); letter-spacing: .3em; text-transform: uppercase; font-size: .68rem; color: #9c7524; }
 .reg-titolo { margin: 0 0 12px; font-family: var(--serif); font-size: 1.35rem; letter-spacing: .05em; font-weight: 600; color: #4a2f10; border: 0; padding: 0; }
@@ -776,3 +776,8 @@ html[data-ambiente] .card > h2, html[data-ambiente] .card .riga > h2 { color: va
   .reg-velo.apre .reg-biglietto { animation: none !important; opacity: 1; transform: translate(-50%, -50%); }
   .reg-coriandoli { display: none; }
 }
+.reg-anni { margin: 0 0 4px; line-height: 1; }
+.reg-anni span { display: inline-block; font-family: var(--serif); font-weight: 600; font-size: 4.2rem; letter-spacing: .04em; background: linear-gradient(180deg, #fff0bd, #e6c274 45%, #9c7524); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; filter: drop-shadow(0 2px 0 rgba(74, 47, 16, .35)); }
+.reg-velo.apre .reg-anni span { animation: reg-pop .9s cubic-bezier(.2, .8, .3, 1.4) 2s both; }
+@keyframes reg-pop { from { opacity: 0; transform: scale(.2) rotate(-12deg); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .reg-velo.apre .reg-anni span { animation: none !important; } }

@@ -728,7 +728,7 @@ html[data-ambiente] .card > h2, html[data-ambiente] .card .riga > h2 { color: va
   animation: reg-gira 40s linear infinite; transition: opacity 1s ease; }
 .reg-velo.apre .reg-raggi { opacity: .75; animation-duration: 25s; }
 
-.reg-scena { position: relative; z-index: 3; width: min(92vw, 340px); height: 470px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.reg-scena { position: relative; z-index: 3; width: min(92vw, 340px); height: 510px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .reg-intro { position: absolute; top: 0; left: 0; right: 0; transition: opacity .5s ease, transform .5s ease; }
 .reg-velo.apre .reg-intro, .reg-velo.apre .reg-tocca { opacity: 0; transform: translateY(-10px); pointer-events: none; }
 .reg-sopra-titolo { margin: 0; font-family: var(--serif); letter-spacing: .32em; text-transform: uppercase; font-size: .72rem; color: rgba(255, 240, 189, .75); }
@@ -822,7 +822,7 @@ html[data-ambiente] .card > h2, html[data-ambiente] .card .riga > h2 { color: va
 @keyframes reg-timbro { from { opacity: 0; transform: scale(2.4) rotate(-40deg); } to { opacity: 1; transform: none; } }
 @keyframes reg-foglia { from { transform: translateX(-180%) skewX(-18deg); } to { transform: translateX(380%) skewX(-18deg); } }
 @keyframes reg-cade { 0% { opacity: 1; transform: translate(0, 0) rotate(0); } 100% { opacity: .9; transform: translate(var(--dx), 110vh) rotate(calc(var(--r) + 720deg)); } }
-@media (max-height: 640px) { .reg-scena { height: 430px; } .reg-testo { font-size: 1.4rem; } .reg-anni span { font-size: 3.6rem; } }
+@media (max-height: 640px) { .reg-scena { height: 460px; } .reg-ps { font-size: 1rem; } .reg-testo { font-size: 1.4rem; } .reg-anni span { font-size: 3.6rem; } }
 @media (prefers-reduced-motion: reduce) {
   .reg-velo, .reg-tocca, .reg-box, .reg-stelle i, .reg-raggi, .reg-orbita, .reg-ombra, .reg-fiocco, .reg-riflesso { animation: none !important; }
   .reg-velo.apre .reg-coperchio, .reg-velo.apre .reg-luce, .reg-velo.apre .reg-box, .reg-velo.apre .reg-ombra { animation: none !important; opacity: 0; }
@@ -830,3 +830,6 @@ html[data-ambiente] .card > h2, html[data-ambiente] .card .riga > h2 { color: va
   .reg-velo.apre .reg-biglietto * { animation: none !important; }
   .reg-coriandoli, .reg-scintille { display: none; }
 }
+.reg-ps { margin: 6px 0 0; text-align: left; font-family: 'Caveat', cursive; font-size: 1.15rem; line-height: 1.15; color: #7a5a2e; }
+.reg-velo.apre .reg-ps { animation: velo-entra .8s ease 5.2s both; }
+@media (prefers-reduced-motion: reduce) { .reg-velo.apre .reg-ps { animation: none !important; } }

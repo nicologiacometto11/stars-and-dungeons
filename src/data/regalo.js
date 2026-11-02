@@ -6,3 +6,4 @@ export const REGALO_TITOLO = 'Buon compleanno, Ludo!'
 export const REGALO_MESSAGGIO =
   'Tantissimi auguri Ludo da parte mia e di Gio, ormai sei arrivato alla tripla cifra tonda!! Ancora tantissimi auguri e ogni volta che ci giochi pensaci ;)'
 export const REGALO_ANNI = 30
+export const REGALO_PS = 'PS: questo biglietto non è stato scritto da un IA'

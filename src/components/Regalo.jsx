@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { REGALO_ANNI, REGALO_ATTIVO, REGALO_MESSAGGIO, REGALO_TITOLO } from '../data/regalo.js'
+import { REGALO_ANNI, REGALO_ATTIVO, REGALO_MESSAGGIO, REGALO_PS, REGALO_TITOLO } from '../data/regalo.js'
 
 const COLORI = ['#e6c274', '#fff0bd', '#b9a2ff', '#ff8aa8', '#7fd6a4', '#8fc2ff']
 
@@ -45,7 +45,7 @@ export default function Regalo() {
 
   useEffect(() => {
     if (!aperto) return
-    const t = setTimeout(() => setLetto(true), 4600)
+    const t = setTimeout(() => setLetto(true), 5600)
     return () => clearTimeout(t)
   }, [aperto])
 
@@ -103,6 +103,7 @@ export default function Regalo() {
           <div className="reg-fregio" aria-hidden="true"><i /><b>✦</b><i /></div>
           <p className="reg-testo">{REGALO_MESSAGGIO}</p>
           <p className="reg-firma">Nico &amp; Gio</p>
+          <p className="reg-ps">{REGALO_PS}</p>
           <span className="reg-sigillo" aria-hidden="true">✦</span>
         </article>
       </div>

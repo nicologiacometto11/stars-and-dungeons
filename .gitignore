@@ -3,3 +3,6 @@ dist
 .env
 e2e/test-results
 e2e/playwright-report
+
+# foto originali lasciate in cartella (nel sito va solo la versione ridotta in public/images/regalo)
+/PHOTO-*.jpg

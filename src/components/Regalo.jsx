@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { REGALO_ANNI, REGALO_ATTIVO, REGALO_MESSAGGIO, REGALO_PS, REGALO_TITOLO } from '../data/regalo.js'
+import { REGALO_ANNI, REGALO_ATTIVO, REGALO_DIDASCALIA, REGALO_FOTO, REGALO_MESSAGGIO, REGALO_PS, REGALO_TITOLO } from '../data/regalo.js'
 
 const COLORI = ['#e6c274', '#fff0bd', '#b9a2ff', '#ff8aa8', '#7fd6a4', '#8fc2ff']
 
@@ -42,6 +42,8 @@ export default function Regalo() {
   const [aperto, setAperto] = useState(false)
   const [letto, setLetto] = useState(false)
   const [chiuso, setChiuso] = useState(false)
+  const [girato, setGirato] = useState(false)
+  const [zoom, setZoom] = useState(false)
 
   useEffect(() => {
     if (!aperto) return
@@ -93,18 +95,34 @@ export default function Regalo() {
         <p className="reg-tocca" aria-hidden="true">Tocca il pacco per aprirlo</p>
 
         <article className="reg-biglietto" aria-hidden={!aperto}>
-          <span className="reg-angolo a1" aria-hidden="true">✦</span>
-          <span className="reg-angolo a2" aria-hidden="true">✦</span>
-          <span className="reg-angolo a3" aria-hidden="true">✦</span>
-          <span className="reg-angolo a4" aria-hidden="true">✦</span>
-          <i className="reg-foglia" aria-hidden="true" />
-          <p className="reg-anni" aria-hidden="true"><span>{REGALO_ANNI}</span></p>
-          <h2 className="reg-titolo">{REGALO_TITOLO}</h2>
-          <div className="reg-fregio" aria-hidden="true"><i /><b>✦</b><i /></div>
-          <p className="reg-testo">{REGALO_MESSAGGIO}</p>
-          <p className="reg-firma">Nico &amp; Gio</p>
-          <p className="reg-ps">{REGALO_PS}</p>
-          <span className="reg-sigillo" aria-hidden="true">✦</span>
+          <div className={`reg-giro${girato ? ' girato' : ''}`}>
+            <div className="reg-faccia fronte" aria-hidden={girato}>
+              <span className="reg-angolo a1" aria-hidden="true">✦</span>
+              <span className="reg-angolo a2" aria-hidden="true">✦</span>
+              <span className="reg-angolo a3" aria-hidden="true">✦</span>
+              <span className="reg-angolo a4" aria-hidden="true">✦</span>
+              <i className="reg-foglia" aria-hidden="true" />
+              <p className="reg-anni" aria-hidden="true"><span>{REGALO_ANNI}</span></p>
+              <h2 className="reg-titolo">{REGALO_TITOLO}</h2>
+              <div className="reg-fregio" aria-hidden="true"><i /><b>✦</b><i /></div>
+              <p className="reg-testo">{REGALO_MESSAGGIO}</p>
+              <p className="reg-firma">Nico &amp; Gio</p>
+              <p className="reg-ps">{REGALO_PS}</p>
+              <span className="reg-sigillo" aria-hidden="true">✦</span>
+            </div>
+            <div className="reg-faccia retro" aria-hidden={!girato}>
+              <span className="reg-angolo a1" aria-hidden="true">✦</span>
+              <span className="reg-angolo a2" aria-hidden="true">✦</span>
+              <span className="reg-angolo a3" aria-hidden="true">✦</span>
+              <span className="reg-angolo a4" aria-hidden="true">✦</span>
+              <button type="button" className="reg-polaroid" onClick={() => setZoom(true)} tabIndex={girato ? 0 : -1} aria-label="Ingrandisci la foto">
+                <i className="reg-nastro-adesivo n1" aria-hidden="true" />
+                <i className="reg-nastro-adesivo n2" aria-hidden="true" />
+                <img src={`${import.meta.env.BASE_URL}${REGALO_FOTO}`} alt="Ludo con Nico e Gio" loading="eager" />
+                <span className="reg-didascalia">{REGALO_DIDASCALIA}</span>
+              </button>
+            </div>
+          </div>
         </article>
       </div>
 
@@ -116,7 +134,16 @@ export default function Regalo() {
         </div>
       )}
 
-      <button type="button" className="reg-entra primary" onClick={() => setChiuso(true)} tabIndex={letto ? 0 : -1}>Entra nel gioco ✦</button>
+      <div className="reg-azioni">
+        <button type="button" className="reg-gira" onClick={() => setGirato((g) => !g)} tabIndex={letto ? 0 : -1}>Gira il biglietto ↻</button>
+        <button type="button" className="reg-entra primary" onClick={() => setChiuso(true)} tabIndex={letto ? 0 : -1}>Entra nel gioco ✦</button>
+      </div>
+
+      {zoom && (
+        <button type="button" className="reg-zoom" onClick={() => setZoom(false)} aria-label="Chiudi la foto">
+          <img src={`${import.meta.env.BASE_URL}${REGALO_FOTO}`} alt="Ludo con Nico e Gio" />
+        </button>
+      )}
     </div>
   )
 }

@@ -8,4 +8,4 @@ export const REGALO_MESSAGGIO =
 export const REGALO_ANNI = 30
 export const REGALO_PS = 'PS: questo biglietto non è stato scritto da un IA'
 export const REGALO_FOTO = 'images/regalo/foto.webp'
-export const REGALO_DIDASCALIA = '26 · 07 · 2024'
+export const REGALO_DIDASCALIA = '08 · 07 · 2024'

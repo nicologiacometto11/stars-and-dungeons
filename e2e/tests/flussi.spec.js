@@ -447,3 +447,15 @@ test('Sali di Rango: parte la scena, e al cambio di metallo la cornice passa da 
   await page.getByRole('button', { name: /^Sali di Rango/ }).click()
   await expect(page.getByRole('dialog', { name: 'Sei salito al Rango 6' }).locator('.rs-cornice.nuova')).toHaveCount(0)
 })
+
+test('Regalo di compleanno: si apre il pacco, esce il biglietto e si entra nel gioco', async ({ page }) => {
+  await page.goto('/?regalo')
+  const velo = page.getByRole('dialog', { name: 'Un regalo per Ludo' })
+  await expect(velo).toBeVisible()
+  await expect(velo.getByRole('button', { name: 'Entra nel gioco ✦' })).toBeHidden()
+  await velo.getByRole('button', { name: 'Apri il regalo' }).click({ force: true })
+  await expect(velo).toContainText('Tantissimi auguri Ludo da parte mia e di Gio')
+  await expect(velo).toContainText('tripla cifra tonda')
+  await velo.getByRole('button', { name: 'Entra nel gioco ✦' }).click({ timeout: 10000 })
+  await expect(velo).toHaveCount(0)
+})

@@ -716,3 +716,63 @@ html[data-ambiente] .card > h2, html[data-ambiente] .card .riga > h2 { color: va
 @media (prefers-reduced-motion: reduce) { .mini-barra.bassa .barra div { animation: none; } }
 @media (max-width: 480px) { .master-codice { align-items: flex-start; width: 100%; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px; } .master-codice small { width: 100%; } }
 .compagno-foto { flex: none; width: 48px; height: 48px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid transparent; background: var(--bg) padding-box, conic-gradient(from 200deg, var(--m2), var(--m3), var(--m1), var(--m2)) border-box; box-shadow: 0 0 10px color-mix(in srgb, var(--m1) 45%, transparent); }
+
+/* ---- Regalo di compleanno ---- */
+.reg-velo { position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 16px 28px; overflow: auto; text-align: center;
+  background: radial-gradient(600px 420px at 50% 42%, rgba(120, 96, 220, .35), transparent 70%), radial-gradient(500px 300px at 50% 100%, rgba(230, 194, 116, .14), transparent 70%), #07081a; animation: velo-entra .6s ease; }
+.reg-stelle { position: absolute; inset: 0; pointer-events: none; }
+.reg-stelle i { position: absolute; border-radius: 50%; background: #fff6d4; box-shadow: 0 0 8px 1px rgba(255, 240, 189, .8); animation: reg-brilla 2.8s ease-in-out infinite; }
+.reg-scena { position: relative; width: min(92vw, 340px); height: 400px; display: grid; place-items: center; }
+.reg-hint { position: absolute; top: 0; left: 0; right: 0; margin: 0; font-family: var(--serif); letter-spacing: .22em; text-transform: uppercase; font-size: .78rem; color: var(--oro); animation: reg-respira 2.4s ease-in-out infinite; }
+
+/* il pacco */
+.reg-box { position: relative; width: 190px; height: 190px; padding: 0; border: 0; background: transparent; cursor: pointer; animation: reg-fluttua 3.2s ease-in-out infinite; -webkit-tap-highlight-color: transparent; }
+.reg-box:disabled { cursor: default; animation: none; }
+.reg-luce { position: absolute; left: 50%; top: 38%; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; pointer-events: none; opacity: 0;
+  background: radial-gradient(circle, #fff 0%, rgba(255, 240, 189, .9) 25%, rgba(255, 240, 189, 0) 70%); }
+.reg-corpo { position: absolute; left: 14px; right: 14px; bottom: 0; height: 120px; border-radius: 6px 6px 12px 12px; overflow: hidden;
+  background: linear-gradient(160deg, #6a52d8, #3c2a96 60%, #2a1d70); box-shadow: 0 16px 34px rgba(0, 0, 0, .55), inset 0 0 0 2px rgba(255, 255, 255, .08); }
+.reg-corpo::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, rgba(255, 255, 255, .05) 0 8px, transparent 8px 16px); }
+.reg-coperchio { position: absolute; left: 4px; right: 4px; bottom: 112px; height: 52px; border-radius: 10px; transform-origin: 20% 100%;
+  background: linear-gradient(160deg, #7b63ec, #4a37ad 70%); box-shadow: 0 6px 14px rgba(0, 0, 0, .45), inset 0 0 0 2px rgba(255, 255, 255, .1); }
+.reg-nastro-v { position: absolute; top: 0; bottom: 0; left: 50%; width: 30px; margin-left: -15px; z-index: 1; background: linear-gradient(90deg, #9c7524, #fff0bd 45%, #e6c274 60%, #9c7524); box-shadow: 0 0 10px rgba(230, 194, 116, .5); }
+.reg-fiocco { position: absolute; left: 50%; bottom: 36px; width: 124px; margin-left: -62px; z-index: 2; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .5)); }
+
+/* il biglietto */
+.reg-biglietto { position: absolute; left: 50%; top: 50%; width: min(88vw, 330px); padding: 26px 22px 40px; border-radius: 6px; transform: translate(-50%, -50%) scale(.3); opacity: 0; pointer-events: none;
+  color: #3a2a14; background: radial-gradient(120% 90% at 20% 0%, #fffaf0, #f3e6c4 60%, #e8d3a0); box-shadow: 0 24px 60px rgba(0, 0, 0, .65), 0 0 0 1px #c9a24a inset, 0 0 0 6px #f3e6c4 inset, 0 0 0 7px rgba(156, 117, 36, .6) inset; }
+.reg-sopra { margin: 0 0 6px; font-family: var(--serif); letter-spacing: .3em; text-transform: uppercase; font-size: .68rem; color: #9c7524; }
+.reg-titolo { margin: 0 0 12px; font-family: var(--serif); font-size: 1.35rem; letter-spacing: .05em; font-weight: 600; color: #4a2f10; border: 0; padding: 0; }
+.reg-testo { margin: 0; font-family: 'Caveat', 'Segoe Script', 'Bradley Hand', cursive; font-size: 1.55rem; line-height: 1.25; color: #3a2a14; }
+.reg-sigillo { position: absolute; left: 50%; bottom: -20px; width: 42px; height: 42px; margin-left: -21px; display: grid; place-items: center; border-radius: 50%; color: #ffd9c9; font-size: 1.1rem;
+  background: radial-gradient(circle at 35% 30%, #e0553f, #a8281a 70%); box-shadow: 0 4px 10px rgba(0, 0, 0, .5), inset 0 0 0 3px rgba(255, 255, 255, .12); }
+
+/* apertura */
+.reg-velo.apre .reg-coperchio { animation: reg-vola 1s cubic-bezier(.3, .6, .3, 1) forwards; }
+.reg-velo.apre .reg-luce { animation: reg-lampo 1.4s ease-out .15s forwards; }
+.reg-velo.apre .reg-box { animation: reg-scuote .45s ease-out, reg-via .7s ease-in 1.5s forwards; }
+.reg-velo.apre .reg-biglietto { animation: reg-esce 1.5s cubic-bezier(.2, .8, .3, 1.05) 1.1s forwards; }
+.reg-velo.apre .reg-testo, .reg-velo.apre .reg-titolo { animation: velo-entra 1s ease 2.2s both; }
+.reg-entra { margin-top: 18px; opacity: 0; pointer-events: none; transition: opacity .8s ease; position: relative; z-index: 3; padding-left: 26px; padding-right: 26px; }
+.reg-velo.letto .reg-entra { opacity: 1; pointer-events: auto; }
+.reg-velo:not(.apre) .reg-entra { display: none; }
+
+/* coriandoli */
+.reg-coriandoli { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 2; }
+.reg-coriandoli i { position: absolute; top: -20px; border-radius: 2px; opacity: 0; animation: reg-cade linear forwards; }
+
+@keyframes reg-fluttua { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-12px) rotate(1.5deg); } }
+@keyframes reg-respira { 50% { opacity: .55; } }
+@keyframes reg-brilla { 0%, 100% { opacity: .15; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.3); } }
+@keyframes reg-scuote { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px) rotate(-2deg); } 40% { transform: translateX(6px) rotate(2deg); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+@keyframes reg-vola { 0% { transform: translateY(0) rotate(0); opacity: 1; } 100% { transform: translate(-30px, -230px) rotate(-32deg); opacity: 0; } }
+@keyframes reg-lampo { 0% { opacity: 0; transform: scale(.4); } 25% { opacity: 1; } 100% { opacity: 0; transform: scale(14); } }
+@keyframes reg-via { to { opacity: 0; transform: translateY(70px) scale(.85); } }
+@keyframes reg-esce { 0% { opacity: 0; transform: translate(-50%, -20%) scale(.3) rotate(-8deg); } 55% { opacity: 1; } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(-1deg); } }
+@keyframes reg-cade { 0% { opacity: 1; transform: translate(0, 0) rotate(0); } 100% { opacity: .9; transform: translate(var(--dx), 110vh) rotate(calc(var(--r) + 720deg)); } }
+@media (prefers-reduced-motion: reduce) {
+  .reg-velo, .reg-hint, .reg-box, .reg-stelle i { animation: none !important; }
+  .reg-velo.apre .reg-coperchio, .reg-velo.apre .reg-luce, .reg-velo.apre .reg-box { animation: none !important; opacity: 0; }
+  .reg-velo.apre .reg-biglietto { animation: none !important; opacity: 1; transform: translate(-50%, -50%); }
+  .reg-coriandoli { display: none; }
+}

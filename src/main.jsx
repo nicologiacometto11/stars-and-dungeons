@@ -2,6 +2,7 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import CieloStellato from './components/CieloStellato.jsx'
+import Regalo from './components/Regalo.jsx'
 import './styles.css'
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
@@ -12,5 +13,6 @@ createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <CieloStellato />
     <App />
+    <Regalo />
   </React.StrictMode>,
 )

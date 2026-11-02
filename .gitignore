@@ -6,3 +6,4 @@ e2e/playwright-report
 
 # foto originali lasciate in cartella (nel sito va solo la versione ridotta in public/images/regalo)
 /PHOTO-*.jpg
+e2e/tests/_shot*

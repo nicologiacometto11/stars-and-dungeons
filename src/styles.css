@@ -882,7 +882,7 @@ html[data-ambiente] .card > h2, html[data-ambiente] .card .riga > h2 { color: va
 button.primary:disabled { background: transparent; border-color: var(--line2); color: var(--muted); opacity: 1; font-weight: 500; }
 
 /* ---- barra sempre visibile della Scheda ---- */
-.hud { position: sticky; top: 6px; z-index: 4; display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; min-height: 0; border: 1px solid var(--line2); border-radius: 14px; background: rgba(16, 18, 34, .88); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 6px 18px rgba(0, 0, 0, .35); text-align: left; color: var(--txt); font-weight: 400; }
+.hud { position: sticky; top: calc(env(safe-area-inset-top) + 6px); z-index: 4; display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; min-height: 0; border: 1px solid var(--line2); border-radius: 14px; background: rgba(16, 18, 34, .88); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 6px 18px rgba(0, 0, 0, .35); text-align: left; color: var(--txt); font-weight: 400; }
 @media (min-width: 641px) { .hud { top: 54px; } }
 .hud small { display: block; font-size: .62rem; letter-spacing: .06em; color: var(--muted); line-height: 1.2; }
 .hud b { font-size: .9rem; font-variant-numeric: tabular-nums; line-height: 1.2; }
@@ -958,7 +958,7 @@ button.primary:disabled { background: transparent; border-color: var(--line2); c
 .master-codice small { width: auto; }
 .master-codice .codice-tavolo { font-size: .95rem; letter-spacing: .08em; }
 .master-codice button { padding: 3px 10px; font-size: .78rem; }
-.scontro-bar { position: sticky; top: 6px; z-index: 4; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px 8px 14px; border: 1px solid rgba(230, 194, 116, .45); border-radius: 14px; background: rgba(22, 22, 34, .92); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 6px 18px rgba(0, 0, 0, .35); }
+.scontro-bar { position: sticky; top: calc(env(safe-area-inset-top) + 6px); z-index: 4; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px 8px 14px; border: 1px solid rgba(230, 194, 116, .45); border-radius: 14px; background: rgba(22, 22, 34, .92); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 6px 18px rgba(0, 0, 0, .35); }
 @media (min-width: 641px) { .scontro-bar { top: 54px; } }
 .scontro-info { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
 .scontro-info small { color: var(--muted); font-size: .72rem; }
@@ -997,3 +997,20 @@ button.primary:disabled { background: transparent; border-color: var(--line2); c
 .ordine-master .maniglia i { display: block; width: 18px; height: 2px; border-radius: 2px; background: var(--muted); }
 .ordine-master li.presa .maniglia i { background: var(--oro); }
 @media (prefers-reduced-motion: reduce) { .ordine-master li { transition: none; } }
+
+/* iOS 26, app installata: il sistema sfoca la parte alta dello schermo (Liquid Glass). */
+/* Con la barra di stato non trasparente l'app parte sotto l'ora e l'inset è 0, ma resta un velo leggero: basta una fascia sottile.
+   Chi l'ha installata prima resta trasparente finché non rimette l'icona (iOS legge l'impostazione solo allora):
+   per lui la sfocatura arriva circa 40 punti sotto la barra, quindi quella fascia resta a tinta unita. */
+.status-cap { display: none; }
+@supports (-webkit-touch-callout: none) {
+  @media (display-mode: standalone) {
+    :root { --fascia: max(28px, min(calc(env(safe-area-inset-top) * 1000), calc(env(safe-area-inset-top) + 56px))); }
+    .status-cap { display: block; position: fixed; top: 0; left: 0; right: 0; height: var(--fascia); background: var(--bg); z-index: 15; pointer-events: none; }
+    .top { padding-top: calc(var(--fascia) + 6px); }
+    .hud, .scontro-bar { top: calc(var(--fascia) + 6px); }
+    .sez-riserve { scroll-margin-top: calc(var(--fascia) + 72px); }
+    .fin-velo { padding-top: calc(var(--fascia) + 8px); }
+    .fin { max-height: calc(100dvh - var(--fascia) - 24px); }
+  }
+}

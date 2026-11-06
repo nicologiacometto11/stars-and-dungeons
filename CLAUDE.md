@@ -188,3 +188,8 @@ Decisione del Master sulla fase 3: NIENTE combattimento sul tavolo (PV e azioni 
 - In scontro la barra `.scontro-bar` resta sempre visibile (Round, turno, "Prossimo turno"). Sotto: Giocatori, Mostri in campo, Ordine dei turni richiudibile, "Fine scontro".
 - Giocatori compatti (`compatti` in `Compagni.jsx`, solo per il Master). "Azioni…", "Vedi scheda" e il Bottino si aprono in una `Finestra`; "Rimuovi dal tavolo" è nella finestra della scheda. Lo Storico è richiudibile (`richiudibile` in `Storico.jsx`).
 - Ordine dei turni: si riordina trascinando la maniglia a tre linee (`OrdineTurni.jsx`, come la coda di Spotify) o con le frecce da tastiera; il turno segue lo stesso personaggio (`spostaInOrdine` in `lib/tavolo.js`).
+
+## iPhone: sfocatura in cima nell'app installata
+
+iOS 26 sfoca da solo la parte alta delle app installate (Liquid Glass) e non si può spegnere. Per questo `index.html` usa `apple-mobile-web-app-status-bar-style` = `default` e `.status-cap` (`styles.css`, solo iOS installata) è una fascia a tinta unita di 28 punti sotto l'ora. Il riquadro fisso da solo non bastava; `black-translucent` peggiora. Chi ha installato prima di questa modifica vede una fascia più alta (inset + 56 punti) finché non cancella l'icona e la rimette: iOS legge l'impostazione solo all'installazione. L'effetto si vede solo su un iPhone vero, non nei test automatici.
+

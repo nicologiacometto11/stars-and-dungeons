@@ -29,6 +29,7 @@ const TAB_OGGETTI = [['inventario', 'Inventario'], ['negozio', 'Negozio']]
 const TAB_ALTRO = [['craft', 'Craft', '⚒️'], ['ricevi', 'Ricevi', '🎁']]
 const VOCE_TAVOLO = ['tavolo', 'Tavolo', '🎲']
 const VOCE_MASTER = ['master', 'Master', '👑']
+const LINK_SATISPAY = 'https://web.satispay.com/download/qrcode/S6Y-CON--CDE5D92E-EEEF-4D62-AF3A-42DC870EF624'
 
 export default function App() {
   const [session, setSession] = useState(modalitaOnline ? undefined : null)
@@ -222,6 +223,10 @@ export default function App() {
                 <span aria-hidden="true">{ico}</span> {nome}
               </button>
             ))}
+            <div className="supporto">
+              <small className="muted">Se vuoi supportarmi:</small>
+              <a className="satispay-btn" href={LINK_SATISPAY} target="_blank" rel="noopener noreferrer">Satispay</a>
+            </div>
           </div>
         </div>
       )}

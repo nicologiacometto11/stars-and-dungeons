@@ -489,3 +489,11 @@ test('Regalo di compleanno: si apre il pacco, esce il biglietto e si entra nel g
   await velo.getByRole('button', { name: 'Entra nel gioco ✦' }).click()
   await expect(velo).toHaveCount(0)
 })
+
+test('Altro: il pulsante Satispay porta al link giusto', async ({ page }) => {
+  await nuovo(page)
+  await page.locator('nav.tabs').getByRole('button', { name: 'Altro' }).click()
+  await expect(page.getByText('Se vuoi supportarmi:')).toBeVisible()
+  await expect(page.locator('a.satispay-btn')).toHaveAttribute('href', 'https://web.satispay.com/download/qrcode/S6Y-CON--CDE5D92E-EEEF-4D62-AF3A-42DC870EF624')
+})
+

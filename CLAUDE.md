@@ -193,3 +193,7 @@ Decisione del Master sulla fase 3: NIENTE combattimento sul tavolo (PV e azioni 
 
 iOS 26 sfoca da solo la parte alta delle app installate (Liquid Glass) e non si può spegnere. Per questo `index.html` usa `apple-mobile-web-app-status-bar-style` = `default` e `.status-cap` (`styles.css`, solo iOS installata) è una fascia a tinta unita di 28 punti sotto l'ora. Il riquadro fisso da solo non bastava; `black-translucent` peggiora. Chi ha installato prima di questa modifica vede una fascia più alta (inset + 56 punti) finché non cancella l'icona e la rimette: iOS legge l'impostazione solo all'installazione. L'effetto si vede solo su un iPhone vero, non nei test automatici.
 
+## Supporto
+
+Pulsante Satispay (`a.satispay-btn`, `LINK_SATISPAY` in `App.jsx`) in fondo al menu "Altro".
+

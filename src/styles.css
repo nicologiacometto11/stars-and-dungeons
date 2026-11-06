@@ -1014,3 +1014,8 @@ button.primary:disabled { background: transparent; border-color: var(--line2); c
     .fin { max-height: calc(100dvh - var(--fascia) - 24px); }
   }
 }
+
+/* ---- supporto ---- */
+.supporto { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; padding: 10px 12px 8px; border-top: 1px solid var(--line); }
+.satispay-btn { display: block; padding: 9px 12px; border-radius: 10px; background: #f94c43; color: #fff; font-weight: 600; font-size: .9rem; text-align: center; text-decoration: none; }
+@media (hover: hover) { .satispay-btn:hover { background: #e63e36; } }

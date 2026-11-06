@@ -28,6 +28,14 @@ export function prossimoTurno(t) {
   return turno >= n ? { turno: 0, round: t.round + 1 } : { turno, round: t.round }
 }
 
+// Sposta un giocatore nell'ordine dei turni: il turno segue lo stesso personaggio
+export function spostaInOrdine(t, da, a) {
+  const ordine = [...t.ordine]
+  const [preso] = ordine.splice(da, 1)
+  ordine.splice(a, 0, preso)
+  return { ordine, turno: ordine.indexOf(t.ordine[t.turno]) }
+}
+
 export function useTavolo(userId, c, d) {
   const [master, setMaster] = useState(false)
   const [membro, setMembro] = useState(false)

@@ -2,12 +2,13 @@ import { useState } from 'react'
 import Compagni from './Compagni.jsx'
 import Finestra from './Finestra.jsx'
 import MasterAzioni from './MasterAzioni.jsx'
+import OrdineTurni from './OrdineTurni.jsx'
 import SchedaMaster from './SchedaMaster.jsx'
 import Storico from './Storico.jsx'
 import { MOSTRI, MOSTRI_BY_ID } from '../data/monsters.js'
 import { ITEMS_BY_ID } from '../data/items.js'
 import { slug } from '../data/craft.js'
-import { ordineIniziale, prossimoTurno } from '../lib/tavolo.js'
+import { ordineIniziale, prossimoTurno, spostaInOrdine } from '../lib/tavolo.js'
 
 // Vista del Master: codice, scontro (Round e turni) e giocatori al tavolo
 const TIPO_DANNO = { fisico: 'fisici', magico: 'magici', puro: 'puri' }
@@ -112,15 +113,6 @@ export default function Master({ tv, studi }) {
     tv.aggiornaTavolo({ mostri: qta > 0 ? [...resto, { id, qta }].sort((a, b) => a.id.localeCompare(b.id)) : resto })
   }
   const avanti = () => tv.aggiornaTavolo(prossimoTurno(t))
-  const sposta = (i, dir) => {
-    const ordine = [...t.ordine]
-    const j = i + dir
-    if (j < 0 || j >= ordine.length) return
-    ;[ordine[i], ordine[j]] = [ordine[j], ordine[i]]
-    // il turno segue lo stesso personaggio
-    const turno = t.turno === i ? j : t.turno === j ? i : t.turno
-    tv.aggiornaTavolo({ ordine, turno })
-  }
   const inTurno = t.scontro ? t.ordine[t.turno] : null
   const perAzioni = tv.giocatori.find((g) => g.user_id === aperto)
   const perScheda = tv.giocatori.find((g) => g.user_id === scheda)
@@ -201,17 +193,7 @@ export default function Master({ tv, studi }) {
 
           <details className="card">
             <summary>Ordine dei turni</summary>
-            <ol className="ordine ordine-master">
-              {t.ordine.map((o, i) => (
-                <li key={o.tipo + o.id} className={i === t.turno ? 'on' : ''}>
-                  <span>{o.nome}</span>
-                  <span className="riga">
-                    <button className="ghost" onClick={() => sposta(i, -1)} disabled={i === 0} aria-label="Su">↑</button>
-                    <button className="ghost" onClick={() => sposta(i, 1)} disabled={i === t.ordine.length - 1} aria-label="Giù">↓</button>
-                  </span>
-                </li>
-              ))}
-            </ol>
+            <OrdineTurni ordine={t.ordine} turno={t.turno} onSposta={(da, a) => tv.aggiornaTavolo(spostaInOrdine(t, da, a))} />
           </details>
 
           <button className="ghost pericolo fine-scontro" onClick={fine}>Fine scontro</button>

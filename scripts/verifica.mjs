@@ -256,6 +256,10 @@ ok(!/MIDAS/i.test(tvG), 'mostri in campo: il nome non si vede se il mostro non Ã
 ok(!/PV/.test(tvG), 'i giocatori non vedono PV dei mostri')
 const tuttiNoti = renderToString(React.createElement((await load('/src/components/Shop.jsx')).default, { c: sc, d: ds, up, studi: { oggetti: new Set(ITEMS.map((i) => i.id)), mostri: new Set(), condividi() {} } }))
 ok(!/misteriosa/.test(tuttiNoti), 'studio condiviso: se un altro giocatore ha studiato un oggetto, nel Negozio si vede senza pagare')
+const { spostaInOrdine } = await load('/src/lib/tavolo.js')
+const ordT = { turno: 1, ordine: [{ id: 'a' }, { id: 'b' }, { id: 'c' }, { id: 'd' }] }
+const sp = (da, a) => { const x = spostaInOrdine(ordT, da, a); return x.ordine.map((o) => o.id).join('') + x.turno }
+ok(sp(3, 0) === 'dabc2' && sp(0, 3) === 'bcda0' && sp(1, 2) === 'acbd2', 'ordine dei turni: il giocatore si sposta e il turno segue lo stesso personaggio')
 const BestiaryM = (await load('/src/components/Bestiary.jsx')).default
 const bs = (incontrati, master = false) => testo(renderToString(React.createElement(BestiaryM, { c: { ...big, bestiario: { scoperti: { elfo: true }, rivelati: {} } }, d: db, up, master, studi: { attivo: true, oggetti: new Set(), mostri: new Set(), incontrati: new Set(incontrati), condividi() {}, rimuovi() {} } })))
 ok(/ASHUZ/.test(bs(['ashuz'])) && !/ASHUZ/.test(bs([])), 'incontrato in comune: un mostro segnato da un altro si vede con il nome')

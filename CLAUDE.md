@@ -187,4 +187,4 @@ Decisione del Master sulla fase 3: NIENTE combattimento sul tavolo (PV e azioni 
 
 - In scontro la barra `.scontro-bar` resta sempre visibile (Round, turno, "Prossimo turno"). Sotto: Giocatori, Mostri in campo, Ordine dei turni richiudibile, "Fine scontro".
 - Giocatori compatti (`compatti` in `Compagni.jsx`, solo per il Master). "Azioni…", "Vedi scheda" e il Bottino si aprono in una `Finestra`; "Rimuovi dal tavolo" è nella finestra della scheda. Lo Storico è richiudibile (`richiudibile` in `Storico.jsx`).
-
+- Ordine dei turni: si riordina trascinando la maniglia a tre linee (`OrdineTurni.jsx`, come la coda di Spotify) o con le frecce da tastiera; il turno segue lo stesso personaggio (`spostaInOrdine` in `lib/tavolo.js`).

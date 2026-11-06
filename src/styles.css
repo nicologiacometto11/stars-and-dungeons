@@ -987,3 +987,13 @@ button.primary:disabled { background: transparent; border-color: var(--line2); c
 .fin-corpo h2 { margin: 0; padding-right: 34px; }
 .fin .master-azioni, .fin .scheda-master { padding-top: 0; border-top: 0; }
 .fin > .card h2 { padding-right: 34px; }
+
+/* ---- ordine dei turni trascinabile ---- */
+.ordine-master li { padding-right: 4px; transition: transform .18s ease; background: var(--bg2); }
+.ordine-master li.presa { position: relative; z-index: 2; transition: none; border-color: var(--oro); box-shadow: 0 8px 20px rgba(0, 0, 0, .55); }
+.ordine-master.in-trascinamento { -webkit-user-select: none; user-select: none; }
+.ordine-master .maniglia { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; flex: none; width: 44px; height: 40px; min-height: 0; padding: 0; border: 0; background: transparent; cursor: grab; touch-action: none; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+.ordine-master .maniglia:active { cursor: grabbing; }
+.ordine-master .maniglia i { display: block; width: 18px; height: 2px; border-radius: 2px; background: var(--muted); }
+.ordine-master li.presa .maniglia i { background: var(--oro); }
+@media (prefers-reduced-motion: reduce) { .ordine-master li { transition: none; } }

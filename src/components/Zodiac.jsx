@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import AssegnaPunto from './AssegnaPunto.jsx'
 import Costellazione from './Costellazione.jsx'
+import Finestra from './Finestra.jsx'
 import IconaElemento from './IconaElemento.jsx'
 import { metallo } from '../lib/ui.js'
 import { SEGNI, SEGNI_BY_ID, OFIUCO, CATEGORIE } from '../data/zodiac.js'
@@ -19,6 +20,8 @@ const BONUS_NOME = { corpoMax: 'Corpo MAX', menteMax: 'Mente MAX', armor: 'Armor
 export default function Zodiac({ c, d, up }) {
   const [sel, setSel] = useState('ariete')
   const [correzione, setCorrezione] = useState(false)
+  // entrando con punti da assegnare la finestra si apre da sola
+  const [assegna, setAssegna] = useState(() => c.rango - segniUsati(c) > 0)
   const dettaglio = useRef(null)
   // scelto un segno, si scende alla sua scheda con le abilità
   const scegli = (id) => {
@@ -47,7 +50,11 @@ export default function Zodiac({ c, d, up }) {
 
   return (
     <div className="stack">
-      <AssegnaPunto c={c} up={up} />
+      {assegna && liberi > 0 && (
+        <Finestra titolo="Assegna un punto" onChiudi={() => setAssegna(false)}>
+          <AssegnaPunto c={c} up={up} />
+        </Finestra>
+      )}
 
       <section className={`card carta ${metallo(c.rango)} zod-testa`}>
         <div className="zod-rango">
@@ -60,9 +67,9 @@ export default function Zodiac({ c, d, up }) {
             {Array.from({ length: RANGO_MAX }, (_, i) => <i key={i} className={i < c.rango ? 'pip on' : 'pip'} />)}
           </div>
           <small className="muted">Punti assegnati {segniUsati(c)} su {c.rango}</small>
-          <p className={liberi > 0 ? 'avviso-int' : 'muted'}>
-            {liberi > 0 ? `Punti da assegnare: ${liberi}` : 'Nessun punto da assegnare. Sale di Rango per averne altri.'}
-          </p>
+          {liberi > 0
+            ? <button className="avviso-int punti-btn" onClick={() => setAssegna(true)}>Punti da assegnare: {liberi} →</button>
+            : <p className="muted">Nessun punto da assegnare. Sale di Rango per averne altri.</p>}
         </div>
       </section>
 

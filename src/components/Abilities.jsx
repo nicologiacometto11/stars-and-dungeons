@@ -55,7 +55,7 @@ export default function Abilities({ c, d, up, tv }) {
         <h2 style={{ margin: 0, border: 0, padding: 0 }}>Abilità</h2>
         <small className="muted">{tutte.length} disponibili</small>
       </div>
-      <div className="filtri">
+      <div className="filtri scorre">
         {FILTRI.map(([k, n]) => (
           <button key={k} className={filtro === k ? 'on' : ''} onClick={() => setFiltro(k)}>{n}</button>
         ))}

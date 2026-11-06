@@ -3,7 +3,6 @@ import { CATEGORIE } from '../data/zodiac.js'
 import { RANGO_MAX, XP_PER_RANGO, conArmor, saliRango, segniUsati, conLog, conMax, normalizza, serveBackup, togliRango } from '../lib/rules.js'
 import { esportaJSON } from '../lib/store.js'
 import Abilities from './Abilities.jsx'
-import AssegnaPunto from './AssegnaPunto.jsx'
 import DanniArmi from './DanniArmi.jsx'
 import { ridimensiona } from '../lib/immagine.js'
 import { metallo } from '../lib/ui.js'
@@ -162,8 +161,9 @@ function Avatar({ c, up }) {
   )
 }
 
-export default function Sheet({ c, d, up, onElimina, tv }) {
+export default function Sheet({ c, d, up, onElimina, tv, onVaiZodiaco }) {
   const fileRef = useRef(null)
+  const riserve = useRef(null)
   const usati = segniUsati(c)
   const liberi = c.rango - usati
   const corpo = Math.min(c.corpo ?? d.corpoMax, d.corpoMax)
@@ -185,7 +185,20 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
 
   return (
     <div className="stack">
-      <section className={`card carta ${metallo(c.rango)}`}>
+      {/* Corpo, Mente, Fato, Sybil e Cura sempre a portata di occhio: un tocco porta alle Riserve */}
+      <button type="button" className="hud" onClick={() => riserve.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })} aria-label="Vai alle Riserve">
+        {[['corpo', 'Corpo', corpo, d.corpoMax], ['mente', 'Mente', mente, d.menteMax]].map(([k, nome, v, max]) => (
+          <span key={k} className={`hud-barra ${k}`}>
+            <span className="hud-testo"><small>{nome}</small><b>{v}/{max}</b></span>
+            <span className="hud-liv"><i style={{ width: `${max > 0 ? Math.min(100, (v / max) * 100) : 0}%` }} /></span>
+          </span>
+        ))}
+        {[['Fato', d.fatoAttuale], ['Sybil', d.sybilAttuale], ['Cura', d.curaAttuale]].map(([nome, v]) => (
+          <span key={nome} className="hud-num"><small>{nome}</small><b>{v}</b></span>
+        ))}
+      </button>
+
+      <section className={`card carta testa-compatta ${metallo(c.rango)}`}>
         <span className="angolo a1" aria-hidden="true">✦</span>
         <span className="angolo a2" aria-hidden="true">✦</span>
         <span className="angolo a3" aria-hidden="true">✦</span>
@@ -212,32 +225,17 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
           </div>
         </div>
 
-        <button
-          className="primary sali-rango" disabled={c.rango >= RANGO_MAX || (c.xp || 0) < XP_PER_RANGO}
-          onClick={() => up((s) => saliRango(s))}
-        >
-          {c.rango >= RANGO_MAX ? 'Rango massimo' : (c.xp || 0) >= XP_PER_RANGO ? `Sali di Rango · ${XP_PER_RANGO} XP` : `Sali di Rango · servono ${XP_PER_RANGO - (c.xp || 0)} XP in più`}
-        </button>
+        {c.rango < RANGO_MAX && (c.xp || 0) >= XP_PER_RANGO && (
+          <button className="primary sali-rango" onClick={() => up((x) => saliRango(x))}>Sali di Rango · {XP_PER_RANGO} XP</button>
+        )}
 
-        <p className={liberi > 0 ? 'avviso-int' : 'muted'}>
-          {liberi > 0 ? `Hai ${liberi} punt${liberi === 1 ? 'o' : 'i'} da assegnare nello Zodiaco.` : 'Tutti i punti Rango sono assegnati.'}
-        </p>
-        <div className="riga spazio testa-nota">
-          <small className="muted">Gli XP li dà il Master.</small>
-          <button
-            className="ghost rango-meno" disabled={c.rango <= 1 || liberi <= 0}
-            title={liberi <= 0 ? 'Prima togli un punto dallo Zodiaco (modalità correzione)' : ''}
-            onClick={() => confirm('Scendere di un Rango? Serve solo per correggere un errore.') && up((x) => togliRango(x))}
-          >− Togli un Rango</button>
-        </div>
+        {liberi > 0 && (
+          <button className="avviso-int punti-btn" onClick={onVaiZodiaco}>Hai {liberi} punt{liberi === 1 ? 'o' : 'i'} da assegnare nello Zodiaco →</button>
+        )}
         {d.ofiuco && <p className="ofiuco">☉ Hai trovato Ofiuco: tutte le tue caratteristiche sono raddoppiate.</p>}
       </section>
 
-      <PromemoriaBackup c={c} up={up} />
-
-      <AssegnaPunto c={c} up={up} />
-
-      <section className="card">
+      <section className="card sez-riserve" ref={riserve}>
         <h2>Riserve</h2>
         <div className="riserve-orb">
         <Riserva nome="Corpo" valore={corpo} max={d.corpoMax} onChange={(v) => up((s) => ({ ...s, corpo: v }))} onRipristina={() => up((s) => ({ ...s, corpo: null }))} onMaxMeno={() => up((s) => conMax(s, 'corpoMax', -1))} onMaxPiu={() => up((s) => conMax(s, 'corpoMax', 1))} />
@@ -267,6 +265,8 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
         </div>
       </section>
 
+      <PromemoriaBackup c={c} up={up} />
+
       <Abilities c={c} d={d} up={up} tv={tv} />
 
       <DanniArmi c={c} d={d} />
@@ -292,8 +292,8 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
         <small className="muted">Puoi cambiare a mano l'Armor Fisica e quella Magica con − e +; gli oggetti equipaggiati aggiungono la loro in automatico.</small>
       </section>
 
-      <section className="card">
-        <h2>Categorie</h2>
+      <details className="card">
+        <summary>Categorie</summary>
         <div className="tabella">
           {CATEGORIE.map((k) => (
             <div key={k.id} className="cat-riga">
@@ -305,10 +305,10 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
             </div>
           ))}
         </div>
-      </section>
+      </details>
 
-      <section className="card">
-        <h2>Bonus ai dadi e danni</h2>
+      <details className="card">
+        <summary>Bonus ai dadi e danni</summary>
         <div className="griglia">
           <div className="stat"><span className="stat-n">Sociale</span><strong>+{d.dadiSociale}</strong></div>
           <div className="stat"><span className="stat-n">Attacco fisico</span><strong>+{d.dadiFisico}</strong><small>ai dadi</small></div>
@@ -319,7 +319,7 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
           <div className="stat"><span className="stat-n">Danni magici</span><strong>+{d.dmgMagici}</strong><small>ogni Arma/Abilità</small></div>
           <div className="stat"><span className="stat-n">Critico</span><strong>{1 + d.critico}%</strong><small>in ogni tiro (parte da 1%)</small></div>
         </div>
-      </section>
+      </details>
 
       <details className="card">
         <summary>Correzioni manuali e backup</summary>
@@ -331,6 +331,13 @@ export default function Sheet({ c, d, up, onElimina, tv }) {
               <input type="number" value={c.extra[k] || 0} onChange={(e) => up((s) => ({ ...s, extra: { ...s.extra, [k]: Number(e.target.value) || 0 } }))} />
             </label>
           ))}
+        </div>
+        <div className="riga">
+          <button
+            className="ghost rango-meno" disabled={c.rango <= 1 || liberi <= 0}
+            title={liberi <= 0 ? 'Prima togli un punto dallo Zodiaco (modalità correzione)' : ''}
+            onClick={() => confirm('Scendere di un Rango? Serve solo per correggere un errore.') && up((x) => togliRango(x))}
+          >− Togli un Rango</button>
         </div>
         <div className="riga">
           <button onClick={() => { esportaJSON(c); up((s) => ({ ...s, ultimoBackup: new Date().toISOString() })) }}>Esporta scheda (JSON)</button>

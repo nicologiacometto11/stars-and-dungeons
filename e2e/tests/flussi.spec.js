@@ -9,17 +9,36 @@ async function nuovo(page, nome = 'Prova') {
   await page.getByRole('button', { name: 'Crea scheda' }).click()
   await expect(page.getByText('Modalità locale')).toBeVisible()
 }
-const tab = (page, nome) => page.locator('nav.tabs').getByRole('button', { name: new RegExp(nome) }).click()
+const tab = async (page, nome) => {
+  const barra = page.locator('nav.tabs')
+  if (['Negozio', 'Inventario'].includes(nome)) {
+    await barra.getByRole('button', { name: 'Oggetti' }).click()
+    return page.locator('.sotto-tab').getByRole('tab', { name: nome }).click()
+  }
+  if (['Craft', 'Ricevi'].includes(nome)) {
+    await barra.getByRole('button', { name: 'Altro' }).click()
+    return page.locator('.altro-menu').getByRole('menuitem', { name: nome }).click()
+  }
+  return barra.getByRole('button', { name: new RegExp(nome) }).click()
+}
+// Carta del Negozio: dalla griglia si apre il dettaglio
+const dettaglio = async (page, nome) => {
+  await page.locator('.mini', { hasText: nome }).first().getByRole('button', { name: `Dettagli di ${nome}` }).click()
+  return page.getByRole('dialog').locator('.item')
+}
+const chiudi = (page) => page.getByRole('button', { name: 'Chiudi' }).click()
 const stat = (page, nome) => page.locator('.stat', { has: page.locator('.stat-n', { hasText: new RegExp(`^${nome}$`) }) })
 
 test('assegnare un punto: prima la Caratteristica, poi il Segno', async ({ page }) => {
   await nuovo(page)
-  await expect(page.getByText(/Hai 1 punto da assegnare/)).toBeVisible()
+  await page.getByRole('button', { name: /Hai 1 punto da assegnare/ }).click()
   await page.getByRole('button', { name: /^Resistenza/ }).click()
   await expect(page.getByText(/Scegli il Segno per/)).toBeVisible()
-  await page.getByRole('button', { name: /^Ariete/ }).click()
+  await page.getByRole('button', { name: /^Ariete Fuoco/ }).click()
   await expect(page.getByRole('heading', { name: 'Assegna un punto' })).toHaveCount(0)
-  await expect(page.getByText('Tutti i punti Rango sono assegnati')).toBeVisible()
+  await expect(page.getByText('Nessun punto da assegnare')).toBeVisible()
+  await tab(page, 'Scheda')
+  await expect(page.getByRole('button', { name: /da assegnare/ })).toHaveCount(0)
 })
 
 test('Aureos: lo 0 si può cancellare e il valore resta dopo il ricaricamento', async ({ page }) => {
@@ -47,9 +66,9 @@ test('Fato, Sybil e Cura salgono oltre la base; il massimo di Corpo si modifica'
 
 test('Zodiaco: si vedono solo le abilità sbloccate e nessun indizio su Ofiuco', async ({ page }) => {
   await nuovo(page)
-  await page.getByRole('button', { name: /^Resistenza/ }).click()
-  await page.getByRole('button', { name: /^Ariete/ }).click()
   await tab(page, 'Zodiaco')
+  await page.getByRole('button', { name: /^Resistenza/ }).click()
+  await page.getByRole('button', { name: /^Ariete Fuoco/ }).click()
   await expect(page.getByText('Muro di Cristallo')).toBeVisible()
   await expect(page.getByText('Rivoluzione di Stelle')).toHaveCount(0)
   await expect(page.getByText(/Ofiuco/i)).toHaveCount(0)
@@ -65,7 +84,7 @@ test('Negozio: effetti nascosti, si studiano con 1 Sybil, comprando si vedono; e
   await page.getByRole('button', { name: 'Aggiungi' }).click()
   await tab(page, 'Negozio')
   await page.getByPlaceholder('Cerca per nome…').fill('Amuleto di Cristallo')
-  const carta = page.locator('.item', { hasText: 'Amuleto di Cristallo' }).first()
+  const carta = await dettaglio(page, 'Amuleto di Cristallo')
   await expect(carta.getByText(/sconosciuto/)).toBeVisible()
   await expect(carta).toHaveClass(/misteriosa/)
   await expect(carta.getByText(/Armor Magica \+3/)).toHaveCount(0)
@@ -73,16 +92,18 @@ test('Negozio: effetti nascosti, si studiano con 1 Sybil, comprando si vedono; e
   await expect(carta).toHaveClass(/gira/)
   await expect(carta).not.toHaveClass(/misteriosa/)
   await expect(carta.getByText(/Armor Magica \+3/)).toBeVisible()
+  await chiudi(page)
   // il Sybil è stato speso
   await tab(page, 'Scheda')
   await expect(stat(page, 'Sybil').locator('strong')).toHaveText('0')
   // comprare e equipaggiare l'Anello di Piume (+3 difesa fisica)
   await tab(page, 'Negozio')
   await page.getByPlaceholder('Cerca per nome…').fill('Anello di Piume')
-  const anello = page.locator('.item', { hasText: 'Anello di Piume' }).first()
+  const anello = await dettaglio(page, 'Anello di Piume')
   await expect(anello.getByText(/sconosciuto/)).toBeVisible()
   await anello.getByRole('button', { name: 'Compra' }).click()
   await expect(anello.getByText(/DIFESA di Corpo/)).toBeVisible()
+  await chiudi(page)
   await tab(page, 'Inventario')
   await page.locator('.item', { hasText: 'Anello di Piume' }).getByRole('button', { name: 'Equipaggia' }).click()
   await tab(page, 'Scheda')
@@ -94,7 +115,7 @@ test('Craft a tentativi: sbagliato non perde niente, giusto forgia e scopre la r
   await tab(page, 'Ricevi')
   for (const m of ["Fibra d'Acqua", 'Zanna selvaggia', 'Becco di Ghiaccio']) {
     await page.getByPlaceholder('Cerca…').fill(m)
-    await page.locator('.item', { hasText: m }).first().getByRole('button', { name: 'Ricevi' }).click()
+    await page.locator('.mini', { hasText: m }).first().getByRole('button', { name: 'Ricevi' }).click()
   }
   await tab(page, 'Craft')
   await expect(page.getByText('Ricette scoperte')).toHaveCount(0)
@@ -114,7 +135,7 @@ test('Pergamena: diventa una delle 6 e si usa', async ({ page }) => {
   await nuovo(page)
   await tab(page, 'Ricevi')
   await page.getByPlaceholder('Cerca…').fill('Pergamena')
-  await page.locator('.item').filter({ has: page.getByText('Pergamena', { exact: true }) }).getByRole('button', { name: 'Ricevi' }).click()
+  await page.locator('.mini').filter({ has: page.getByText('Pergamena', { exact: true }) }).getByRole('button', { name: 'Ricevi' }).click()
   await tab(page, 'Inventario')
   const carta = page.locator('.item', { hasText: 'Pergamena:' }).first()
   await expect(carta).toBeVisible()
@@ -146,10 +167,10 @@ test('Elimina personaggio: serve scrivere il nome', async ({ page }) => {
 test('XP: il Cosmo Liquido dà 2 XP e con 3 XP si sale di Rango', async ({ page }) => {
   await nuovo(page)
   const salita = page.getByRole('button', { name: /Sali di Rango/ })
-  await expect(salita).toBeDisabled()
+  await expect(salita).toHaveCount(0)
   await tab(page, 'Ricevi')
   await page.getByPlaceholder('Cerca…').fill('Cosmo Liquido')
-  const ricevi = page.locator('.item').filter({ has: page.getByText('Cosmo Liquido', { exact: true }) }).getByRole('button', { name: 'Ricevi' })
+  const ricevi = page.locator('.mini').filter({ has: page.getByText('Cosmo Liquido', { exact: true }) }).getByRole('button', { name: 'Ricevi' })
   await ricevi.click()
   await ricevi.click()
   await tab(page, 'Inventario')
@@ -157,22 +178,22 @@ test('XP: il Cosmo Liquido dà 2 XP e con 3 XP si sale di Rango', async ({ page 
   await carta.getByRole('button', { name: 'Usa' }).click() // 2 XP: ancora non basta
   await tab(page, 'Scheda')
   await expect(page.getByText('2 XP', { exact: true })).toBeVisible()
-  await expect(salita).toBeDisabled()
+  await expect(salita).toHaveCount(0)
   await tab(page, 'Inventario')
   await page.locator('.item', { hasText: 'Cosmo Liquido' }).getByRole('button', { name: 'Usa' }).click() // 4 XP
   await tab(page, 'Scheda')
-  await expect(salita).toBeEnabled()
+  await expect(salita).toBeVisible()
   await salita.click()
   await expect(page.locator('.rango strong').first()).toHaveText('2')
   await expect(page.getByText('1 XP', { exact: true })).toBeVisible()
-  await expect(page.getByText(/Hai 2 punti da assegnare/)).toBeVisible()
+  await expect(page.getByRole('button', { name: /Hai 2 punti da assegnare/ })).toBeVisible()
 })
 
 // Riceve oggetti dalla tab Ricevi (per i test di equipaggiamento)
 async function ricevi(page, nome) {
   await tab(page, 'Ricevi')
   await page.getByPlaceholder('Cerca…').fill(nome)
-  await page.locator('.item').filter({ has: page.getByText(nome, { exact: true }) }).getByRole('button', { name: 'Ricevi' }).click()
+  await page.locator('.mini').filter({ has: page.getByText(nome, { exact: true }) }).getByRole('button', { name: 'Ricevi' }).click()
 }
 
 test('Equipaggiamento: 1 Anello, 1 Amuleto, 1 Item agg; due mani + una mano dà errore', async ({ page }) => {
@@ -201,6 +222,7 @@ test('Armor a scelta, Rango che scende e Bestiario: nascondere di nuovo', async 
   await expect(page.locator('.stat', { has: page.locator('.stat-n', { hasText: /^Fisica$/ }) }).locator('strong')).toHaveText('1')
   await expect(page.locator('.stat', { has: page.locator('.stat-n', { hasText: /^Magica$/ }) }).locator('strong')).toHaveText('2')
   // Rango: a 1 non scende
+  await page.getByText('Correzioni manuali e backup').click()
   await expect(page.getByRole('button', { name: /Togli un Rango/ })).toBeDisabled()
   // Bestiario: scopro e nascondo
   await tab(page, 'Bestiario')
@@ -213,12 +235,12 @@ test('Negozio per categorie: Anelli, Amuleti, Item agg, Consumabili', async ({ p
   await nuovo(page)
   await tab(page, 'Negozio')
   await page.getByRole('button', { name: 'Anelli', exact: true }).click()
-  const nomi = await page.locator('.item .item-head strong').allTextContents()
+  const nomi = await page.locator('.mini .mini-nome').allTextContents()
   expect(nomi.length).toBeGreaterThan(3)
   expect(nomi.every((n) => /^Anello/.test(n))).toBeTruthy()
   await page.getByRole('button', { name: 'Consumabili', exact: true }).click()
-  await expect(page.locator('.item', { hasText: 'Tonico' }).first()).toBeVisible()
-  await expect(page.locator('.item', { hasText: /^Anello di Piume/ })).toHaveCount(0)
+  await expect(page.locator('.mini', { hasText: 'Tonico' }).first()).toBeVisible()
+  await expect(page.locator('.mini', { hasText: /^Anello di Piume/ })).toHaveCount(0)
 })
 
 test('Danni delle armi equipaggiate con i bonus', async ({ page }) => {

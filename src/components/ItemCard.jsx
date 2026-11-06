@@ -69,3 +69,25 @@ export default function ItemCard({ it, c, d, qta, children, compact, noto = true
     </div>
   )
 }
+
+// Carta piccola per le griglie: nome, grado e immagine. Gli effetti restano nel dettaglio, che si apre al tocco.
+export function CartaMini({ it, qta, noto = true, onApri, children }) {
+  useEffect(() => { avviaInclinazione() }, [])
+  return (
+    <div className={`mini carta-ogg ${TIER_CLASS[it.tier] || ''}${noto ? '' : ' misteriosa'}`} onPointerDown={chiediSensori}>
+      <button type="button" className="mini-apri" onClick={onApri} aria-label={`Dettagli di ${it.nome}`}>
+        <span className="mini-img">
+          {IMMAGINI.includes(it.id)
+            ? <img src={`${import.meta.env.BASE_URL}images/oggetti/${it.id}.webp`} alt="" loading="lazy" />
+            : <span className="dorso-segno" aria-hidden="true">✦</span>}
+        </span>
+        <span className="mini-nome">{it.nome}</span>
+        <span className="mini-tag">
+          <span className="tag">{it.tier}</span>
+          {qta > 0 && <span className="tag qta">×{qta}</span>}
+        </span>
+      </button>
+      {children && <div className="mini-piede">{children}</div>}
+    </div>
+  )
+}

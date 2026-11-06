@@ -22,12 +22,13 @@ import Receive from './components/Receive.jsx'
 const TABS = [
   ['scheda', 'Scheda', '🧙'],
   ['zodiaco', 'Zodiaco', '✨'],
-  ['negozio', 'Negozio', '🛒'],
-  ['inventario', 'Inventario', '🎒'],
+  ['oggetti', 'Oggetti', '🎒'],
   ['bestiario', 'Bestiario', '📖'],
-  ['craft', 'Craft', '⚒️'],
-  ['ricevi', 'Ricevi', '🎁'],
 ]
+const TAB_OGGETTI = [['inventario', 'Inventario'], ['negozio', 'Negozio']]
+const TAB_ALTRO = [['craft', 'Craft', '⚒️'], ['ricevi', 'Ricevi', '🎁']]
+const VOCE_TAVOLO = ['tavolo', 'Tavolo', '🎲']
+const VOCE_MASTER = ['master', 'Master', '👑']
 
 export default function App() {
   const [session, setSession] = useState(modalitaOnline ? undefined : null)
@@ -36,6 +37,8 @@ export default function App() {
   const [errore, setErrore] = useState('')
   const [stato, setStato] = useState('idle')
   const [tab, setTab] = useState('scheda')
+  const [oggetti, setOggetti] = useState('inventario') // ultima vista scelta tra Inventario e Negozio
+  const [altroAperto, setAltroAperto] = useState(null) // posizione del pulsante Altro, se il menu è aperto
   const [recupero, setRecupero] = useState(false)
   const dirty = useRef(false)
   const userId = session?.user?.id
@@ -150,16 +153,29 @@ export default function App() {
 
   if (!c) return <Creazione onCrea={(nome) => { dirty.current = true; setC(nuovaScheda(nome)) }} />
 
+  const vai = (id) => {
+    setAltroAperto(null)
+    if (id === 'oggetti') id = oggetti
+    if (TAB_OGGETTI.some(([k]) => k === id)) setOggetti(id)
+    setTab(id)
+    window.scrollTo({ top: 0 })
+  }
+  // il Master ha la sua vista nella barra e il Tavolo in "Altro"; i giocatori il contrario
+  const barra = [...TABS, ...(tv.master ? [VOCE_MASTER] : modalitaOnline ? [VOCE_TAVOLO] : [])]
+  const altro = [...TAB_ALTRO, ...(tv.master ? [VOCE_TAVOLO] : [])]
+  const inOggetti = TAB_OGGETTI.some(([k]) => k === tab)
+  const inAltro = altro.some(([k]) => k === tab)
+
   const statoTxt = { idle: '', salvando: 'Salvataggio…', salvato: 'Salvato', errore: 'Errore di salvataggio, riprovo alla prossima modifica' }[stato]
 
   return (
     <div className="app">
       <header className="top">
-        <div>
+        <div className="top-titolo">
           <h1>Stars &amp; Dungeons</h1>
           <span className="sub">
-            {c.nome || 'Senza nome'} · Rango {c.rango}
-            {d.ofiuco && ' · ☉ Ofiuco'}
+            {c.nome || 'Senza nome'} · R{c.rango}
+            {d.ofiuco && ' · ☉'}
           </span>
         </div>
         <div className="top-dx">
@@ -179,17 +195,44 @@ export default function App() {
         <div className="avviso">Modalità locale: la scheda è salvata solo su questo browser. Configura Supabase per averla su ogni dispositivo.</div>
       )}
 
-      <nav className={`tabs ${modalitaOnline ? 'molte' : ''}`}>
-        {[...TABS, ...(modalitaOnline ? [['tavolo', 'Tavolo', '🎲']] : []), ...(tv.master ? [['master', 'Master', '👑']] : [])].map(([id, nome, ico]) => (
-          <button key={id} aria-label={nome} aria-current={tab === id ? 'page' : undefined} className={tab === id ? 'on' : ''} onClick={() => { setTab(id); window.scrollTo({ top: 0 }) }}>
-            <span className="ico" aria-hidden="true">{ico}</span>
-            <span className="nome-tab">{nome}</span>
-          </button>
-        ))}
+      <nav className="tabs molte">
+        {barra.map(([id, nome, ico]) => {
+          const attiva = id === 'oggetti' ? inOggetti : tab === id
+          return (
+            <button key={id} aria-label={nome} aria-current={attiva ? 'page' : undefined} className={attiva ? 'on' : ''} onClick={() => vai(id)}>
+              <span className="ico" aria-hidden="true">{ico}</span>
+              <span className="nome-tab">{nome}</span>
+            </button>
+          )
+        })}
+        <button aria-label="Altro" aria-expanded={!!altroAperto} className={inAltro ? 'on' : ''} onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); setAltroAperto((a) => (a ? null : { '--menu-x': `${r.left}px`, '--menu-y': `${r.bottom + 6}px` })) }}>
+          <span className="ico" aria-hidden="true">☰</span>
+          <span className="nome-tab">{inAltro ? altro.find(([k]) => k === tab)[1] : 'Altro'}</span>
+        </button>
       </nav>
 
+      {altroAperto && (
+        <div className="altro-velo" onClick={() => setAltroAperto(null)}>
+          <div className="altro-menu" role="menu" style={altroAperto}>
+            {altro.map(([id, nome, ico]) => (
+              <button key={id} role="menuitem" className={tab === id ? 'on' : ''} onClick={() => vai(id)}>
+                <span aria-hidden="true">{ico}</span> {nome}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {inOggetti && (
+        <div className="sotto-tab" role="tablist" aria-label="Oggetti">
+          {TAB_OGGETTI.map(([id, nome]) => (
+            <button key={id} role="tab" aria-selected={tab === id} className={tab === id ? 'on' : ''} onClick={() => vai(id)}>{nome}</button>
+          ))}
+        </div>
+      )}
+
       <main>
-        {tab === 'scheda' && <Sheet c={c} d={d} up={up} onElimina={elimina} tv={tv} />}
+        {tab === 'scheda' && <Sheet c={c} d={d} up={up} onElimina={elimina} tv={tv} onVaiZodiaco={() => vai('zodiaco')} />}
         {tab === 'zodiaco' && <Zodiac c={c} d={d} up={up} />}
         {tab === 'negozio' && <Shop c={c} d={d} up={up} studi={studi} />}
         {tab === 'inventario' && <Inventory c={c} d={d} up={up} />}

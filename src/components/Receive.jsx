@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import { ITEMS } from '../data/items.js'
 import { MOSTRI } from '../data/monsters.js'
 import { applicaBottino, conversioniBottino, haAnelloOro, riceviOggetto, conLog, qtaIn, testoConversioni } from '../lib/rules.js'
-import ItemCard from './ItemCard.jsx'
+import ItemCard, { CartaMini } from './ItemCard.jsx'
+import Finestra from './Finestra.jsx'
 
 function Bottino({ c, up, onAvviso }) {
   const [id, setId] = useState('')
@@ -43,9 +44,16 @@ export default function Receive({ c, d, up }) {
   const [cat, setCat] = useState('tutti')
   const [au, setAu] = useState('')
   const [avviso, setAvviso] = useState('')
+  const [apertoId, setApertoId] = useState(null)
+  const aperto = ITEMS.find((i) => i.id === apertoId)
   const mostraAvviso = (testo) => {
     setAvviso(testo)
     setTimeout(() => setAvviso(''), 9000)
+  }
+
+  const ricevi = (it) => {
+    up((s) => riceviOggetto(s, it))
+    if (it.aureosAlRicevimento) mostraAvviso(`${it.nome} convertito in ${it.aureosAlRicevimento} Aureos`)
   }
 
   const lista = useMemo(() => {
@@ -77,20 +85,31 @@ export default function Receive({ c, d, up }) {
       <section className="card">
         <h2>Oggetti, armi e abilità</h2>
         <input placeholder="Cerca…" value={q} onChange={(e) => setQ(e.target.value)} />
-        <div className="filtri">
+        <div className="filtri scorre">
           {[['tutti', 'Tutto'], ['arma', 'Armi'], ['oggetto', 'Oggetti'], ['materiale', 'Materiali'], ['chiave', 'Chiave'], ['abilita', 'Abilità']].map(([k, n]) => (
             <button key={k} className={cat === k ? 'on' : ''} onClick={() => setCat(k)}>{n}</button>
           ))}
         </div>
       </section>
 
-      {lista.slice(0, 80).map((it) => (
-        <ItemCard key={it.id} it={it} c={c} d={d} qta={qtaIn(c, it.id)} compact>
-          {it.aureosAlRicevimento && <small className="muted">Si converte subito in {it.aureosAlRicevimento} Aureos</small>}
-          <button onClick={() => { up((s) => riceviOggetto(s, it)); if (it.aureosAlRicevimento) mostraAvviso(`${it.nome} convertito in ${it.aureosAlRicevimento} Aureos`) }}>Ricevi</button>
-        </ItemCard>
-      ))}
+      <div className="griglia-carte">
+        {lista.slice(0, 80).map((it) => (
+          <CartaMini key={it.id} it={it} qta={qtaIn(c, it.id)} onApri={() => setApertoId(it.id)}>
+            {it.aureosAlRicevimento && <small className="muted">Diventa {it.aureosAlRicevimento} Aureos</small>}
+            <button onClick={() => ricevi(it)}>Ricevi</button>
+          </CartaMini>
+        ))}
+      </div>
       {lista.length > 80 && <p className="muted centrato">Mostrati 80 risultati su {lista.length}: affina la ricerca.</p>}
+
+      {aperto && (
+        <Finestra titolo={aperto.nome} onChiudi={() => setApertoId(null)}>
+          <ItemCard it={aperto} c={c} d={d} qta={qtaIn(c, aperto.id)} compact>
+            {aperto.aureosAlRicevimento && <small className="muted">Si converte subito in {aperto.aureosAlRicevimento} Aureos</small>}
+            <button onClick={() => ricevi(aperto)}>Ricevi</button>
+          </ItemCard>
+        </Finestra>
+      )}
     </div>
   )
 }

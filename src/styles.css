@@ -868,3 +868,85 @@ html[data-ambiente] .card > h2, html[data-ambiente] .card .riga > h2 { color: va
 .reg-velo.apre .reg-tocca { animation: none; opacity: 0; }
 .reg-biglietto { width: min(86vw, 336px); }
 @media (max-width: 400px) { .reg-azioni { gap: 8px; } .reg-azioni button { padding: 10px 14px; font-size: .9rem; } }
+
+/* ---- vista nuova: intestazione sottile ---- */
+.top { padding: 10px 2px 8px; }
+.top-titolo { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.top-titolo h1 { margin: 0; font-size: .92rem; white-space: nowrap; }
+.top .sub { font-size: .75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.top-dx { flex: none; }
+.top-dx button { padding: 4px 10px; min-height: 0; font-size: .78rem; }
+@media (max-width: 640px) { .top { padding-top: calc(env(safe-area-inset-top) + 8px); } }
+
+/* ---- pulsanti principali disattivati: grigi, non dorati ---- */
+button.primary:disabled { background: transparent; border-color: var(--line2); color: var(--muted); opacity: 1; font-weight: 500; }
+
+/* ---- barra sempre visibile della Scheda ---- */
+.hud { position: sticky; top: 6px; z-index: 4; display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; min-height: 0; border: 1px solid var(--line2); border-radius: 14px; background: rgba(16, 18, 34, .88); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 6px 18px rgba(0, 0, 0, .35); text-align: left; color: var(--txt); font-weight: 400; }
+@media (min-width: 641px) { .hud { top: 54px; } }
+.hud small { display: block; font-size: .62rem; letter-spacing: .06em; color: var(--muted); line-height: 1.2; }
+.hud b { font-size: .9rem; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.hud-barra { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.hud-testo { display: flex; align-items: baseline; justify-content: space-between; gap: 4px; }
+.hud-liv { display: block; height: 5px; border-radius: 99px; background: rgba(255, 255, 255, .08); overflow: hidden; }
+.hud-liv i { display: block; height: 100%; border-radius: 99px; transition: width .35s; }
+.hud-barra.corpo .hud-liv i { background: linear-gradient(90deg, #a92f3a, #f0626f); }
+.hud-barra.mente .hud-liv i { background: linear-gradient(90deg, #2f5fc0, #6ea8ff); }
+.hud-num { flex: none; width: 36px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.sez-riserve { scroll-margin-top: 72px; }
+@media (min-width: 641px) { .sez-riserve { scroll-margin-top: 120px; } }
+
+/* ---- testa della Scheda compatta ---- */
+.testa-compatta .testa-top { margin-bottom: 10px; gap: 12px; }
+.testa-compatta .avatar { width: 58px; height: 58px; font-size: 1.2rem; }
+.testa-compatta .nome-blocco { gap: 4px; }
+.testa-compatta .testa-stat { gap: 8px; margin-bottom: 0; }
+.testa-compatta .rango, .testa-compatta .xp-box { padding: 6px 12px; }
+.testa-compatta .rango small, .testa-compatta .xp-box small { font-size: .62rem; }
+.testa-compatta .rango-num strong { font-size: 1.5rem; }
+.testa-compatta .xp-num { margin: 2px 0 5px; }
+.testa-compatta .xp-barra { height: 5px; }
+.testa-compatta .sali-rango { margin: 10px 0 0; }
+.punti-btn { display: block; width: 100%; text-align: left; font-size: .88rem; min-height: 0; }
+.testa-compatta .punti-btn { margin-top: 10px; }
+
+/* ---- barra di navigazione: Altro e sotto-tab ---- */
+.altro-velo { position: fixed; inset: 0; z-index: 19; }
+.altro-menu { position: fixed; left: var(--menu-x, 12px); top: var(--menu-y, 100px); display: flex; flex-direction: column; gap: 4px; min-width: 180px; padding: 6px; border: 1px solid var(--line2); border-radius: 16px; background: rgba(22, 25, 44, .96); box-shadow: 0 10px 30px rgba(0, 0, 0, .5); animation: velo-entra .15s ease; }
+.altro-menu button { display: block; width: 100%; text-align: left; border: 0; background: transparent; padding: 10px 12px; border-radius: 10px; }
+.altro-menu button.on { color: var(--oro); background: rgba(230, 194, 116, .14); }
+@media (max-width: 640px) { .altro-menu { left: auto; top: auto; right: 12px; bottom: calc(env(safe-area-inset-bottom) + 80px); } }
+.sotto-tab { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin-bottom: 12px; border: 1px solid var(--line); border-radius: 14px; background: rgba(16, 18, 34, .7); }
+.sotto-tab button { border: 0; background: transparent; color: var(--muted); padding: 8px; min-height: 0; border-radius: 10px; font-size: .88rem; }
+.sotto-tab button.on { background: rgba(230, 194, 116, .16); color: var(--oro); font-weight: 600; }
+
+/* ---- filtri su una sola riga che scorre di lato (solo telefono) ---- */
+@media (max-width: 640px) {
+  .filtri.scorre { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: -14px; padding-right: 22px; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 22px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 22px), transparent); }
+  .filtri.scorre::-webkit-scrollbar { display: none; }
+  .filtri.scorre button { flex: none; white-space: nowrap; min-height: 36px; }
+  .filtri.scorre .sep { flex: none; }
+}
+
+/* ---- griglia di carte piccole ---- */
+.griglia-carte { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+@media (max-width: 340px) { .griglia-carte { grid-template-columns: 1fr 1fr; gap: 8px; } }
+.mini { display: flex; flex-direction: column; border: 1px solid rgba(var(--g), .35); border-radius: var(--r); min-width: 0; }
+.mini-apri { display: flex; flex-direction: column; align-items: stretch; gap: 6px; flex: 1; padding: 8px 8px 6px; min-height: 0; border: 0; border-radius: 0; background: transparent; color: var(--txt); text-align: left; font-weight: 400; }
+.mini-img { display: grid; place-items: center; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: rgba(10, 11, 20, .5); }
+.mini-img img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
+.mini-nome { font-size: .86rem; font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
+.mini-tag { display: flex; gap: 4px; flex-wrap: wrap; margin-top: auto; }
+.mini-piede { display: flex; flex-direction: column; gap: 4px; padding: 6px 8px 8px; border-top: 1px solid var(--line); }
+.mini-piede .oro { font-size: .86rem; }
+.mini-piede small { font-size: .72rem; line-height: 1.2; }
+.mini-piede button { width: 100%; padding: 6px; min-height: 34px; font-size: .84rem; }
+
+/* ---- finestra sopra la pagina ---- */
+.fin-velo { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(5, 6, 14, .72); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); animation: velo-entra .2s ease; }
+.fin { position: relative; width: 100%; max-width: 460px; max-height: calc(100dvh - 32px); overflow: auto; overscroll-behavior: contain; border-radius: 18px; border: 1px solid var(--line2); background: var(--bg2); }
+.fin > .item, .fin > .card { border: 0; border-radius: 0; box-shadow: none; }
+.fin .item-head, .fin .assegna > .riga:first-child { padding-right: 34px; }
+.fin-x { position: absolute; top: 6px; right: 6px; z-index: 2; width: 36px; height: 36px; min-height: 0; padding: 0; border-radius: 50%; font-size: 1.2rem; line-height: 1; }
+@media (max-width: 640px) { .fin-velo { align-items: flex-end; padding-bottom: calc(env(safe-area-inset-bottom) + 16px); } }
+@media (prefers-reduced-motion: reduce) { .fin-velo, .altro-menu { animation: none; } }

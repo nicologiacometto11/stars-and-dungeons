@@ -116,14 +116,14 @@ export default function Bestiary({ c, d, up, studi = STUDI_VUOTI, master = false
           <h2 style={{ margin: 0 }}>Bestiario</h2>
           <small className="muted">{trovati}/{MOSTRI.length} scoperti · Sybil {d.sybilAttuale}</small>
         </div>
-        <div className="filtri">
+        <div className="filtri scorre">
           {AMBIENTI.map((a) => (
             <button key={a} className={vista === 'mostri' && amb === a ? 'on' : ''} onClick={() => { setAmb(a); setVista('mostri') }}>{a}</button>
           ))}
           <button className={vista === 'speciali' ? 'on' : ''} onClick={() => setVista('speciali')}>Boss e Missioni</button>
         </div>
         {vista === 'mostri' && (
-          <div className="filtri">
+          <div className="filtri scorre">
             {['tutti', ...GRADI.filter((g) => MOSTRI.some((m) => m.ambiente === amb && m.grado === g))].map((g) => (
               <button key={g} className={grado === g ? 'on' : ''} onClick={() => setGrado(g)}>{g === 'tutti' ? 'Tutti i gradi' : g}</button>
             ))}

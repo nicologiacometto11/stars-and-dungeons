@@ -254,8 +254,8 @@ ok(/Mostri in campo/.test(tvM) && /MIDAS/i.test(tvM) && /3\s*×/.test(tvM), 'mos
 ok(/3\s*×/.test(tvG) && /1\s*×/.test(tvG) && /images\/monsters\/midas/.test(renderToString(React.createElement((await load('/src/components/Tavolo.jsx')).default, { c: big, userId: 'a', tv: { ...tvB, membro: true } }))), 'mostri in campo: i giocatori vedono foto e quantità')
 ok(!/MIDAS/i.test(tvG), 'mostri in campo: il nome non si vede se il mostro non è stato incontrato')
 ok(!/PV/.test(tvG), 'i giocatori non vedono PV dei mostri')
-const tuttiNoti = testo(renderToString(React.createElement((await load('/src/components/Shop.jsx')).default, { c: sc, d: ds, up, studi: { oggetti: new Set(ITEMS.map((i) => i.id)), mostri: new Set(), condividi() {} } })))
-ok(!/Studia · 1 Sybil/.test(tuttiNoti) && !/sconosciuto/.test(tuttiNoti), 'studio condiviso: se un altro giocatore ha studiato un oggetto, nel Negozio si vede senza pagare')
+const tuttiNoti = renderToString(React.createElement((await load('/src/components/Shop.jsx')).default, { c: sc, d: ds, up, studi: { oggetti: new Set(ITEMS.map((i) => i.id)), mostri: new Set(), condividi() {} } }))
+ok(!/misteriosa/.test(tuttiNoti), 'studio condiviso: se un altro giocatore ha studiato un oggetto, nel Negozio si vede senza pagare')
 const BestiaryM = (await load('/src/components/Bestiary.jsx')).default
 const bs = (incontrati, master = false) => testo(renderToString(React.createElement(BestiaryM, { c: { ...big, bestiario: { scoperti: { elfo: true }, rivelati: {} } }, d: db, up, master, studi: { attivo: true, oggetti: new Set(), mostri: new Set(), incontrati: new Set(incontrati), condividi() {}, rimuovi() {} } })))
 ok(/ASHUZ/.test(bs(['ashuz'])) && !/ASHUZ/.test(bs([])), 'incontrato in comune: un mostro segnato da un altro si vede con il nome')
@@ -263,8 +263,12 @@ ok(!/Nascondi/.test(bs(['ashuz'])) && /Nascondi a tutti/.test(bs(['ashuz'], true
 ok(!/ELFO/.test(bs([])), "online conta solo l'incontrato in comune: un segno personale vecchio non si vede")
 const beStud = testo(renderToString(React.createElement((await load('/src/components/Bestiary.jsx')).default, { c: { ...big, bestiario: { scoperti: { ashuz: true }, rivelati: {} } }, d: db, up, studi: { attivo: true, oggetti: new Set(), mostri: new Set(['ashuz']), incontrati: new Set(['ashuz']), condividi() {} } })))
 ok(/Attacco/.test(beStud) && !/Paga 1 Sybil/.test(beStud.split('ASHUZ')[1]?.slice(0, 200) || ''), 'studio condiviso: i dettagli di un mostro studiato da un altro si vedono')
-const th = testo(renderToString(React.createElement((await load('/src/components/Shop.jsx')).default, { c: sc, d: ds, up })))
-ok(/sconosciuto/.test(th) && /Studia · 1 Sybil/.test(th), 'Negozio: effetti nascosti con Studia')
+const th = renderToString(React.createElement((await load('/src/components/Shop.jsx')).default, { c: sc, d: ds, up }))
+const conEffetto = SHOP_ITEMS.find((i) => i.abilita || i.desc)
+ok(/misteriosa/.test(th) && !th.includes(conEffetto.abilita || conEffetto.desc), 'Negozio: nella griglia gli effetti non si vedono')
+const ItemCardM = (await load('/src/components/ItemCard.jsx')).default
+const dett = testo(renderToString(React.createElement(ItemCardM, { it: conEffetto, c: sc, d: ds, noto: false, puoiStudiare: true })))
+ok(/sconosciuto/.test(dett) && /Studia · 1 Sybil/.test(dett), 'Negozio: nel dettaglio effetti nascosti con Studia')
 
 await vite.close()
 console.log(fail ? `\n${fail} problemi` : 'Tutti i controlli sono passati.')

@@ -11,10 +11,10 @@ function Barra({ nome, tipo, v = 0, max = 0 }) {
   )
 }
 
-export default function Compagni({ giocatori, turnoId, io, onEspelli, extra }) {
+export default function Compagni({ giocatori, turnoId, io, extra, compatti }) {
   if (!giocatori.length) return <p className="muted">Nessun giocatore al tavolo.</p>
   return (
-    <div className="compagni">
+    <div className={`compagni${compatti ? ' compatti' : ''}`}>
       {giocatori.map((g) => {
         const s = g.stato || {}
         const turno = turnoId === g.user_id
@@ -32,8 +32,10 @@ export default function Compagni({ giocatori, turnoId, io, onEspelli, extra }) {
               </div>
               {turno && <span className="compagno-turno">✦ In turno</span>}
             </div>
-            <Barra nome="Corpo" tipo="corpo" v={s.corpo} max={s.corpoMax} />
-            <Barra nome="Mente" tipo="mente" v={s.mente} max={s.menteMax} />
+            <div className="compagno-barre">
+              <Barra nome="Corpo" tipo="corpo" v={s.corpo} max={s.corpoMax} />
+              <Barra nome="Mente" tipo="mente" v={s.mente} max={s.menteMax} />
+            </div>
             <div className="compagno-num">
               <span>Armor F <b>{s.armorF ?? '–'}</b></span>
               <span>Armor M <b>{s.armorM ?? '–'}</b></span>
@@ -41,7 +43,6 @@ export default function Compagni({ giocatori, turnoId, io, onEspelli, extra }) {
               <span>Sybil <b>{s.sybil ?? '–'}</b></span>
             </div>
             {extra && extra(g)}
-            {onEspelli && <button className="ghost compagno-rimuovi" onClick={() => onEspelli(g)}>Rimuovi dal tavolo</button>}
           </div>
         )
       })}

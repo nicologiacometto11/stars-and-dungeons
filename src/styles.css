@@ -950,3 +950,40 @@ button.primary:disabled { background: transparent; border-color: var(--line2); c
 .fin-x { position: absolute; top: 6px; right: 6px; z-index: 2; width: 36px; height: 36px; min-height: 0; padding: 0; border-radius: 50%; font-size: 1.2rem; line-height: 1; }
 @media (max-width: 640px) { .fin-velo { align-items: flex-end; padding-bottom: calc(env(safe-area-inset-bottom) + 16px); } }
 @media (prefers-reduced-motion: reduce) { .fin-velo, .altro-menu { animation: none; } }
+
+/* ---- vista Master compatta ---- */
+.master-testa { flex-wrap: wrap; align-items: center; padding: 10px 12px; gap: 8px 12px; }
+.master-sopra { letter-spacing: .18em; }
+.master-codice { width: auto; flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 8px; }
+.master-codice small { width: auto; }
+.master-codice .codice-tavolo { font-size: .95rem; letter-spacing: .08em; }
+.master-codice button { padding: 3px 10px; font-size: .78rem; }
+.scontro-bar { position: sticky; top: 6px; z-index: 4; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px 8px 14px; border: 1px solid rgba(230, 194, 116, .45); border-radius: 14px; background: rgba(22, 22, 34, .92); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 6px 18px rgba(0, 0, 0, .35); }
+@media (min-width: 641px) { .scontro-bar { top: 54px; } }
+.scontro-info { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.scontro-info small { color: var(--muted); font-size: .72rem; }
+.scontro-info small b { color: var(--oro); }
+.scontro-info strong { font-family: var(--serif); font-size: .95rem; letter-spacing: .03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.scontro-bar button { flex: none; padding: 8px 12px; min-height: 40px; font-size: .86rem; }
+.compagno-barre { display: contents; }
+.compagni.compatti .compagno { padding: 10px; gap: 8px; }
+.compagni.compatti .compagno-testa { gap: 10px; }
+.compagni.compatti .compagno-foto, .compagni.compatti .compagno-iniziale { width: 34px; height: 34px; font-size: .95rem; }
+.compagni.compatti .compagno-nome strong { font-size: .95rem; }
+.compagni.compatti .compagno-nome small { font-size: .72rem; line-height: 1.2; }
+.compagni.compatti .compagno-barre { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.compagni.compatti .mini-barra small { font-size: .74rem; }
+.compagni.compatti .mini-barra .barra { height: 6px; }
+.compagni.compatti .compagno-num { gap: 4px; }
+.compagni.compatti .compagno-num span { flex-direction: row; justify-content: center; align-items: baseline; gap: 4px; padding: 3px 2px; font-size: .6rem; letter-spacing: .02em; white-space: nowrap; }
+.compagni.compatti .compagno-num b { font-size: .86rem; }
+.compagni.compatti .master-bottoni button { min-height: 36px; padding: 6px; font-size: .86rem; }
+@media (min-width: 641px) { .compagni.compatti { display: grid; grid-template-columns: 1fr 1fr; align-items: start; } }
+.mostri-editor { margin-bottom: 0; }
+.ordine-master { margin: 10px 0 0; }
+.fine-scontro { align-self: flex-start; padding: 6px 14px; min-height: 0; }
+.apri-riga { width: 100%; text-align: left; color: var(--oro); font-family: var(--serif); font-weight: 600; letter-spacing: .06em; font-size: .9rem; }
+.fin-corpo { display: flex; flex-direction: column; gap: 10px; padding: 16px; }
+.fin-corpo h2 { margin: 0; padding-right: 34px; }
+.fin .master-azioni, .fin .scheda-master { padding-top: 0; border-top: 0; }
+.fin > .card h2 { padding-right: 34px; }

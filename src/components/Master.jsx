@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Compagni from './Compagni.jsx'
+import Finestra from './Finestra.jsx'
 import MasterAzioni from './MasterAzioni.jsx'
 import SchedaMaster from './SchedaMaster.jsx'
 import Storico from './Storico.jsx'
@@ -92,6 +93,7 @@ export default function Master({ tv, studi }) {
   const [copiato, setCopiato] = useState(false)
   const [aperto, setAperto] = useState(null)
   const [scheda, setScheda] = useState(null)
+  const [bottino, setBottino] = useState(false)
   const t = tv.tavolo
   if (!tv.pronto || !t) return <p className="muted centrato">Carico il tavolo…</p>
 
@@ -120,31 +122,65 @@ export default function Master({ tv, studi }) {
     tv.aggiornaTavolo({ ordine, turno })
   }
   const inTurno = t.scontro ? t.ordine[t.turno] : null
+  const perAzioni = tv.giocatori.find((g) => g.user_id === aperto)
+  const perScheda = tv.giocatori.find((g) => g.user_id === scheda)
 
   return (
     <div className="stack">
       <header className="master-testa">
         <div>
           <p className="master-sopra">Vista Master</p>
-          <h1 className="master-titolo">Il tavolo</h1>
-          <small className="muted">{tv.giocatori.length} {tv.giocatori.length === 1 ? 'giocatore' : 'giocatori'} · {t.scontro ? `scontro, Round ${t.round}` : 'nessuno scontro'}</small>
+          <small className="muted">{tv.giocatori.length} {tv.giocatori.length === 1 ? 'giocatore' : 'giocatori'}</small>
         </div>
         <div className="master-codice">
-          <small className="muted">Codice del tavolo</small>
+          <small className="muted">Codice</small>
           <strong className="codice-tavolo">{tv.codice || '…'}</strong>
           <button onClick={copia}>{copiato ? 'Copiato ✓' : 'Copia'}</button>
         </div>
       </header>
 
+      {t.scontro ? (
+        <div className="scontro-bar">
+          <div className="scontro-info">
+            <small>⚔️ Round <b>{t.round}</b></small>
+            <strong>Turno di {inTurno?.nome || '…'}</strong>
+          </div>
+          <button className="primary" onClick={avanti}>Prossimo turno ▶</button>
+        </div>
+      ) : (
+        <section className="card">
+          <h2>⚔️ Scontro</h2>
+          <p className="muted">Nessuno scontro in corso. I giocatori presenti entrano nell'ordine dei turni.</p>
+          <button className="primary" disabled={!tv.giocatori.length} onClick={inizia}>Inizia scontro</button>
+        </section>
+      )}
+
       <section className="card">
-        <h2>⚔️ Scontro</h2>
-        {t.scontro ? (
-          <>
-            <div className="round-box">
-              <span className="muted">Round</span>
-              <strong className="round-n">{t.round}</strong>
-            </div>
-            <p className="turno-di">Turno di {inTurno?.nome || '…'}</p>
+        <h2>🧙 Giocatori <span className="conteggio">{tv.giocatori.length}</span></h2>
+        <Compagni
+          compatti
+          giocatori={tv.giocatori}
+          turnoId={inTurno?.id}
+          extra={(g) => (
+            <>
+              {tv.inAttesa.filter((a) => a.user_id === g.user_id).map((a) => (
+                <div key={a.id} className="in-attesa">
+                  <small>⏳ In attesa di conferma: {descriviAzione(a)}</small>
+                  <button className="ghost" onClick={() => tv.annullaAzione(a.id)}>Annulla</button>
+                </div>
+              ))}
+              <div className="master-bottoni">
+                <button onClick={() => setScheda(g.user_id)}>Vedi scheda</button>
+                <button onClick={() => setAperto(g.user_id)}>Azioni…</button>
+              </div>
+            </>
+          )}
+        />
+      </section>
+
+      {t.scontro && (
+        <>
+          <section className="card">
             <div className="mostri-editor">
               <strong>🐉 Mostri in campo</strong>
               {mostriCampo.map((x) => (
@@ -161,6 +197,10 @@ export default function Master({ tv, studi }) {
                 {MOSTRI.map((x) => <option key={x.id} value={x.id}>{x.nome} (Grado {x.grado})</option>)}
               </select>
             </div>
+          </section>
+
+          <details className="card">
+            <summary>Ordine dei turni</summary>
             <ol className="ordine ordine-master">
               {t.ordine.map((o, i) => (
                 <li key={o.tipo + o.id} className={i === t.turno ? 'on' : ''}>
@@ -172,46 +212,38 @@ export default function Master({ tv, studi }) {
                 </li>
               ))}
             </ol>
-            <div className="riga">
-              <button className="primary" onClick={avanti}>Prossimo turno ▶</button>
-              <button className="ghost pericolo" onClick={fine}>Fine scontro</button>
-            </div>
-          </>
-        ) : (
-          <>
-            <p className="muted">Nessuno scontro in corso. I giocatori presenti entrano nell'ordine dei turni.</p>
-            <button className="primary" disabled={!tv.giocatori.length} onClick={inizia}>Inizia scontro</button>
-          </>
-        )}
-      </section>
+          </details>
 
-      <section className="card">
-        <h2>🧙 Giocatori <span className="conteggio">{tv.giocatori.length}</span></h2>
-        <Compagni
-          giocatori={tv.giocatori}
-          turnoId={inTurno?.id}
-          extra={(g) => (
-            <>
-              {tv.inAttesa.filter((a) => a.user_id === g.user_id).map((a) => (
-                <div key={a.id} className="in-attesa">
-                  <small>⏳ In attesa di conferma: {descriviAzione(a)}</small>
-                  <button className="ghost" onClick={() => tv.annullaAzione(a.id)}>Annulla</button>
-                </div>
-              ))}
-              <div className="master-bottoni">
-                <button onClick={() => setScheda(scheda === g.user_id ? null : g.user_id)}>{scheda === g.user_id ? 'Chiudi scheda' : 'Vedi scheda'}</button>
-                <button onClick={() => setAperto(aperto === g.user_id ? null : g.user_id)}>{aperto === g.user_id ? 'Chiudi azioni' : 'Azioni…'}</button>
-              </div>
-              {scheda === g.user_id && <SchedaMaster userId={g.user_id} />}
-              {aperto === g.user_id && <MasterAzioni g={g} tv={tv} />}
-            </>
-          )}
-          onEspelli={(g) => confirm(`Rimuovere ${g.nome || 'questo giocatore'} dal tavolo? La sua scheda non viene toccata.`) && tv.espelli(g.user_id)}
-        />
-      </section>
+          <button className="ghost pericolo fine-scontro" onClick={fine}>Fine scontro</button>
+        </>
+      )}
 
-      <Bottino tv={tv} />
-      <Storico eventi={tv.eventi} onPulisci={tv.pulisciStorico} />
+      <button className="card apri-riga" onClick={() => setBottino(true)}>🎁 Bottino di un mostro…</button>
+      <Storico richiudibile eventi={tv.eventi} onPulisci={tv.pulisciStorico} />
+
+      {perAzioni && (
+        <Finestra titolo={`Azioni per ${perAzioni.nome || 'il giocatore'}`} onChiudi={() => setAperto(null)}>
+          <div className="fin-corpo">
+            <h2>Azioni per {perAzioni.nome || 'il giocatore'}</h2>
+            <MasterAzioni g={perAzioni} tv={tv} />
+          </div>
+        </Finestra>
+      )}
+      {perScheda && (
+        <Finestra titolo={`Scheda di ${perScheda.nome || 'il giocatore'}`} onChiudi={() => setScheda(null)}>
+          <div className="fin-corpo">
+            <h2>Scheda di {perScheda.nome || 'il giocatore'}</h2>
+            <SchedaMaster userId={perScheda.user_id} />
+            <button className="ghost compagno-rimuovi" onClick={() => confirm(`Rimuovere ${perScheda.nome || 'questo giocatore'} dal tavolo? La sua scheda non viene toccata.`) && tv.espelli(perScheda.user_id)}>Rimuovi dal tavolo</button>
+          </div>
+        </Finestra>
+      )}
+      {bottino && (
+        <Finestra titolo="Bottino di un mostro" onChiudi={() => setBottino(false)}>
+          <Bottino tv={tv} />
+        </Finestra>
+      )}
+
       <details className="card zona-pericolo">
         <summary>Zona pericolosa</summary>
         <h3 className="sotto">Ripartire da zero</h3>

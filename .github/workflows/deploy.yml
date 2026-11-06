@@ -39,5 +39,13 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # Temporaneo: annulla il deploy rimasto bloccato su Pages, che impedisce tutti gli altri
+      - name: Annulla il deploy bloccato
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          curl -sS -i -X POST -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/deployments/fa98f5be1c5b7b9014d203f2a420c28980e210d5/cancel" | head -20 || true
+          sleep 15
       - id: deployment
         uses: actions/deploy-pages@v4

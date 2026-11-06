@@ -161,10 +161,20 @@ export default function App() {
     window.scrollTo({ top: 0 })
   }
   // il Master ha la sua vista nella barra e il Tavolo in "Altro"; i giocatori il contrario
-  const barra = [...TABS, ...(tv.master ? [VOCE_MASTER] : modalitaOnline ? [VOCE_TAVOLO] : [])]
+  const ultima = tv.master ? [VOCE_MASTER] : modalitaOnline ? [VOCE_TAVOLO] : [] // nella barra sta dopo "Altro"
   const altro = [...TAB_ALTRO, ...(tv.master ? [VOCE_TAVOLO] : [])]
   const inOggetti = TAB_OGGETTI.some(([k]) => k === tab)
   const inAltro = altro.some(([k]) => k === tab)
+
+  const voceBarra = ([id, nome, ico]) => {
+    const attiva = id === 'oggetti' ? inOggetti : tab === id
+    return (
+      <button key={id} aria-label={nome} aria-current={attiva ? 'page' : undefined} className={attiva ? 'on' : ''} onClick={() => vai(id)}>
+        <span className="ico" aria-hidden="true">{ico}</span>
+        <span className="nome-tab">{nome}</span>
+      </button>
+    )
+  }
 
   const statoTxt = { idle: '', salvando: 'Salvataggio…', salvato: 'Salvato', errore: 'Errore di salvataggio, riprovo alla prossima modifica' }[stato]
 
@@ -196,19 +206,12 @@ export default function App() {
       )}
 
       <nav className="tabs molte">
-        {barra.map(([id, nome, ico]) => {
-          const attiva = id === 'oggetti' ? inOggetti : tab === id
-          return (
-            <button key={id} aria-label={nome} aria-current={attiva ? 'page' : undefined} className={attiva ? 'on' : ''} onClick={() => vai(id)}>
-              <span className="ico" aria-hidden="true">{ico}</span>
-              <span className="nome-tab">{nome}</span>
-            </button>
-          )
-        })}
+        {TABS.map(voceBarra)}
         <button aria-label="Altro" aria-expanded={!!altroAperto} className={inAltro ? 'on' : ''} onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); setAltroAperto((a) => (a ? null : { '--menu-x': `${r.left}px`, '--menu-y': `${r.bottom + 6}px` })) }}>
           <span className="ico" aria-hidden="true">☰</span>
           <span className="nome-tab">{inAltro ? altro.find(([k]) => k === tab)[1] : 'Altro'}</span>
         </button>
+        {ultima.map(voceBarra)}
       </nav>
 
       {altroAperto && (

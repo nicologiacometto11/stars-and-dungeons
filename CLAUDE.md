@@ -177,7 +177,7 @@ Decisione del Master sulla fase 3: NIENTE combattimento sul tavolo (PV e azioni 
 
 ## Vista nuova (Scheda, barra, griglie)
 
-- Barra in basso: Scheda, Zodiaco, Oggetti, Bestiario, Tavolo (per il Master: Master) e "Altro" con Craft e Ricevi (per il Master anche Tavolo). Oggetti ha le sotto-tab Inventario e Negozio.
+- Barra in basso: Scheda, Zodiaco, Oggetti, Bestiario, "Altro" con Craft e Ricevi (per il Master anche Tavolo) e infine Tavolo (per il Master: Master). Oggetti ha le sotto-tab Inventario e Negozio.
 - Scheda: in cima la barra sempre visibile (`.hud`, sola lettura, un tocco porta alle Riserve), poi testa compatta e Riserve. Categorie e Bonus sono richiudibili, "Togli un Rango" è in Correzioni manuali. "Sali di Rango" compare solo con XP sufficienti.
 - "Assegna un punto" è solo nello Zodiaco, in una finestra (`Finestra.jsx`) che si apre entrando se ci sono punti liberi; nella Scheda resta un pulsante che porta lì.
 - Negozio e Ricevi: griglia di carte piccole (`CartaMini` in `ItemCard.jsx`), il dettaglio si apre al tocco. Nella griglia non ci sono mai gli effetti, così i segreti del Negozio restano nascosti.

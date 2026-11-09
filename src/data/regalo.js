@@ -1,6 +1,6 @@
 // Regalo di compleanno per il Master: a ogni apertura dell'app compare un pacco con un biglietto.
 // Per toglierlo basta mettere REGALO_ATTIVO = false.
-export const REGALO_ATTIVO = true
+export const REGALO_ATTIVO = false
 
 export const REGALO_TITOLO = 'Buon compleanno, Ludo!'
 export const REGALO_MESSAGGIO =
